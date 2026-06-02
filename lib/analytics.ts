@@ -53,6 +53,50 @@ export function getSessionPerformance(trades: JournalTrade[]) {
   }));
 }
 
+export function getAverageHoldTimeMinutes(trades: JournalTrade[]): number | null {
+  const withHold = trades.filter((t) => t.holdTimeMinutes != null && t.holdTimeMinutes > 0);
+  if (!withHold.length) return null;
+  const total = withHold.reduce((sum, t) => sum + (t.holdTimeMinutes ?? 0), 0);
+  return Math.round(total / withHold.length);
+}
+
+export function getAverageMaeMfe(trades: JournalTrade[]) {
+  const withMae = trades.filter((t) => t.mae != null);
+  const withMfe = trades.filter((t) => t.mfe != null);
+  const avg = (values: number[]) =>
+    values.length ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2)) : null;
+  return {
+    avgMae: avg(withMae.map((t) => t.mae!)),
+    avgMfe: avg(withMfe.map((t) => t.mfe!)),
+  };
+}
+
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function weekdayIndex(date: Date) {
+  return (date.getDay() + 6) % 7;
+}
+
+export function getDayHourHeatmap(trades: JournalTrade[]) {
+  const cells: { day: string; hour: number; pnl: number; count: number }[] = [];
+  for (let d = 0; d < 7; d += 1) {
+    for (let h = 0; h < 24; h += 1) {
+      cells.push({ day: DAY_LABELS[d], hour: h, pnl: 0, count: 0 });
+    }
+  }
+
+  for (const trade of trades) {
+    const at = new Date(trade.entryAt || trade.date);
+    const d = weekdayIndex(at);
+    const h = at.getHours();
+    const idx = d * 24 + h;
+    cells[idx].pnl += trade.netProfitLoss;
+    cells[idx].count += 1;
+  }
+
+  return cells;
+}
+
 export function getSetupWinRateVsMistakes(trades: JournalTrade[]) {
   const setupTags: SetupTag[] = ["Liquidity Sweep", "FVG Mitigation", "Break of Structure", "Order Block"];
   const negativeEmotions = new Set(["Revenge Trading", "Overlot", "FOMO", "Fear", "Greed"]);

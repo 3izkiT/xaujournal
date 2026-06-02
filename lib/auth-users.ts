@@ -1,3 +1,4 @@
+import { Plan } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 export type StoredUser = {
@@ -5,6 +6,7 @@ export type StoredUser = {
   email: string;
   name: string;
   passwordHash: string;
+  plan: Plan;
   createdAt: string;
 };
 
@@ -13,6 +15,7 @@ function normalizeUser(user: {
   email: string;
   name: string;
   passwordHash: string;
+  plan: Plan;
   createdAt: Date;
 }): StoredUser {
   return {
@@ -20,6 +23,7 @@ function normalizeUser(user: {
     email: user.email,
     name: user.name,
     passwordHash: user.passwordHash,
+    plan: user.plan,
     createdAt: user.createdAt.toISOString(),
   };
 }

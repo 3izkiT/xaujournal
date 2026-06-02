@@ -11,6 +11,7 @@ const navItems = [
   { href: "/calendar", label: "Calendar View", desc: "Monthly consistency" },
   { href: "/gallery", label: "Gallery View", desc: "Before / after study" },
   { href: "/pricing", label: "Pricing", desc: "Plans and upgrade" },
+  { href: "/settings", label: "Settings", desc: "Pro prefs + coach link" },
 ];
 
 function navClass(active: boolean) {

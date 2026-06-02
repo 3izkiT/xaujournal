@@ -3,27 +3,48 @@
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { calculateDisciplineScore } from "@/lib/data";
-import { DisciplineChecklist, EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
+import { FREE_TRADE_LIMIT } from "@/lib/plans";
+import {
+  DisciplineChecklist,
+  EmotionType,
+  JournalTrade,
+  SessionType,
+  SetupTag,
+  TradeType,
+  UserPlan,
+} from "@/lib/types";
 
 type AddTradePayload = {
   date: string;
+  entryAt?: string;
+  exitAt?: string | null;
+  holdTimeMinutes?: number | null;
   type: TradeType;
   netProfitLoss: number;
   rMultiple: string;
   entryPrice: number;
   exitPrice: number;
+  mae?: number | null;
+  mfe?: number | null;
   session: SessionType;
   setupTags: SetupTag[];
   emotion: EmotionType;
   beforeChartUrl: string;
   afterChartUrl: string;
   disciplineChecklist: DisciplineChecklist;
+  noteContext: string;
+  noteMistake: string;
+  noteNextAction: string;
 };
 
 type XauJournalContextValue = {
   trades: JournalTrade[];
   loading: boolean;
-  addTrade: (payload: AddTradePayload) => Promise<void>;
+  plan: UserPlan;
+  tradeLimit: number | null;
+  tradeCount: number;
+  canAddMore: boolean;
+  addTrade: (payload: AddTradePayload) => Promise<{ ok: boolean; error?: string }>;
   refreshTrades: () => Promise<void>;
 };
 
@@ -33,8 +54,22 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
   const [trades, setTrades] = useState<JournalTrade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [plan, setPlan] = useState<UserPlan>("FREE");
+  const [tradeLimit, setTradeLimit] = useState<number | null>(FREE_TRADE_LIMIT);
+  const [tradeCount, setTradeCount] = useState(0);
+  const [canAddMore, setCanAddMore] = useState(true);
 
   const storageKey = session?.user?.id ? `xaujournal-trades-${session.user.id}` : null;
+
+  const applyMeta = useCallback(
+    (data: { plan?: UserPlan; tradeLimit?: number | null; tradeCount?: number; canAddMore?: boolean }) => {
+      if (data.plan) setPlan(data.plan);
+      if (data.tradeLimit !== undefined) setTradeLimit(data.tradeLimit);
+      if (data.tradeCount !== undefined) setTradeCount(data.tradeCount);
+      if (data.canAddMore !== undefined) setCanAddMore(data.canAddMore);
+    },
+    []
+  );
 
   const refreshTrades = useCallback(async () => {
     if (!session?.user?.id) {
@@ -47,64 +82,109 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch("/api/trades", { cache: "no-store" });
       if (res.ok) {
-        const data = (await res.json()) as { trades: JournalTrade[] };
+        const data = (await res.json()) as {
+          trades: JournalTrade[];
+          plan?: UserPlan;
+          tradeLimit?: number | null;
+          tradeCount?: number;
+          canAddMore?: boolean;
+        };
         setTrades(data.trades);
+        applyMeta(data);
         if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
       } else if (storageKey) {
         const cached = localStorage.getItem(storageKey);
         if (cached) setTrades(JSON.parse(cached) as JournalTrade[]);
+        setPlan(session.user.plan ?? "FREE");
       }
     } catch {
       if (storageKey) {
         const cached = localStorage.getItem(storageKey);
         if (cached) setTrades(JSON.parse(cached) as JournalTrade[]);
       }
+      setPlan(session.user.plan ?? "FREE");
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.id, storageKey]);
+  }, [session?.user?.id, session?.user?.plan, storageKey, applyMeta]);
 
   useEffect(() => {
     if (status === "loading") return;
     void refreshTrades();
   }, [status, refreshTrades]);
 
-  const addTrade = useCallback(async (payload: AddTradePayload) => {
-    if (!session?.user?.id) return;
-
-    const disciplineScore = calculateDisciplineScore(payload.disciplineChecklist);
-    const optimistic: JournalTrade = {
-      id: `t-${Date.now()}`,
-      asset: "XAUUSD (Gold)",
-      disciplineScore,
-      ...payload,
-    };
-
-    setTrades((prev) => {
-      const next = [optimistic, ...prev];
-      if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next));
-      return next;
-    });
-
-    try {
-      const res = await fetch("/api/trades", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const data = (await res.json()) as { trades: JournalTrade[] };
-        setTrades(data.trades);
-        if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+  const addTrade = useCallback(
+    async (payload: AddTradePayload): Promise<{ ok: boolean; error?: string }> => {
+      if (!session?.user?.id) return { ok: false, error: "Not signed in." };
+      if (!canAddMore) {
+        return {
+          ok: false,
+          error: `Free tier limit (${FREE_TRADE_LIMIT} logs). Upgrade for unlimited.`,
+        };
       }
-    } catch {
-      // optimistic update kept
-    }
-  }, [session?.user?.id, storageKey]);
+
+      const disciplineScore = calculateDisciplineScore(payload.disciplineChecklist);
+      const entryAt = payload.entryAt ?? new Date(`${payload.date}T12:00:00`).toISOString();
+      const optimistic: JournalTrade = {
+        ...payload,
+        id: `t-${Date.now()}`,
+        asset: "XAUUSD (Gold)",
+        disciplineScore,
+        entryAt,
+        exitAt: payload.exitAt ?? null,
+        holdTimeMinutes: payload.holdTimeMinutes ?? null,
+        mae: payload.mae ?? null,
+        mfe: payload.mfe ?? null,
+      };
+
+      setTrades((prev) => {
+        const next = [optimistic, ...prev];
+        if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next));
+        return next;
+      });
+
+      try {
+        const res = await fetch("/api/trades", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, entryAt }),
+        });
+        const data = (await res.json()) as {
+          trades?: JournalTrade[];
+          error?: string;
+          plan?: UserPlan;
+          tradeLimit?: number | null;
+          tradeCount?: number;
+          canAddMore?: boolean;
+        };
+        if (res.ok && data.trades) {
+          setTrades(data.trades);
+          applyMeta(data);
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+          return { ok: true };
+        }
+        if (data.trades) setTrades(data.trades);
+        applyMeta(data);
+        return { ok: false, error: data.error ?? "Failed to save trade." };
+      } catch {
+        return { ok: false, error: "Network error." };
+      }
+    },
+    [session?.user?.id, canAddMore, storageKey, applyMeta]
+  );
 
   const value = useMemo(
-    () => ({ trades, loading, addTrade, refreshTrades }),
-    [trades, loading, refreshTrades, addTrade]
+    () => ({
+      trades,
+      loading,
+      plan,
+      tradeLimit,
+      tradeCount,
+      canAddMore,
+      addTrade,
+      refreshTrades,
+    }),
+    [trades, loading, plan, tradeLimit, tradeCount, canAddMore, addTrade, refreshTrades]
   );
 
   return <XauJournalContext.Provider value={value}>{children}</XauJournalContext.Provider>;

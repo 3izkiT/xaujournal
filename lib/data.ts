@@ -37,8 +37,28 @@ export function calculateDisciplineScore(checklist: DisciplineChecklist): 0 | 33
   return 0;
 }
 
+function mockTrade(
+  trade: Omit<
+    JournalTrade,
+    "entryAt" | "exitAt" | "holdTimeMinutes" | "mae" | "mfe" | "noteContext" | "noteMistake" | "noteNextAction"
+  > &
+    Partial<Pick<JournalTrade, "entryAt" | "exitAt" | "holdTimeMinutes" | "mae" | "mfe" | "noteContext" | "noteMistake" | "noteNextAction">>
+): JournalTrade {
+  return {
+    entryAt: `${trade.date}T13:00:00.000Z`,
+    exitAt: null,
+    holdTimeMinutes: 45,
+    mae: -40,
+    mfe: 90,
+    noteContext: "Session aligned with plan.",
+    noteMistake: "No major mistake.",
+    noteNextAction: "Keep same risk per trade.",
+    ...trade,
+  };
+}
+
 export const mockTrades: JournalTrade[] = [
-  {
+  mockTrade({
     id: "t-001",
     asset: "XAUUSD (Gold)",
     date: "2026-05-24",
@@ -54,8 +74,14 @@ export const mockTrades: JournalTrade[] = [
     afterChartUrl: afterPlaceholder,
     disciplineChecklist: { followedPlan: true, rrAtLeastOneToTwo: true, calmMindset: true },
     disciplineScore: 100,
-  },
-  {
+    mae: -25,
+    mfe: 140,
+    holdTimeMinutes: 35,
+    noteContext: "London sweep into BOS continuation.",
+    noteMistake: "None.",
+    noteNextAction: "Repeat London-only filter.",
+  }),
+  mockTrade({
     id: "t-002",
     asset: "XAUUSD (Gold)",
     date: "2026-05-25",
@@ -71,8 +97,14 @@ export const mockTrades: JournalTrade[] = [
     afterChartUrl: afterPlaceholder,
     disciplineChecklist: { followedPlan: false, rrAtLeastOneToTwo: false, calmMindset: false },
     disciplineScore: 0,
-  },
-  {
+    mae: -120,
+    mfe: 30,
+    holdTimeMinutes: 12,
+    noteContext: "Chased NY open without confirmation.",
+    noteMistake: "Entered before structure break.",
+    noteNextAction: "Wait for 1:2 RR before entry.",
+  }),
+  mockTrade({
     id: "t-003",
     asset: "XAUUSD (Gold)",
     date: "2026-05-27",
@@ -88,8 +120,10 @@ export const mockTrades: JournalTrade[] = [
     afterChartUrl: afterPlaceholder,
     disciplineChecklist: { followedPlan: true, rrAtLeastOneToTwo: true, calmMindset: false },
     disciplineScore: 66,
-  },
-  {
+    entryAt: "2026-05-27T02:30:00.000Z",
+    holdTimeMinutes: 90,
+  }),
+  mockTrade({
     id: "t-004",
     asset: "XAUUSD (Gold)",
     date: "2026-05-28",
@@ -105,8 +139,10 @@ export const mockTrades: JournalTrade[] = [
     afterChartUrl: afterPlaceholder,
     disciplineChecklist: { followedPlan: true, rrAtLeastOneToTwo: false, calmMindset: true },
     disciplineScore: 66,
-  },
-  {
+    mae: -55,
+    mfe: 45,
+  }),
+  mockTrade({
     id: "t-005",
     asset: "XAUUSD (Gold)",
     date: "2026-05-30",
@@ -122,8 +158,10 @@ export const mockTrades: JournalTrade[] = [
     afterChartUrl: afterPlaceholder,
     disciplineChecklist: { followedPlan: false, rrAtLeastOneToTwo: true, calmMindset: false },
     disciplineScore: 33,
-  },
-  {
+    noteMistake: "Revenge entry after prior loss.",
+    noteNextAction: "Stop after 1 loss per session.",
+  }),
+  mockTrade({
     id: "t-006",
     asset: "XAUUSD (Gold)",
     date: "2026-06-01",
@@ -139,5 +177,8 @@ export const mockTrades: JournalTrade[] = [
     afterChartUrl: afterPlaceholder,
     disciplineChecklist: { followedPlan: true, rrAtLeastOneToTwo: true, calmMindset: true },
     disciplineScore: 100,
-  },
+    holdTimeMinutes: 75,
+    mae: -30,
+    mfe: 160,
+  }),
 ];
