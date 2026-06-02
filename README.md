@@ -17,9 +17,18 @@ Open [http://localhost:3000](http://localhost:3000) (redirects to `/dashboard`).
 - Recharts for dashboard analytics
 - 100% manual — no broker API
 
-## Deploy
+## Member login
 
-Connect this repository to a **new** Vercel project (separate from Gold IQ).
+- **Sign in:** `/login`
+- **Register:** `/register`
+- Demo account: `demo@xaujournal.app` / `xaujournal2026`
+
+Set in Vercel (required):
+
+- `AUTH_SECRET` — random string (`openssl rand -base64 32`)
+- `AUTH_URL` — e.g. `https://xaujournal-nine.vercel.app`
+
+## Deploy
 
 ```bash
 npx vercel --prod

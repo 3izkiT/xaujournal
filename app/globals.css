@@ -2,7 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --pastel-mint: #d1fae5;
+  --pastel-blue: #dbeafe;
+  --pastel-yellow: #fef3c7;
+  --pastel-pink: #ffe4e6;
+  --ink: #1e293b;
+  --paper: #f8fafc;
+}
+
 body {
-  color: #1e293b;
-  background: #f8fafc;
+  color: var(--ink);
+  background: var(--paper);
 }

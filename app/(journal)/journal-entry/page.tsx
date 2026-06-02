@@ -39,11 +39,11 @@ export default function JournalEntryPage() {
     setSetupTags((prev) => (prev.includes(tag) ? prev.filter((v) => v !== tag) : [...prev, tag]));
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!canAdd) return;
 
-    addTrade({
+    await addTrade({
       date,
       type,
       netProfitLoss: Number(netProfitLoss),

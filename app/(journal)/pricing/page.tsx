@@ -32,7 +32,7 @@ export default function PricingPage() {
             <li>Full gallery + future export tools</li>
           </ul>
           <Link
-            href="/journal-entry"
+            href="/login"
             className="mt-6 inline-block rounded-2xl bg-amber-200 px-5 py-3 text-sm font-medium text-amber-900 transition hover:bg-amber-300"
           >
             Upgrade Now

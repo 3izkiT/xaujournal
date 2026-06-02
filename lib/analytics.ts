@@ -12,6 +12,23 @@ export function getAverageDisciplineScore(trades: JournalTrade[]): number {
   return Math.round(total / trades.length);
 }
 
+export function getMonthlyDisciplineScore(trades: JournalTrade[], reference = new Date()): number {
+  const month = reference.getMonth();
+  const year = reference.getFullYear();
+  const monthly = trades.filter((trade) => {
+    const d = new Date(trade.date);
+    return d.getMonth() === month && d.getFullYear() === year;
+  });
+  return getAverageDisciplineScore(monthly);
+}
+
+export function getProfitFactor(trades: JournalTrade[]): number {
+  const grossProfit = trades.filter((t) => t.netProfitLoss > 0).reduce((s, t) => s + t.netProfitLoss, 0);
+  const grossLoss = Math.abs(trades.filter((t) => t.netProfitLoss < 0).reduce((s, t) => s + t.netProfitLoss, 0));
+  if (grossLoss === 0) return grossProfit > 0 ? 99.99 : 0;
+  return Number((grossProfit / grossLoss).toFixed(2));
+}
+
 export function getTotalPnl(trades: JournalTrade[]): number {
   return trades.reduce((sum, trade) => sum + trade.netProfitLoss, 0);
 }
