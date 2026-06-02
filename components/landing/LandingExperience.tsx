@@ -45,8 +45,8 @@ const sections = [
 export function LandingExperience() {
   return (
     <div className="landing-root bg-[#fafafa] text-slate-900">
-      <header className="landing-nav fixed inset-x-0 top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <header className="landing-nav fixed inset-x-0 top-0 z-50 bg-[#fafafa]/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-200 to-amber-400 text-xs font-bold text-amber-900">
               Au
@@ -81,24 +81,24 @@ export function LandingExperience() {
         </div>
       </header>
 
-      <main className="landing-scroll pt-[72px]">
+      <main className="landing-scroll pt-14">
         {/* Hero */}
-        <section className="landing-section flex min-h-[100svh] items-center">
-          <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center">
+        <section className="landing-section flex min-h-0 items-center py-10 md:py-14">
+          <div className="mx-auto grid w-full max-w-6xl gap-6 px-6 lg:grid-cols-2 lg:items-center lg:gap-8">
             <div className="landing-reveal">
-              <p className="text-sm font-medium uppercase tracking-[0.25em] text-slate-400">Gold trader&apos;s journal</p>
-              <h1 className="mt-4 text-5xl font-semibold leading-[1.05] tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">Gold trader&apos;s journal</p>
+              <h1 className="mt-2 text-4xl font-semibold leading-[1.08] tracking-tight text-slate-900 md:text-5xl lg:text-6xl">
                 Stay disciplined.
                 <br />
                 <span className="bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
                   One trade at a time.
                 </span>
               </h1>
-              <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
+              <p className="mt-3 max-w-lg text-base leading-relaxed text-slate-600 md:text-lg">
                 XAUJournal is a manual, discipline-first workspace for XAUUSD — no broker sync, no noise. Just clarity,
                 reflection, and pastel analytics built for serious traders.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-5 flex flex-wrap gap-2.5">
                 <Link
                   href="/register"
                   className="rounded-full bg-slate-900 px-7 py-3.5 text-sm font-medium text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800"
@@ -112,7 +112,7 @@ export function LandingExperience() {
                   Sign in
                 </Link>
               </div>
-              <p className="mt-6 text-xs text-slate-400">Free tier · 10 trades · No card required</p>
+              <p className="mt-3 text-xs text-slate-400">Free tier · 10 trades · No card required</p>
             </div>
             <div className="landing-reveal landing-reveal-delay">
               <DeviceFrame label="xaujournal.app — Dashboard">
@@ -127,19 +127,19 @@ export function LandingExperience() {
           <section
             key={section.id}
             id={section.id}
-            className="landing-section flex min-h-[100svh] items-center scroll-mt-20 border-t border-slate-200/60 bg-white"
+            className="landing-section flex min-h-0 items-center scroll-mt-16 py-10 md:py-12"
           >
             <div
-              className={`mx-auto grid w-full max-w-6xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center ${
+              className={`mx-auto grid w-full max-w-6xl gap-6 px-6 lg:grid-cols-2 lg:items-center lg:gap-8 ${
                 section.reverse ? "lg:[direction:rtl]" : ""
               }`}
             >
-              <div className={`landing-reveal space-y-5 ${section.reverse ? "lg:[direction:ltr]" : ""}`}>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">{section.eyebrow}</p>
-                <h2 className="text-4xl font-semibold leading-tight tracking-tight text-slate-900 md:text-5xl">
+              <div className={`landing-reveal space-y-2.5 ${section.reverse ? "lg:[direction:ltr]" : ""}`}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{section.eyebrow}</p>
+                <h2 className="text-3xl font-semibold leading-tight tracking-tight text-slate-900 md:text-4xl">
                   {section.hook}
                 </h2>
-                <p className="max-w-md text-lg leading-relaxed text-slate-600">{section.body}</p>
+                <p className="max-w-md text-base leading-relaxed text-slate-600">{section.body}</p>
                 <Link
                   href="/register"
                   className="inline-flex items-center gap-2 text-sm font-medium text-sky-700 transition hover:text-sky-900"
@@ -156,14 +156,14 @@ export function LandingExperience() {
         ))}
 
         {/* CTA */}
-        <section className="landing-section flex min-h-[70svh] items-center bg-gradient-to-b from-slate-900 to-slate-800 text-white">
-          <div className="landing-reveal mx-auto max-w-3xl px-6 py-20 text-center">
-            <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Built for XAUUSD traders</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">Your journal. Your rules. Your edge.</h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-slate-300">
+        <section className="landing-section flex min-h-0 items-center bg-gradient-to-b from-slate-900 to-slate-800 py-14 text-white md:py-16">
+          <div className="landing-reveal mx-auto max-w-3xl px-6 text-center">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Built for XAUUSD traders</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">Your journal. Your rules. Your edge.</h2>
+            <p className="mx-auto mt-3 max-w-xl text-base text-slate-300">
               Join traders who choose manual reflection over autopilot stats — and build discipline that compounds.
             </p>
-            <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link
                 href="/register"
                 className="rounded-full bg-white px-8 py-3.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
@@ -181,7 +181,7 @@ export function LandingExperience() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-400">
+      <footer className="bg-[#fafafa] py-6 text-center text-xs text-slate-400">
         © {new Date().getFullYear()} XAUJournal · Manual reflection for high discipline Gold trading
       </footer>
     </div>
