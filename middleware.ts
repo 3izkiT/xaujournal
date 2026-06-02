@@ -4,5 +4,11 @@ import { authConfig } from "@/auth.config";
 export default NextAuth(authConfig).auth;
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/journal-entry/:path*", "/calendar/:path*", "/gallery/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/journal-entry/:path*",
+    "/calendar/:path*",
+    "/gallery/:path*",
+    "/settings/:path*",
+  ],
 };
