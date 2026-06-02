@@ -84,6 +84,21 @@ html {
   animation: rise-up 700ms ease-out both;
 }
 
+/* Scroll reveal (landing) — transform/opacity only for GPU-friendly motion */
+.xau-scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.xau-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -101,6 +116,12 @@ html {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+
+  .xau-scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

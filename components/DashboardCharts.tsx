@@ -117,7 +117,7 @@ export function DashboardCharts({ equityCurve, setupVsMistakes }: Props) {
   const hasSetupData = setupVsMistakes.some((row) => row.winRate > 0 || row.mistakes > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Tier 1: long-form trends — full width, horizontal scroll when dense */}
       <section className="xau-card-bordered p-4 md:p-5">
         <ChartSectionHeader
