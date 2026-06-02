@@ -15,3 +15,18 @@ body {
   color: var(--ink);
   background: var(--paper);
 }
+
+@keyframes rise-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise-up {
+  animation: rise-up 700ms ease-out both;
+}

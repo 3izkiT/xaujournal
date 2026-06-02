@@ -6,22 +6,22 @@ import { signOut, useSession } from "next-auth/react";
 import { ReactNode, useState } from "react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/journal-entry", label: "Journal Entry" },
-  { href: "/calendar", label: "Calendar View" },
-  { href: "/gallery", label: "Gallery View" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/dashboard", label: "Dashboard", desc: "KPI + insights" },
+  { href: "/journal-entry", label: "Journal Entry", desc: "Add new trade" },
+  { href: "/calendar", label: "Calendar View", desc: "Monthly consistency" },
+  { href: "/gallery", label: "Gallery View", desc: "Before / after study" },
+  { href: "/pricing", label: "Pricing", desc: "Plans and upgrade" },
 ];
 
 function navClass(active: boolean) {
   return active
-    ? "rounded-2xl bg-sky-100 px-4 py-3 text-sky-700 shadow-sm transition"
-    : "rounded-2xl px-4 py-3 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700";
+    ? "block w-full rounded-2xl border border-sky-200 bg-sky-100 px-4 py-3 text-sky-800 shadow-sm transition"
+    : "block w-full rounded-2xl border border-transparent px-4 py-3 text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-800";
 }
 
 function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   return (
-    <nav className="space-y-2">
+    <nav className="space-y-2.5">
       {navItems.map((item) => (
         <Link
           key={item.href}
@@ -29,7 +29,8 @@ function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: (
           className={navClass(pathname === item.href)}
           onClick={onNavigate}
         >
-          {item.label}
+          <span className="block text-sm font-medium leading-tight">{item.label}</span>
+          <span className="mt-1 block text-xs text-slate-500">{item.desc}</span>
         </Link>
       ))}
     </nav>
@@ -67,7 +68,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-slate-900/30"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-[min(100%,280px)] flex-col bg-white p-5 shadow-xl">
+          <aside className="absolute left-0 top-0 flex h-full w-[min(100%,320px)] flex-col bg-white p-5 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
               <h1 className="text-xl font-semibold text-slate-900">XAUJournal</h1>
               <button
@@ -84,7 +85,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="w-full rounded-2xl bg-rose-50 px-4 py-2 text-sm text-rose-700"
+                className="w-full rounded-2xl bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-100"
               >
                 Sign out
               </button>
@@ -93,8 +94,8 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 lg:grid-cols-[270px_1fr] lg:py-8">
-        <aside className="hidden h-fit rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:block">
+      <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 lg:grid-cols-[310px_1fr] lg:py-8">
+        <aside className="hidden h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:block">
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Premium Journal</p>
             <h1 className="mt-2 text-2xl font-semibold text-slate-900">XAUJournal</h1>
