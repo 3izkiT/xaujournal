@@ -15,8 +15,8 @@ const navItems = [
 
 function navClass(active: boolean) {
   return active
-    ? "block w-full rounded-2xl border border-sky-200 bg-sky-100 px-4 py-3 text-sky-800 shadow-sm transition"
-    : "block w-full rounded-2xl border border-transparent px-4 py-3 text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-800";
+    ? "block w-full rounded-2xl border border-xau-gold bg-xau-gold-soft px-4 py-3 text-xau-ink shadow-sm transition"
+    : "block w-full rounded-2xl border border-transparent px-4 py-3 text-xau-muted transition hover:border-xau-border hover:bg-xau-app hover:text-xau-ink";
 }
 
 function MenuIcon() {
@@ -35,6 +35,26 @@ function CloseIcon() {
   );
 }
 
+function BrandMark({ compact }: { compact?: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent font-bold text-xau-ink ${
+          compact ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs"
+        }`}
+      >
+        Au
+      </span>
+      {!compact && (
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-xau-muted">Premium Journal</p>
+          <h1 className="text-2xl font-semibold text-xau-ink">XAUJournal</h1>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   return (
     <nav className="space-y-2.5" aria-label="Main navigation">
@@ -46,7 +66,7 @@ function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: (
           onClick={onNavigate}
         >
           <span className="block text-sm font-medium leading-tight">{item.label}</span>
-          <span className="mt-1 block text-xs text-slate-500">{item.desc}</span>
+          <span className="mt-1 block text-xs text-xau-muted">{item.desc}</span>
         </Link>
       ))}
     </nav>
@@ -91,26 +111,24 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      {/* Mobile app bar: brand left, menu control right (standard pattern) */}
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm lg:hidden">
-        <Link href="/dashboard" className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">XAUJournal</p>
-          <p className="truncate text-sm font-medium text-slate-800">Trading journal</p>
+    <div className="min-h-screen bg-xau-app text-xau-ink">
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-xau-border bg-xau-card px-4 py-3 shadow-card lg:hidden">
+        <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
+          <BrandMark compact />
+          <p className="truncate text-sm font-medium text-xau-ink">Trading journal</p>
         </Link>
         <button
           type="button"
           aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav-drawer"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-xau-border bg-xau-card text-xau-ink transition hover:bg-xau-app"
           onClick={() => setMobileOpen((open) => !open)}
         >
           {mobileOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
       </header>
 
-      {/* Left drawer + backdrop (slides from start / left in LTR) */}
       <div
         className={`fixed inset-0 z-40 lg:hidden ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}
         aria-hidden={!mobileOpen}
@@ -119,7 +137,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           type="button"
           tabIndex={mobileOpen ? 0 : -1}
           aria-label="Close menu"
-          className={`absolute inset-0 bg-slate-900/40 transition-opacity duration-300 ${
+          className={`absolute inset-0 bg-xau-ink/30 transition-opacity duration-300 ${
             mobileOpen ? "opacity-100" : "opacity-0"
           }`}
           onClick={closeMobile}
@@ -129,19 +147,19 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"
-          className={`absolute left-0 top-0 flex h-full w-[min(88vw,320px)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+          className={`absolute left-0 top-0 flex h-full w-[min(88vw,320px)] flex-col bg-xau-card shadow-2xl transition-transform duration-300 ease-out ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <div className="flex items-center justify-between border-b border-xau-border px-5 py-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">Menu</p>
-              <h2 className="text-lg font-semibold text-slate-900">XAUJournal</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-xau-muted">Menu</p>
+              <h2 className="text-lg font-semibold text-xau-ink">XAUJournal</h2>
             </div>
             <button
               type="button"
               aria-label="Close navigation menu"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-xau-app text-xau-muted"
               onClick={closeMobile}
             >
               <CloseIcon />
@@ -152,12 +170,12 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
             <SidebarNav pathname={pathname} onNavigate={closeMobile} />
           </div>
 
-          <div className="space-y-2 border-t border-slate-100 px-5 py-4">
-            <p className="truncate text-xs text-slate-500">{userEmail}</p>
+          <div className="space-y-2 border-t border-xau-border px-5 py-4">
+            <p className="truncate text-xs text-xau-muted">{userEmail}</p>
             <button
               type="button"
               onClick={() => void handleSignOut()}
-              className="w-full rounded-2xl bg-rose-50 px-4 py-2.5 text-sm font-medium text-rose-700 transition hover:bg-rose-100"
+              className="w-full rounded-2xl bg-xau-rose px-4 py-2.5 text-sm font-medium text-xau-loss transition hover:brightness-[0.98]"
             >
               Sign out
             </button>
@@ -166,26 +184,25 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
       </div>
 
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 lg:grid-cols-[310px_1fr] lg:py-8">
-        <aside className="hidden h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:block">
+        <aside className="xau-card-bordered hidden h-fit p-6 lg:block">
           <div className="mb-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Premium Journal</p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-900">XAUJournal</h1>
-            <p className="mt-2 text-sm text-slate-500">Discipline-first trading journal for Gold traders.</p>
+            <BrandMark />
+            <p className="mt-3 text-sm text-xau-muted">Discipline-first trading journal for Gold traders.</p>
           </div>
           <SidebarNav pathname={pathname} />
-          <div className="mt-8 space-y-2 border-t border-slate-100 pt-4">
-            <p className="text-xs text-slate-500">{userEmail}</p>
+          <div className="mt-8 space-y-2 border-t border-xau-border pt-4">
+            <p className="text-xs text-xau-muted">{userEmail}</p>
             <button
               type="button"
               onClick={() => void handleSignOut()}
-              className="w-full rounded-2xl bg-rose-50 px-4 py-2 text-sm text-rose-700 transition hover:bg-rose-100"
+              className="w-full rounded-2xl bg-xau-rose px-4 py-2 text-sm font-medium text-xau-loss transition hover:brightness-[0.98]"
             >
               Sign out
             </button>
           </div>
         </aside>
 
-        <main className="min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:p-8">{children}</main>
+        <main className="xau-card-bordered min-w-0 p-5 md:p-8">{children}</main>
       </div>
     </div>
   );

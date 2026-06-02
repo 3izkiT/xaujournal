@@ -108,28 +108,28 @@ export default function JournalEntryPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-semibold text-slate-900">Journal Entry</h2>
-          <p className="mt-2 text-sm text-slate-500">Complete the discipline checklist and reflection notes before saving.</p>
+          <h2 className="text-3xl font-semibold text-xau-ink">Journal Entry</h2>
+          <p className="mt-2 text-sm text-xau-muted">Complete the discipline checklist and reflection notes before saving.</p>
         </div>
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+        <div className="rounded-2xl border border-xau-gold bg-xau-gold-soft px-4 py-2 text-sm text-xau-ink">
           {plan === "PREMIUM_GOLD" ? "Premium · " : "Free · "}
           {limitLabel}
         </div>
       </div>
 
       {submitError && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{submitError}</div>
+        <div className="rounded-2xl border border-xau-border bg-xau-rose px-4 py-3 text-sm text-xau-loss">{submitError}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <h3 className="text-lg font-medium text-slate-900">Pre-Trade Discipline Checklist</h3>
+        <section className="rounded-2xl border border-xau-border bg-xau-app p-5">
+          <h3 className="text-lg font-medium text-xau-ink">Pre-Trade Discipline Checklist</h3>
           <div className="mt-4 space-y-3">
-            <label className="flex items-center gap-3 text-sm text-slate-700">
+            <label className="flex items-center gap-3 text-sm text-xau-ink">
               <input type="checkbox" checked={followedPlan} onChange={(e) => setFollowedPlan(e.target.checked)} />
               Did I follow my strict trading plan/strategy?
             </label>
-            <label className="flex items-center gap-3 text-sm text-slate-700">
+            <label className="flex items-center gap-3 text-sm text-xau-ink">
               <input
                 type="checkbox"
                 checked={rrAtLeastOneToTwo}
@@ -137,25 +137,25 @@ export default function JournalEntryPage() {
               />
               Is my Risk-to-Reward ratio at least 1:2?
             </label>
-            <label className="flex items-center gap-3 text-sm text-slate-700">
+            <label className="flex items-center gap-3 text-sm text-xau-ink">
               <input type="checkbox" checked={calmMindset} onChange={(e) => setCalmMindset(e.target.checked)} />
               Is my mindset completely calm and free of FOMO?
             </label>
           </div>
-          <div className="mt-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-700">
+          <div className="mt-4 rounded-2xl border border-xau-border bg-xau-calm px-4 py-3 text-sm text-xau-ink">
             Discipline Score: <span className="font-semibold">{score}%</span>
           </div>
         </section>
 
         <section className="rounded-2xl border border-violet-200 bg-violet-50/50 p-5">
-          <h3 className="text-lg font-medium text-slate-900">Reflection notes (required)</h3>
-          <p className="mt-1 text-xs text-slate-500">Min 3 characters each — context, mistake, next action.</p>
+          <h3 className="text-lg font-medium text-xau-ink">Reflection notes (required)</h3>
+          <p className="mt-1 text-xs text-xau-muted">Min 3 characters each — context, mistake, next action.</p>
           <div className="mt-4 space-y-3">
             <textarea
               required
               minLength={3}
               rows={2}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+              className="w-full rounded-2xl border border-xau-border px-4 py-3 text-sm"
               placeholder="Context: What was the market telling you?"
               value={noteContext}
               onChange={(e) => setNoteContext(e.target.value)}
@@ -164,7 +164,7 @@ export default function JournalEntryPage() {
               required
               minLength={3}
               rows={2}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+              className="w-full rounded-2xl border border-xau-border px-4 py-3 text-sm"
               placeholder="Mistake: What went wrong (or 'none')?"
               value={noteMistake}
               onChange={(e) => setNoteMistake(e.target.value)}
@@ -173,7 +173,7 @@ export default function JournalEntryPage() {
               required
               minLength={3}
               rows={2}
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+              className="w-full rounded-2xl border border-xau-border px-4 py-3 text-sm"
               placeholder="Next action: What will you do differently?"
               value={noteNextAction}
               onChange={(e) => setNoteNextAction(e.target.value)}
@@ -182,32 +182,32 @@ export default function JournalEntryPage() {
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
-          <input className="rounded-2xl border border-slate-200 px-4 py-3" value="XAUUSD (Gold)" disabled />
+          <input className="rounded-2xl border border-xau-border px-4 py-3" value="XAUUSD (Gold)" disabled />
           <input
             type="date"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-xau-border px-4 py-3"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <label className="block text-sm text-slate-600">
+          <label className="block text-sm text-xau-muted">
             Entry time
             <input
               type="time"
-              className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3"
+              className="mt-1 w-full rounded-2xl border border-xau-border px-4 py-3"
               value={entryTime}
               onChange={(e) => setEntryTime(e.target.value)}
             />
           </label>
-          <label className="block text-sm text-slate-600">
+          <label className="block text-sm text-xau-muted">
             Exit time (optional)
             <input
               type="time"
-              className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3"
+              className="mt-1 w-full rounded-2xl border border-xau-border px-4 py-3"
               value={exitTime}
               onChange={(e) => setExitTime(e.target.value)}
             />
           </label>
-          <select className="rounded-2xl border border-slate-200 px-4 py-3" value={type} onChange={(e) => setType(e.target.value as "Buy" | "Sell")}>
+          <select className="rounded-2xl border border-xau-border px-4 py-3" value={type} onChange={(e) => setType(e.target.value as "Buy" | "Sell")}>
             {tradeTypeOptions.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -217,18 +217,18 @@ export default function JournalEntryPage() {
           <input
             type="number"
             step="0.01"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-xau-border px-4 py-3"
             placeholder="Net Profit/Loss ($)"
             value={netProfitLoss}
             onChange={(e) => setNetProfitLoss(e.target.value)}
           />
           <input
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-xau-border px-4 py-3"
             placeholder="R-Multiple (e.g. +3R)"
             value={rMultiple}
             onChange={(e) => setRMultiple(e.target.value)}
           />
-          <select className="rounded-2xl border border-slate-200 px-4 py-3" value={session} onChange={(e) => setSession(e.target.value as typeof session)}>
+          <select className="rounded-2xl border border-xau-border px-4 py-3" value={session} onChange={(e) => setSession(e.target.value as typeof session)}>
             {sessionOptions.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -238,7 +238,7 @@ export default function JournalEntryPage() {
           <input
             type="number"
             step="0.1"
-            className="rounded-2xl border border-rose-100 bg-rose-50/50 px-4 py-3"
+            className="rounded-2xl border border-xau-border bg-xau-rose/50 px-4 py-3"
             placeholder="MAE ($ adverse excursion)"
             value={mae}
             onChange={(e) => setMae(e.target.value)}
@@ -246,7 +246,7 @@ export default function JournalEntryPage() {
           <input
             type="number"
             step="0.1"
-            className="rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3"
+            className="rounded-2xl border border-xau-border bg-xau-mint/50 px-4 py-3"
             placeholder="MFE ($ favorable excursion)"
             value={mfe}
             onChange={(e) => setMfe(e.target.value)}
@@ -256,7 +256,7 @@ export default function JournalEntryPage() {
             step="0.1"
             min="2000"
             max="2600"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-xau-border px-4 py-3"
             placeholder="Entry Price"
             value={entryPrice}
             onChange={(e) => setEntryPrice(e.target.value)}
@@ -266,15 +266,15 @@ export default function JournalEntryPage() {
             step="0.1"
             min="2000"
             max="2600"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-xau-border px-4 py-3"
             placeholder="Exit Price"
             value={exitPrice}
             onChange={(e) => setExitPrice(e.target.value)}
           />
         </section>
 
-        <section className="space-y-4 rounded-2xl border border-slate-200 p-5">
-          <h3 className="text-lg font-medium text-slate-900">Setup Tags & Emotion</h3>
+        <section className="space-y-4 rounded-2xl border border-xau-border p-5">
+          <h3 className="text-lg font-medium text-xau-ink">Setup Tags & Emotion</h3>
           <div className="flex flex-wrap gap-2">
             {setupTagOptions.map((tag) => (
               <button
@@ -283,15 +283,15 @@ export default function JournalEntryPage() {
                 onClick={() => handleSetupTagChange(tag)}
                 className={`rounded-full px-4 py-2 text-sm transition ${
                   setupTags.includes(tag)
-                    ? "bg-sky-100 text-sky-700"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    ? "bg-xau-calm text-xau-ink"
+                    : "bg-xau-app text-xau-muted hover:bg-xau-calm"
                 }`}
               >
                 {tag}
               </button>
             ))}
           </div>
-          <select className="w-full rounded-2xl border border-slate-200 px-4 py-3" value={emotion} onChange={(e) => setEmotion(e.target.value)}>
+          <select className="w-full rounded-2xl border border-xau-border px-4 py-3" value={emotion} onChange={(e) => setEmotion(e.target.value)}>
             {emotionOptions.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -302,7 +302,7 @@ export default function JournalEntryPage() {
 
         <section className="grid gap-4 md:grid-cols-2">
           <label
-            className="rounded-2xl border border-dashed border-sky-200 bg-sky-50 p-4 text-sm text-sky-700"
+            className="rounded-2xl border border-dashed border-xau-border bg-xau-calm p-4 text-sm text-xau-ink"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
@@ -312,14 +312,14 @@ export default function JournalEntryPage() {
             <span className="mb-2 block font-medium">Before Trade Chart</span>
             <input type="file" accept="image/*" className="mb-2 block text-xs" onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "before")} />
             <input
-              className="w-full rounded-xl border border-sky-200 bg-white px-3 py-2 text-xs text-slate-600"
+              className="w-full rounded-xl border border-xau-border bg-white px-3 py-2 text-xs text-xau-muted"
               placeholder="or paste image URL"
               value={beforeChartUrl}
               onChange={(e) => setBeforeChartUrl(e.target.value)}
             />
           </label>
           <label
-            className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700"
+            className="rounded-2xl border border-dashed border-xau-border bg-xau-mint p-4 text-sm text-xau-profit"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
@@ -329,7 +329,7 @@ export default function JournalEntryPage() {
             <span className="mb-2 block font-medium">After Trade Chart</span>
             <input type="file" accept="image/*" className="mb-2 block text-xs" onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "after")} />
             <input
-              className="w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-xs text-slate-600"
+              className="w-full rounded-xl border border-xau-border bg-white px-3 py-2 text-xs text-xau-muted"
               placeholder="or paste image URL"
               value={afterChartUrl}
               onChange={(e) => setAfterChartUrl(e.target.value)}
@@ -340,13 +340,13 @@ export default function JournalEntryPage() {
         <button
           type="submit"
           disabled={!canAddMore}
-          className="rounded-2xl bg-sky-100 px-6 py-3 font-medium text-sky-700 transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-2xl bg-xau-calm px-6 py-3 font-medium text-xau-ink transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {canAddMore ? "Save Trade Log" : `Upgrade for more than ${FREE_TRADE_LIMIT} logs`}
         </button>
         {!canAddMore && (
-          <p className="text-sm text-slate-500">
-            <Link href="/pricing" className="text-sky-700 underline">
+          <p className="text-sm text-xau-muted">
+            <Link href="/pricing" className="text-xau-ink underline">
               View Premium
             </Link>{" "}
             for unlimited logs and cloud chart storage (coming soon).

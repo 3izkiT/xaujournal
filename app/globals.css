@@ -3,18 +3,67 @@
 @tailwind utilities;
 
 :root {
-  --pastel-mint: #d1fae5;
-  --pastel-blue: #dbeafe;
-  --pastel-yellow: #fef3c7;
-  --pastel-pink: #ffe4e6;
-  --ink: #1e293b;
-  --paper: #f8fafc;
+  /* Canvas & typography */
+  --xau-app: #f9f9fb;
+  --xau-card: #ffffff;
+  --xau-ink: #2d3142;
+  --xau-muted: #6b7280;
+  --xau-border: #ededed;
+
+  /* Muted pastel accents */
+  --xau-mint: #e2f0d9;
+  --xau-rose: #fadbd8;
+  --xau-calm: #e1ebf5;
+
+  /* Champagne gold */
+  --xau-gold: #e8d7a5;
+  --xau-gold-accent: #e5c158;
+  --xau-gold-soft: #f5f0e3;
+
+  --xau-profit: #4a6354;
+  --xau-loss: #7d5a56;
 }
 
-body {
-  color: var(--ink);
-  background: var(--paper);
-  --pastel-yellow: #fef3c7;
+@layer base {
+  body {
+    color: var(--xau-ink);
+    background: var(--xau-app);
+  }
+}
+
+@layer components {
+  .xau-card {
+    @apply rounded-2xl bg-xau-card shadow-card;
+  }
+
+  .xau-card-bordered {
+    @apply xau-card border border-xau-border;
+  }
+
+  .xau-kpi-mint {
+    @apply rounded-2xl border border-xau-border bg-xau-mint p-5;
+  }
+
+  .xau-kpi-calm {
+    @apply rounded-2xl border border-xau-border bg-xau-calm p-5;
+  }
+
+  .xau-kpi-rose {
+    @apply rounded-2xl border border-xau-border bg-xau-rose p-5;
+  }
+
+  .xau-kpi-gold {
+    @apply rounded-2xl border border-xau-border bg-xau-gold-soft p-5;
+  }
+
+  .xau-btn-gold {
+    @apply rounded-xl bg-xau-gold-accent px-4 py-2.5 text-sm font-semibold text-xau-ink shadow-sm transition hover:brightness-95;
+  }
+
+  .xau-btn-ghost {
+    @apply rounded-xl border border-xau-border bg-xau-card px-4 py-2.5 text-sm font-medium text-xau-ink transition hover:bg-xau-app;
+  }
+}
 
 html {
   scroll-behavior: smooth;
@@ -89,13 +138,4 @@ html {
   .landing-scroll {
     scroll-snap-type: y proximity;
   }
-}
-  --pastel-pink: #ffe4e6;
-  --ink: #1e293b;
-  --paper: #f8fafc;
-}
-
-body {
-  color: var(--ink);
-  background: var(--paper);
 }

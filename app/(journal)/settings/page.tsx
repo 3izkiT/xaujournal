@@ -53,10 +53,10 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) return <p className="text-sm text-slate-500">Loading settings…</p>;
+  if (loading) return <p className="text-sm text-xau-muted">Loading settings…</p>;
   if (!settings) {
     return (
-      <p className="text-sm text-rose-600">
+      <p className="text-sm text-xau-loss">
         Settings require DATABASE_URL on the server. See docs/production-db.md
       </p>
     );
@@ -65,15 +65,15 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h2 className="text-3xl font-semibold text-slate-900">Pro settings</h2>
-        <p className="mt-2 text-sm text-slate-500">Custom checklist, tags, risk model, and coach share link.</p>
+        <h2 className="text-3xl font-semibold text-xau-ink">Pro settings</h2>
+        <p className="mt-2 text-sm text-xau-muted">Custom checklist, tags, risk model, and coach share link.</p>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6">
+      <form onSubmit={handleSave} className="space-y-6 rounded-2xl border border-xau-border bg-white p-6">
         <div>
-          <label className="text-sm font-medium text-slate-700">Template preset</label>
+          <label className="text-sm font-medium text-xau-ink">Template preset</label>
           <select
-            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
             value={settings.templatePreset}
             onChange={(e) => setSettings({ ...settings, templatePreset: e.target.value })}
           >
@@ -84,9 +84,9 @@ export default function SettingsPage() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700">Risk model</label>
+          <label className="text-sm font-medium text-xau-ink">Risk model</label>
           <select
-            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
             value={settings.riskModel}
             onChange={(e) => setSettings({ ...settings, riskModel: e.target.value })}
           >
@@ -97,9 +97,9 @@ export default function SettingsPage() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700">Custom setup tags (comma-separated)</label>
+          <label className="text-sm font-medium text-xau-ink">Custom setup tags (comma-separated)</label>
           <input
-            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
             value={settings.customSetupTags.join(", ")}
             onChange={(e) =>
               setSettings({
@@ -111,9 +111,9 @@ export default function SettingsPage() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700">Custom error tags (comma-separated)</label>
+          <label className="text-sm font-medium text-xau-ink">Custom error tags (comma-separated)</label>
           <input
-            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
             value={settings.customErrorTags.join(", ")}
             onChange={(e) =>
               setSettings({
@@ -124,15 +124,15 @@ export default function SettingsPage() {
           />
         </div>
 
-        <button type="submit" className="rounded-2xl bg-sky-100 px-6 py-3 text-sm font-medium text-sky-700">
+        <button type="submit" className="rounded-2xl bg-xau-calm px-6 py-3 text-sm font-medium text-xau-ink">
           Save settings
         </button>
-        {message && <p className="text-sm text-slate-600">{message}</p>}
+        {message && <p className="text-sm text-xau-muted">{message}</p>}
       </form>
 
       <section className="rounded-2xl border border-violet-200 bg-violet-50/40 p-6">
-        <h3 className="text-lg font-medium text-slate-900">Team / coach mode</h3>
-        <p className="mt-2 text-sm text-slate-600">Generate a read-only link for your mentor (30-day expiry).</p>
+        <h3 className="text-lg font-medium text-xau-ink">Team / coach mode</h3>
+        <p className="mt-2 text-sm text-xau-muted">Generate a read-only link for your mentor (30-day expiry).</p>
         <button
           type="button"
           onClick={() => void createCoachLink()}

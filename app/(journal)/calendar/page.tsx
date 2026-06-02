@@ -4,9 +4,9 @@ import { useMemo } from "react";
 import { useXauJournal } from "@/components/XauJournalContext";
 
 function pnlTone(value: number) {
-  if (value > 0) return "bg-emerald-100 text-emerald-700";
-  if (value < 0) return "bg-rose-100 text-rose-700";
-  return "bg-amber-100 text-amber-700";
+  if (value > 0) return "bg-xau-mint text-xau-profit";
+  if (value < 0) return "bg-xau-rose text-xau-loss";
+  return "bg-xau-gold-soft text-xau-ink";
 }
 
 export default function CalendarPage() {
@@ -33,17 +33,17 @@ export default function CalendarPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-semibold text-slate-900">Calendar View</h2>
-        <p className="mt-2 text-sm text-slate-500">Visualize consistency with daily pastel P&L blocks.</p>
+        <h2 className="text-3xl font-semibold text-xau-ink">Calendar View</h2>
+        <p className="mt-2 text-sm text-xau-muted">Visualize consistency with daily pastel P&L blocks.</p>
       </div>
       <div className="grid grid-cols-7 gap-2 text-center text-sm">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((name) => (
-          <div key={name} className="py-2 font-medium text-slate-500">
+          <div key={name} className="py-2 font-medium text-xau-muted">
             {name}
           </div>
         ))}
         {cells.map((day, index) => {
-          if (!day) return <div key={`empty-${index}`} className="h-24 rounded-2xl border border-dashed border-slate-100" />;
+          if (!day) return <div key={`empty-${index}`} className="h-24 rounded-2xl border border-dashed border-xau-border" />;
           const isoDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
           const pnl = entriesByDate.get(isoDate) ?? 0;
           return (

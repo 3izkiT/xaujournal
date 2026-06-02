@@ -68,48 +68,50 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
     void signIn(DEMO_EMAIL, DEMO_PASSWORD);
   };
 
+  const inputClass =
+    "mt-1 w-full rounded-2xl border border-xau-border bg-xau-card px-4 py-3 text-xau-ink outline-none transition focus:border-xau-gold focus:ring-2 focus:ring-xau-gold/30";
+
   return (
-    <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-      <Link href="/" className="text-sm text-sky-600 hover:underline">
+    <div className="xau-card-bordered w-full max-w-md p-8">
+      <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
         ← Back to home
       </Link>
-      <h1 className="mt-4 text-2xl font-semibold text-slate-900">Sign in to XAUJournal</h1>
-      <p className="mt-2 text-sm text-slate-500">Your personal Gold trading journal workspace.</p>
+      <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Sign in to XAUJournal</h1>
+      <p className="mt-2 text-sm text-xau-muted">Your personal Gold trading journal workspace.</p>
 
       {error && (
-        <p className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
+        <p
+          className="mt-4 rounded-2xl border border-xau-border bg-xau-rose px-4 py-3 text-sm font-medium text-xau-loss"
+          role="alert"
+        >
           {error}
         </p>
       )}
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
-        <label className="block text-sm text-slate-600">
+        <label className="block text-sm text-xau-muted">
           Email
           <input
             type="email"
             autoComplete="email"
-            className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className={inputClass}
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="block text-sm text-slate-600">
+        <label className="block text-sm text-xau-muted">
           Password
           <input
             type="password"
             autoComplete="current-password"
-            className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className={inputClass}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-2xl bg-sky-100 py-3 font-medium text-sky-800 hover:bg-sky-200 disabled:cursor-wait disabled:opacity-60"
-        >
+        <button type="submit" disabled={loading} className="xau-btn-gold w-full disabled:cursor-wait disabled:opacity-60">
           {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
@@ -118,18 +120,18 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
         type="button"
         disabled={loading}
         onClick={handleDemo}
-        className="mt-3 w-full rounded-2xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-medium text-amber-800 hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60"
+        className="mt-3 w-full rounded-2xl border border-xau-gold bg-xau-gold-soft py-2.5 text-sm font-medium text-xau-ink transition hover:brightness-[0.98] disabled:cursor-wait disabled:opacity-60"
       >
         {loading ? "Signing in…" : "Sign in as demo"}
       </button>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-xau-muted">
         No account?{" "}
-        <Link href="/register" className="text-sky-600 hover:underline">
+        <Link href="/register" className="font-medium text-xau-ink hover:text-xau-gold-accent">
           Register
         </Link>
       </p>
-      <p className="mt-4 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
+      <p className="mt-4 rounded-2xl bg-xau-gold-soft px-3 py-2 text-xs text-xau-ink">
         Demo: {DEMO_EMAIL} / {DEMO_PASSWORD}
       </p>
     </div>

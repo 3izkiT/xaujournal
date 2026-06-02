@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+const inputClass =
+  "w-full rounded-2xl border border-xau-border bg-xau-card px-4 py-3 text-xau-ink outline-none transition focus:border-xau-gold focus:ring-2 focus:ring-xau-gold/30";
+
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,25 +38,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <Link href="/" className="text-sm text-sky-600 hover:underline">
+    <div className="flex min-h-screen items-center justify-center bg-xau-app px-4">
+      <div className="xau-card-bordered w-full max-w-md p-8">
+        <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
           ← Back to home
         </Link>
-        <h1 className="mt-4 text-2xl font-semibold text-slate-900">Create your account</h1>
-        <p className="mt-2 text-sm text-slate-500">Free tier includes 10 trade logs and full discipline tracking.</p>
+        <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Create your account</h1>
+        <p className="mt-2 text-sm text-xau-muted">Free tier includes 10 trade logs and full discipline tracking.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <input
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3"
-            placeholder="Display name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input className={inputClass} placeholder="Display name" value={name} onChange={(e) => setName(e.target.value)} />
           <input
             type="email"
             required
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className={inputClass}
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -62,25 +60,25 @@ export default function RegisterPage() {
             type="password"
             required
             minLength={8}
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+            className={inputClass}
             placeholder="Password (min 8 chars)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="text-sm text-rose-600">{error}</p>}
-          {message && <p className="text-sm text-emerald-600">{message}</p>}
+          {error && <p className="text-sm font-medium text-xau-loss">{error}</p>}
+          {message && <p className="text-sm font-medium text-xau-profit">{message}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-2xl bg-emerald-100 py-3 font-medium text-emerald-800 hover:bg-emerald-200 disabled:opacity-60"
+            className="xau-btn-gold w-full disabled:cursor-wait disabled:opacity-60"
           >
             {loading ? "Creating…" : "Create account"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-xau-muted">
           Already have an account?{" "}
-          <Link href="/login" className="text-sky-600 hover:underline">
+          <Link href="/login" className="font-medium text-xau-ink hover:text-xau-gold-accent">
             Sign in
           </Link>
         </p>

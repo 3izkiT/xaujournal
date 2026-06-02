@@ -11,7 +11,7 @@ export function ChartContainer({ children, className = "h-72" }: { children: Rea
 
   if (!mounted) {
     return (
-      <div className={`${className} animate-pulse rounded-2xl bg-slate-100`} aria-hidden="true" />
+      <div className={`${className} animate-pulse rounded-2xl bg-xau-app`} aria-hidden="true" />
     );
   }
 
