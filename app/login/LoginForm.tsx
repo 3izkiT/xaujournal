@@ -1,19 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
-import { authenticate, type LoginState } from "@/app/login/actions";
-
-const initialState: LoginState = {};
+import { FormEvent, useState } from "react";
 
 export function LoginForm() {
-  const [state, formAction, pending] = useActionState(authenticate, initialState);
+  const [email, setEmail] = useState("demo@xaujournal.app");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const fillDemo = () => {
-    const email = document.getElementById("login-email") as HTMLInputElement | null;
-    const password = document.getElementById("login-password") as HTMLInputElement | null;
-    if (email) email.value = "demo@xaujournal.app";
-    if (password) password.value = "xaujournal2026";
+    setEmail("demo@xaujournal.app");
+    setPassword("xaujournal2026");
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = (await res.json()) as { error?: string; redirectTo?: string };
+
+      if (!res.ok) {
+        setError(data.error ?? "Sign in failed.");
+        return;
+      }
+
+      window.location.assign(data.redirectTo ?? "/dashboard");
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,33 +50,32 @@ export function LoginForm() {
       <h1 className="mt-4 text-2xl font-semibold text-slate-900">Sign in to XAUJournal</h1>
       <p className="mt-2 text-sm text-slate-500">Your personal Gold trading journal workspace.</p>
 
-      <form action={formAction} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <input
-          id="login-email"
-          name="email"
           type="email"
           required
           autoComplete="email"
-          defaultValue="demo@xaujournal.app"
           className="w-full rounded-2xl border border-slate-200 px-4 py-3"
           placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          id="login-password"
-          name="password"
           type="password"
           required
           autoComplete="current-password"
           className="w-full rounded-2xl border border-slate-200 px-4 py-3"
           placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        {state?.error && <p className="text-sm text-rose-600">{state.error}</p>}
+        {error && <p className="text-sm text-rose-600">{error}</p>}
         <button
           type="submit"
-          disabled={pending}
+          disabled={loading}
           className="w-full rounded-2xl bg-sky-100 py-3 font-medium text-sky-800 hover:bg-sky-200 disabled:cursor-wait disabled:opacity-60"
         >
-          {pending ? "Signing in…" : "Sign in"}
+          {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
