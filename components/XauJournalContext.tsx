@@ -69,7 +69,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     void refreshTrades();
   }, [status, refreshTrades]);
 
-  const addTrade = async (payload: AddTradePayload) => {
+  const addTrade = useCallback(async (payload: AddTradePayload) => {
     if (!session?.user?.id) return;
 
     const disciplineScore = calculateDisciplineScore(payload.disciplineChecklist);
@@ -100,7 +100,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     } catch {
       // optimistic update kept
     }
-  };
+  }, [session?.user?.id, storageKey]);
 
   const value = useMemo(
     () => ({ trades, loading, addTrade, refreshTrades }),
