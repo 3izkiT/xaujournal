@@ -1,8 +1,12 @@
 import type { NextAuthConfig } from "next-auth";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const authConfig = {
   trustHost: true,
   secret: process.env.AUTH_SECRET,
+  // Local dev runs on http://localhost — must not use __Secure- cookies or login never sticks.
+  useSecureCookies: isProduction,
   pages: {
     signIn: "/login",
   },

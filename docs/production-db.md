@@ -49,3 +49,16 @@ UPDATE "User" SET plan = 'PREMIUM_GOLD' WHERE email = 'you@example.com';
 ---
 
 Send the **pooled** `DATABASE_URL` in chat (or add to `.env.local` locally) and we can run migrate + confirm production in one pass.
+
+## Local development (`.env.local`)
+
+Use **different** values than production:
+
+```env
+DATABASE_URL="postgresql://..."
+AUTH_URL="http://localhost:3000"
+AUTH_SECRET="your-local-secret"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+Do **not** set `AUTH_URL` to the Vercel URL when running `npm run dev` — secure session cookies will not stick on `http://localhost`.

@@ -3,19 +3,16 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+const DEMO_EMAIL = "demo@xaujournal.app";
+const DEMO_PASSWORD = "xaujournal2026";
+
 export function LoginForm() {
-  const [email, setEmail] = useState("demo@xaujournal.app");
+  const [email, setEmail] = useState(DEMO_EMAIL);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const fillDemo = () => {
-    setEmail("demo@xaujournal.app");
-    setPassword("xaujournal2026");
-  };
-
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+  const performLogin = async (loginEmail: string, loginPassword: string) => {
     setLoading(true);
     setError("");
 
@@ -24,7 +21,7 @@ export function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
 
       const data = (await res.json()) as { error?: string; redirectTo?: string };
@@ -40,6 +37,17 @@ export function LoginForm() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    void performLogin(email.trim(), password);
+  };
+
+  const signInAsDemo = () => {
+    setEmail(DEMO_EMAIL);
+    setPassword(DEMO_PASSWORD);
+    void performLogin(DEMO_EMAIL, DEMO_PASSWORD);
   };
 
   return (
@@ -81,10 +89,11 @@ export function LoginForm() {
 
       <button
         type="button"
-        onClick={fillDemo}
-        className="mt-3 w-full rounded-2xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-medium text-amber-800 hover:bg-amber-100"
+        disabled={loading}
+        onClick={signInAsDemo}
+        className="mt-3 w-full rounded-2xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-medium text-amber-800 hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60"
       >
-        Fill demo account
+        {loading ? "Signing in…" : "Sign in as demo"}
       </button>
 
       <p className="mt-6 text-center text-sm text-slate-500">
@@ -94,7 +103,7 @@ export function LoginForm() {
         </Link>
       </p>
       <p className="mt-4 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
-        Demo: demo@xaujournal.app / xaujournal2026
+        Demo: {DEMO_EMAIL} / {DEMO_PASSWORD}
       </p>
     </div>
   );
