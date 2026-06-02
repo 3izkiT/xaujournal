@@ -10,7 +10,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ trades: getTradesForUser(session.user.id) });
+  const trades = await getTradesForUser(session.user.id);
+  return NextResponse.json({ trades });
 }
 
 export async function POST(request: Request) {
@@ -42,8 +43,9 @@ export async function POST(request: Request) {
       disciplineScore,
     };
 
-    addTradeForUser(session.user.id, trade);
-    return NextResponse.json({ trade, trades: getTradesForUser(session.user.id) });
+    await addTradeForUser(session.user.id, trade);
+    const trades = await getTradesForUser(session.user.id);
+    return NextResponse.json({ trade, trades });
   } catch {
     return NextResponse.json({ error: "Failed to save trade." }, { status: 500 });
   }

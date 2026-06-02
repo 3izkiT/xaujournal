@@ -15,6 +15,7 @@ Open [http://localhost:3000](http://localhost:3000) (redirects to `/dashboard`).
 
 - Next.js 15 (App Router), TypeScript, Tailwind CSS
 - Recharts for dashboard analytics
+- Auth.js (credentials) + PostgreSQL (Prisma)
 - 100% manual — no broker API
 
 ## Member login
@@ -27,6 +28,26 @@ Set in Vercel (required):
 
 - `AUTH_SECRET` — random string (`openssl rand -base64 32`)
 - `AUTH_URL` — e.g. `https://xaujournal-nine.vercel.app`
+- `DATABASE_URL` — managed Postgres connection string
+
+## Database setup (production-ready)
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
+
+Schema: `prisma/schema.prisma`  
+Migrations: `prisma/migrations/`  
+Seed data: `prisma/seed.ts` (includes demo account and sample trades)
+
+## Scale-first checklist
+
+- Use managed Postgres with pooling (Neon/Supabase/RDS + PgBouncer)
+- Add read replica when dashboard reads grow
+- Keep chart screenshots in object storage (S3/R2/Cloudinary), not DB blobs
+- Enable nightly backups + monthly restore drill (see `docs/backup-checklist.md`)
 
 ## Deploy
 

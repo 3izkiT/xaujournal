@@ -16,6 +16,10 @@ body {
   background: var(--paper);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @keyframes rise-up {
   from {
     opacity: 0;
@@ -29,4 +33,14 @@ body {
 
 .animate-rise-up {
   animation: rise-up 700ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-rise-up {
+    animation: none;
+  }
 }

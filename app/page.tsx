@@ -45,8 +45,8 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 pb-24 pt-10">
-        <section className="animate-rise-up rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-10 shadow-sm md:p-14">
+      <main className="mx-auto max-w-6xl px-6 pb-24 pt-10 lg:snap-y lg:snap-mandatory lg:space-y-6">
+        <section className="animate-rise-up snap-start rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-10 shadow-sm md:p-14 lg:min-h-[82vh] lg:content-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-500">Silent Luxury · XAUUSD Only</p>
           <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
             Manual reflection for high discipline Gold trading
@@ -71,7 +71,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="mt-12 grid gap-5 md:grid-cols-3">
+        <section className="mt-12 grid snap-start gap-5 md:grid-cols-3 lg:min-h-[48vh] lg:content-center">
           <article className="animate-rise-up rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
             <h2 className="font-medium text-emerald-800">Pre-trade checklist</h2>
             <p className="mt-2 text-sm text-emerald-700">Plan, R:R, and calm mindset scored 0–100% automatically.</p>
@@ -86,7 +86,7 @@ export default function LandingPage() {
           </article>
         </section>
 
-        <section className="mt-16 grid gap-6 lg:grid-cols-[220px_1fr]">
+        <section className="mt-16 grid snap-start gap-6 lg:min-h-[95vh] lg:grid-cols-[220px_1fr] lg:items-start">
           <aside className="hidden h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-5 lg:block">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Explore Flow</p>
             <div className="space-y-2">
