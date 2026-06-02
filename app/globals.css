@@ -14,7 +14,7 @@
 body {
   color: var(--ink);
   background: var(--paper);
-}
+  --pastel-yellow: #fef3c7;
 
 html {
   scroll-behavior: smooth;
@@ -89,4 +89,13 @@ html {
   .landing-scroll {
     scroll-snap-type: y proximity;
   }
+}
+  --pastel-pink: #ffe4e6;
+  --ink: #1e293b;
+  --paper: #f8fafc;
+}
+
+body {
+  color: var(--ink);
+  background: var(--paper);
 }

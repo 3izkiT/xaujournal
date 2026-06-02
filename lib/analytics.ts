@@ -36,13 +36,22 @@ export function getTotalPnl(trades: JournalTrade[]): number {
 export function getEquityCurve(trades: JournalTrade[]) {
   const ordered = [...trades].sort((a, b) => a.date.localeCompare(b.date));
   let running = 0;
-  return ordered.map((trade) => {
+
+  const points = ordered.map((trade, index) => {
     running += trade.netProfitLoss;
+    const d = new Date(trade.date);
+    const shortDate = trade.date.slice(5);
+    const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     return {
-      date: trade.date.slice(5),
+      date: shortDate,
+      label,
+      tradeIndex: index + 1,
       equity: Number(running.toFixed(2)),
+      change: trade.netProfitLoss,
     };
   });
+
+  return [{ date: "Start", label: "Start", tradeIndex: 0, equity: 0, change: 0 }, ...points];
 }
 
 export function getSessionPerformance(trades: JournalTrade[]) {
