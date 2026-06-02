@@ -4,19 +4,101 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", desc: "KPI + insights" },
-  { href: "/journal-entry", label: "Journal Entry", desc: "Add new trade" },
-  { href: "/calendar", label: "Calendar View", desc: "Monthly consistency" },
-  { href: "/gallery", label: "Gallery View", desc: "Before / after study" },
-  { href: "/pricing", label: "Pricing", desc: "Plans and upgrade" },
-  { href: "/settings", label: "Settings", desc: "Pro prefs + coach link" },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: ReactNode;
+};
+
+const mainNav: NavItem[] = [
+  { href: "/dashboard", label: "Dashboard", icon: <IconGrid /> },
+  { href: "/analytics", label: "Analytics", icon: <IconChart /> },
+  { href: "/calendar", label: "Calendar", icon: <IconCalendar /> },
+  { href: "/journal-entry", label: "Journal", icon: <IconPen /> },
+  { href: "/history", label: "History", icon: <IconList /> },
+  { href: "/gallery", label: "Gallery", icon: <IconImage /> },
 ];
 
-function navClass(active: boolean) {
-  return active
-    ? "block w-full rounded-2xl border border-xau-gold bg-xau-gold-soft px-4 py-3 text-xau-ink shadow-sm transition"
-    : "block w-full rounded-2xl border border-transparent px-4 py-3 text-xau-muted transition hover:border-xau-border hover:bg-xau-app hover:text-xau-ink";
+const secondaryNav: NavItem[] = [
+  { href: "/sync", label: "Sync", icon: <IconSync /> },
+  { href: "/settings", label: "Settings", icon: <IconGear /> },
+];
+
+function IconGrid() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function IconChart() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 19V5M10 19V9M16 19V12M22 19V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconCalendar() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconPen() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M12 20h9M4 20h2l9.5-9.5a2 2 0 0 0 0-2.8l-.7-.7a2 2 0 0 0-2.8 0L4 16.2V20z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconList() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconImage() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="9" cy="10" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M21 16l-5-5-4 4-2-2-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconSync() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 12a8 8 0 0 1 13.5-5.5M20 12a8 8 0 0 1-13.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M16 5h3.5V1.5M4 19h3.5V22.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconGear() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
 function MenuIcon() {
@@ -35,41 +117,74 @@ function CloseIcon() {
   );
 }
 
-function BrandMark({ compact }: { compact?: boolean }) {
+function NavLink({ item, active, onNavigate }: { item: NavItem; active: boolean; onNavigate?: () => void }) {
   return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent font-bold text-xau-ink ${
-          compact ? "h-8 w-8 text-[10px]" : "h-10 w-10 text-xs"
-        }`}
-      >
-        Au
-      </span>
-      {!compact && (
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-xau-muted">Premium Journal</p>
-          <h1 className="text-2xl font-semibold text-xau-ink">XAUJournal</h1>
-        </div>
-      )}
-    </div>
+    <Link
+      href={item.href}
+      onClick={onNavigate}
+      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+        active
+          ? "bg-xau-gold-soft text-xau-ink shadow-sm"
+          : "text-xau-muted hover:bg-xau-app hover:text-xau-ink"
+      }`}
+    >
+      <span className={active ? "text-xau-gold-accent" : "text-xau-muted"}>{item.icon}</span>
+      {item.label}
+    </Link>
   );
 }
 
-function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+function SidebarContent({
+  pathname,
+  userEmail,
+  onNavigate,
+  onSignOut,
+}: {
+  pathname: string;
+  userEmail: string | null;
+  onNavigate?: () => void;
+  onSignOut: () => void;
+}) {
   return (
-    <nav className="space-y-2.5" aria-label="Main navigation">
-      {navItems.map((item) => (
+    <>
+      <div className="flex items-center gap-2.5 px-2">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-xs font-bold text-xau-ink">
+          Au
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-xau-ink">XAUJournal</p>
+          <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD terminal</p>
+        </div>
+      </div>
+
+      <nav className="mt-8 flex flex-1 flex-col gap-1" aria-label="Main navigation">
+        {mainNav.map((item) => (
+          <NavLink key={item.href} item={item} active={pathname === item.href} onNavigate={onNavigate} />
+        ))}
+        <div className="my-3 border-t border-xau-border" />
+        {secondaryNav.map((item) => (
+          <NavLink key={item.href} item={item} active={pathname === item.href} onNavigate={onNavigate} />
+        ))}
+      </nav>
+
+      <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
         <Link
-          key={item.href}
-          href={item.href}
-          className={navClass(pathname === item.href)}
+          href="/pricing"
+          className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
           onClick={onNavigate}
         >
-          <span className="block text-sm font-medium leading-tight">{item.label}</span>
-          <span className="mt-1 block text-xs text-xau-muted">{item.desc}</span>
+          Upgrade plan
         </Link>
-      ))}
-    </nav>
+        <p className="truncate px-3 text-[11px] text-xau-muted">{userEmail}</p>
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="w-full rounded-xl px-3 py-2 text-left text-sm text-xau-loss hover:bg-xau-rose"
+        >
+          Sign out
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -111,98 +226,51 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen bg-xau-app text-xau-ink">
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-xau-border bg-xau-card px-4 py-3 shadow-card lg:hidden">
-        <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
-          <BrandMark compact />
-          <p className="truncate text-sm font-medium text-xau-ink">Trading journal</p>
+    <div className="min-h-screen bg-xau-app text-xau-ink lg:flex">
+      {/* Mobile header */}
+      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-xau-border bg-xau-card px-4 py-3 lg:hidden">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
+            Au
+          </span>
+          <span className="text-sm font-semibold">XAUJournal</span>
         </Link>
         <button
           type="button"
-          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
-          aria-controls="mobile-nav-drawer"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-xau-border bg-xau-card text-xau-ink transition hover:bg-xau-app"
-          onClick={() => setMobileOpen((open) => !open)}
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-xau-border"
+          onClick={() => setMobileOpen((o) => !o)}
         >
           {mobileOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
       </header>
 
-      <div
-        className={`fixed inset-0 z-40 lg:hidden ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}
-        aria-hidden={!mobileOpen}
-      >
+      {/* Mobile drawer */}
+      <div className={`fixed inset-0 z-40 lg:hidden ${mobileOpen ? "" : "pointer-events-none"}`}>
         <button
           type="button"
-          tabIndex={mobileOpen ? 0 : -1}
-          aria-label="Close menu"
-          className={`absolute inset-0 bg-xau-ink/30 transition-opacity duration-300 ${
-            mobileOpen ? "opacity-100" : "opacity-0"
-          }`}
+          aria-label="Close"
+          className={`absolute inset-0 bg-xau-ink/25 transition ${mobileOpen ? "opacity-100" : "opacity-0"}`}
           onClick={closeMobile}
         />
         <aside
-          id="mobile-nav-drawer"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Navigation menu"
-          className={`absolute left-0 top-0 flex h-full w-[min(88vw,320px)] flex-col bg-xau-card shadow-2xl transition-transform duration-300 ease-out ${
+          className={`absolute left-0 top-0 flex h-full w-[280px] flex-col bg-xau-card p-5 shadow-xl transition ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex items-center justify-between border-b border-xau-border px-5 py-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-xau-muted">Menu</p>
-              <h2 className="text-lg font-semibold text-xau-ink">XAUJournal</h2>
-            </div>
-            <button
-              type="button"
-              aria-label="Close navigation menu"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-xau-app text-xau-muted"
-              onClick={closeMobile}
-            >
-              <CloseIcon />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-5 py-4">
-            <SidebarNav pathname={pathname} onNavigate={closeMobile} />
-          </div>
-
-          <div className="space-y-2 border-t border-xau-border px-5 py-4">
-            <p className="truncate text-xs text-xau-muted">{userEmail}</p>
-            <button
-              type="button"
-              onClick={() => void handleSignOut()}
-              className="w-full rounded-2xl bg-xau-rose px-4 py-2.5 text-sm font-medium text-xau-loss transition hover:brightness-[0.98]"
-            >
-              Sign out
-            </button>
-          </div>
+          <SidebarContent pathname={pathname} userEmail={userEmail} onNavigate={closeMobile} onSignOut={() => void handleSignOut()} />
         </aside>
       </div>
 
-      <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-8 lg:grid-cols-[310px_1fr] lg:py-8">
-        <aside className="xau-card-bordered hidden h-fit p-6 lg:block">
-          <div className="mb-6">
-            <BrandMark />
-            <p className="mt-3 text-sm text-xau-muted">Discipline-first trading journal for Gold traders.</p>
-          </div>
-          <SidebarNav pathname={pathname} />
-          <div className="mt-8 space-y-2 border-t border-xau-border pt-4">
-            <p className="text-xs text-xau-muted">{userEmail}</p>
-            <button
-              type="button"
-              onClick={() => void handleSignOut()}
-              className="w-full rounded-2xl bg-xau-rose px-4 py-2 text-sm font-medium text-xau-loss transition hover:brightness-[0.98]"
-            >
-              Sign out
-            </button>
-          </div>
-        </aside>
+      {/* Desktop sidebar — full height, no floating card */}
+      <aside className="hidden w-[248px] shrink-0 flex-col border-r border-xau-border bg-xau-card px-4 py-6 lg:flex lg:min-h-screen lg:sticky lg:top-0 lg:h-screen">
+        <SidebarContent pathname={pathname} userEmail={userEmail} onSignOut={() => void handleSignOut()} />
+      </aside>
 
-        <main className="xau-card-bordered min-w-0 p-5 md:p-8">{children}</main>
+      {/* Main canvas — open background, no extra card wrapper */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <main className="flex-1 px-4 py-6 md:px-8 md:py-8 lg:max-w-[1200px]">{children}</main>
       </div>
     </div>
   );

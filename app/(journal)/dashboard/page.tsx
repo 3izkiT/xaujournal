@@ -2,42 +2,27 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { DashboardSection } from "@/components/dashboard/DashboardSection";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
   getAverageDisciplineScore,
-  getAverageHoldTimeMinutes,
-  getAverageMaeMfe,
-  getDayHourHeatmap,
   getEquityCurve,
   getMonthlyDisciplineScore,
   getProfitFactor,
   getSessionPerformance,
-  getSetupWinRateVsMistakes,
   getTotalPnl,
   getWinRate,
 } from "@/lib/analytics";
-import { getRuleBreakStats } from "@/lib/discipline";
 
-const DashboardCharts = dynamic(
-  () => import("@/components/DashboardCharts").then((m) => m.DashboardCharts),
-  { ssr: false, loading: () => <ChartSkeleton /> }
+const EquityChart = dynamic(
+  () => import("@/components/dashboard/EquityChart").then((m) => m.EquityChart),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-2xl bg-xau-card" /> }
 );
 
-const ExecutionAnalytics = dynamic(
-  () => import("@/components/dashboard/ExecutionAnalytics").then((m) => m.ExecutionAnalytics),
-  { ssr: false, loading: () => <ChartSkeleton /> }
+const SessionMini = dynamic(
+  () => import("@/components/dashboard/SessionMini").then((m) => m.SessionMini),
+  { ssr: false, loading: () => <div className="h-40 animate-pulse rounded-2xl bg-xau-card" /> }
 );
-
-const DisciplineAnalytics = dynamic(
-  () => import("@/components/dashboard/DisciplineAnalytics").then((m) => m.DisciplineAnalytics),
-  { ssr: false, loading: () => <ChartSkeleton /> }
-);
-
-function ChartSkeleton() {
-  return <div className="h-48 animate-pulse rounded-2xl bg-xau-app" />;
-}
 
 export default function DashboardPage() {
   const { trades, loading } = useXauJournal();
@@ -48,41 +33,38 @@ export default function DashboardPage() {
   const profitFactor = getProfitFactor(trades);
   const equityCurve = getEquityCurve(trades);
   const sessionData = getSessionPerformance(trades);
-  const setupVsMistakes = getSetupWinRateVsMistakes(trades);
-  const ruleBreaks = getRuleBreakStats(trades).map((r) => ({ label: r.label, count: r.count }));
-  const heatmap = getDayHourHeatmap(trades);
-  const avgHoldMinutes = getAverageHoldTimeMinutes(trades);
-  const { avgMae, avgMfe } = getAverageMaeMfe(trades);
-  const recentTrades = trades.slice(0, 8);
-  const tradeLabel = trades.length === 1 ? "1 trade logged" : `${trades.length} trades logged`;
+  const recentTrades = trades.slice(0, 5);
 
   if (loading) {
     return <p className="text-sm text-xau-muted">Loading your journal…</p>;
   }
 
   return (
-    <div className="space-y-10">
-      <header className="flex flex-wrap items-start justify-between gap-4">
+    <div className="space-y-6">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">XAUUSD</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-xau-ink md:text-3xl">Dashboard</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-xau-ink md:text-[1.75rem]">
+            {trades.length === 0 ? "Welcome back" : "Performance overview"}
+          </h1>
           <p className="mt-1 text-sm text-xau-muted">
-            {trades.length === 0 ? "Log your first trade to unlock analytics." : tradeLabel}
+            {trades.length === 0
+              ? "Log your first XAUUSD trade to unlock your terminal."
+              : `${trades.length} trade${trades.length === 1 ? "" : "s"} · discipline-first journal`}
           </p>
         </div>
-        <Link href="/journal-entry" className="xau-btn-gold shrink-0">
-          Log new trade
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/analytics" className="xau-btn-ghost hidden sm:inline-flex">
+            Full analytics
+          </Link>
+          <Link href="/journal-entry" className="xau-btn-gold">
+            Log trade
+          </Link>
+        </div>
       </header>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label="Win rate" value={`${winRate}%`} accent="mint" />
-        <KpiCard
-          label="Discipline"
-          value={`${avgDiscipline}%`}
-          hint={`This month: ${monthlyDiscipline}%`}
-          accent="calm"
-        />
+        <KpiCard label="Discipline" value={`${avgDiscipline}%`} hint={`Month: ${monthlyDiscipline}%`} accent="calm" />
         <KpiCard
           label="Net P&L"
           value={`${totalPnl >= 0 ? "+" : "-"}$${Math.abs(totalPnl).toFixed(2)}`}
@@ -92,85 +74,54 @@ export default function DashboardPage() {
         <KpiCard label="Profit factor" value={String(profitFactor)} accent="gold" />
       </div>
 
-      <DashboardSection
-        title="Performance trends"
-        description="Cumulative equity and setup quality over your logged history."
-      >
-        <DashboardCharts equityCurve={equityCurve} setupVsMistakes={setupVsMistakes} />
-      </DashboardSection>
+      <EquityChart equityCurve={equityCurve} />
 
-      <DashboardSection
-        title="Execution & sessions"
-        description="How long you hold, excursion stats, and P&L by market session."
-      >
-        <ExecutionAnalytics
-          sessionData={sessionData}
-          avgHoldMinutes={avgHoldMinutes}
-          avgMae={avgMae}
-          avgMfe={avgMfe}
-        />
-      </DashboardSection>
-
-      <DashboardSection
-        title="Discipline & timing"
-        description="Rule breaks and when you trade best during the week."
-      >
-        <DisciplineAnalytics ruleBreaks={ruleBreaks} heatmap={heatmap} />
-      </DashboardSection>
-
-      <DashboardSection
-        title="Recent activity"
-        description="Latest manual logs for quick review."
-        action={
-          <Link href="/gallery" className="xau-btn-ghost px-3 py-2 text-xs">
-            Open gallery
-          </Link>
-        }
-      >
-        {recentTrades.length === 0 ? (
-          <div className="rounded-xl bg-xau-app px-4 py-8 text-center text-sm text-xau-muted">
-            No trades yet.{" "}
-            <Link href="/journal-entry" className="font-medium text-xau-ink underline-offset-2 hover:underline">
-              Add your first trade
+      <div className="grid gap-4 lg:grid-cols-5">
+        <article className="xau-card-bordered lg:col-span-3">
+          <div className="flex items-center justify-between border-b border-xau-border px-4 py-3">
+            <h2 className="text-sm font-semibold text-xau-ink">Recent trades</h2>
+            <Link href="/history" className="text-xs font-medium text-xau-muted hover:text-xau-ink">
+              View all →
             </Link>
           </div>
-        ) : (
-          <div className="overflow-hidden rounded-xl border border-xau-border">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-xau-app text-xs uppercase tracking-wide text-xau-muted">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Type</th>
-                  <th className="hidden px-4 py-3 font-medium sm:table-cell">Hold</th>
-                  <th className="hidden px-4 py-3 font-medium md:table-cell">MAE / MFE</th>
-                  <th className="px-4 py-3 font-medium">Net</th>
-                  <th className="px-4 py-3 font-medium">Discipline</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-xau-border bg-xau-card">
-                {recentTrades.map((trade) => (
-                  <tr key={trade.id} className="text-xau-ink">
-                    <td className="px-4 py-3 whitespace-nowrap">{trade.date}</td>
-                    <td className="px-4 py-3">{trade.type}</td>
-                    <td className="hidden px-4 py-3 sm:table-cell">
-                      {trade.holdTimeMinutes != null ? `${trade.holdTimeMinutes}m` : "—"}
-                    </td>
-                    <td className="hidden px-4 py-3 text-xs text-xau-muted md:table-cell">
-                      {trade.mae ?? "—"} / {trade.mfe ?? "—"}
-                    </td>
-                    <td
-                      className={`px-4 py-3 font-semibold ${trade.netProfitLoss >= 0 ? "text-xau-profit" : "text-xau-loss"}`}
-                    >
-                      {trade.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(trade.netProfitLoss).toFixed(2)}
-                    </td>
-                    <td className="px-4 py-3">{trade.disciplineScore}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </DashboardSection>
+          {recentTrades.length === 0 ? (
+            <p className="px-4 py-8 text-center text-sm text-xau-muted">No trades logged yet.</p>
+          ) : (
+            <ul className="divide-y divide-xau-border">
+              {recentTrades.map((t) => (
+                <li key={t.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+                  <div className="min-w-0">
+                    <p className="font-medium text-xau-ink">{t.date}</p>
+                    <p className="text-xs text-xau-muted">
+                      {t.type} · {t.disciplineScore}% discipline
+                    </p>
+                  </div>
+                  <p className={`shrink-0 font-semibold ${t.netProfitLoss >= 0 ? "text-xau-profit" : "text-xau-loss"}`}>
+                    {t.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(t.netProfitLoss).toFixed(2)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+
+        <div className="lg:col-span-2">
+          <SessionMini sessionData={sessionData} />
+        </div>
+      </div>
+
+      <Link
+        href="/analytics"
+        className="flex items-center justify-between rounded-2xl border border-xau-border bg-xau-card px-5 py-4 transition hover:shadow-card"
+      >
+        <div>
+          <p className="text-sm font-semibold text-xau-ink">Open full analytics</p>
+          <p className="text-xs text-xau-muted">Setup tags, heatmap, rule breaks, MAE/MFE</p>
+        </div>
+        <span className="text-xau-gold-accent" aria-hidden>
+          →
+        </span>
+      </Link>
     </div>
   );
 }
