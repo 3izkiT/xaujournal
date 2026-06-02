@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { getAppSession } from "@/lib/app-session";
 import { calculateDisciplineScore } from "@/lib/data";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getTradeLimit, FREE_TRADE_LIMIT } from "@/lib/plans";
@@ -26,14 +26,14 @@ export async function GET() {
       { status: 503 }
     );
   }
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await getAppSession();
+  if (!session?.userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const [trades, meta] = await Promise.all([
-    getTradesForUser(session.user.id),
-    journalMeta(session.user.id),
+    getTradesForUser(session.userId),
+    journalMeta(session.userId),
   ]);
 
   return NextResponse.json({ trades, ...meta });
@@ -46,13 +46,13 @@ export async function POST(request: Request) {
       { status: 503 }
     );
   }
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await getAppSession();
+  if (!session?.userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const meta = await journalMeta(session.user.id);
+    const meta = await journalMeta(session.userId);
     if (!meta.canAddMore) {
       return NextResponse.json(
         {
@@ -101,9 +101,9 @@ export async function POST(request: Request) {
       noteNextAction: body.noteNextAction,
     };
 
-    await addTradeForUser(session.user.id, trade);
-    const trades = await getTradesForUser(session.user.id);
-    const updatedMeta = await journalMeta(session.user.id);
+    await addTradeForUser(session.userId, trade);
+    const trades = await getTradesForUser(session.userId);
+    const updatedMeta = await journalMeta(session.userId);
     return NextResponse.json({ trade, trades, ...updatedMeta });
   } catch {
     return NextResponse.json({ error: "Failed to save trade." }, { status: 500 });

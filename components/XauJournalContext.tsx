@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { calculateDisciplineScore } from "@/lib/data";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
@@ -13,6 +12,13 @@ import {
   TradeType,
   UserPlan,
 } from "@/lib/types";
+
+type AppUser = {
+  id: string;
+  email: string;
+  name: string;
+  plan: UserPlan;
+};
 
 type AddTradePayload = {
   date: string;
@@ -51,7 +57,8 @@ type XauJournalContextValue = {
 const XauJournalContext = createContext<XauJournalContextValue | null>(null);
 
 export function XauJournalProvider({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [trades, setTrades] = useState<JournalTrade[]>([]);
   const [loading, setLoading] = useState(true);
   const [plan, setPlan] = useState<UserPlan>("FREE");
@@ -59,7 +66,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
   const [tradeCount, setTradeCount] = useState(0);
   const [canAddMore, setCanAddMore] = useState(true);
 
-  const storageKey = session?.user?.id ? `xaujournal-trades-${session.user.id}` : null;
+  const storageKey = user?.id ? `xaujournal-trades-${user.id}` : null;
 
   const applyMeta = useCallback(
     (data: { plan?: UserPlan; tradeLimit?: number | null; tradeCount?: number; canAddMore?: boolean }) => {
@@ -71,8 +78,26 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetch("/api/auth/me", { credentials: "include", cache: "no-store" });
+        if (res.ok) {
+          const data = (await res.json()) as { user: AppUser };
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setAuthReady(true);
+      }
+    })();
+  }, []);
+
   const refreshTrades = useCallback(async () => {
-    if (!session?.user?.id) {
+    if (!user?.id) {
       setTrades([]);
       setLoading(false);
       return;
@@ -80,7 +105,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/trades", { cache: "no-store" });
+      const res = await fetch("/api/trades", { cache: "no-store", credentials: "include" });
       if (res.ok) {
         const data = (await res.json()) as {
           trades: JournalTrade[];
@@ -95,27 +120,27 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
       } else if (storageKey) {
         const cached = localStorage.getItem(storageKey);
         if (cached) setTrades(JSON.parse(cached) as JournalTrade[]);
-        setPlan(session.user.plan ?? "FREE");
+        setPlan(user.plan ?? "FREE");
       }
     } catch {
       if (storageKey) {
         const cached = localStorage.getItem(storageKey);
         if (cached) setTrades(JSON.parse(cached) as JournalTrade[]);
       }
-      setPlan(session.user.plan ?? "FREE");
+      setPlan(user.plan ?? "FREE");
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.id, session?.user?.plan, storageKey, applyMeta]);
+  }, [user?.id, user?.plan, storageKey, applyMeta]);
 
   useEffect(() => {
-    if (status === "loading") return;
+    if (!authReady) return;
     void refreshTrades();
-  }, [status, refreshTrades]);
+  }, [authReady, refreshTrades]);
 
   const addTrade = useCallback(
     async (payload: AddTradePayload): Promise<{ ok: boolean; error?: string }> => {
-      if (!session?.user?.id) return { ok: false, error: "Not signed in." };
+      if (!user?.id) return { ok: false, error: "Not signed in." };
       if (!canAddMore) {
         return {
           ok: false,
@@ -147,6 +172,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
         const res = await fetch("/api/trades", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ ...payload, entryAt }),
         });
         const data = (await res.json()) as {
@@ -170,7 +196,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
         return { ok: false, error: "Network error." };
       }
     },
-    [session?.user?.id, canAddMore, storageKey, applyMeta]
+    [user?.id, canAddMore, storageKey, applyMeta]
   );
 
   const value = useMemo(

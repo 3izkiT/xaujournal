@@ -1,12 +1,16 @@
 import type { NextAuthConfig } from "next-auth";
 
-const isProduction = process.env.NODE_ENV === "production";
+function shouldUseSecureCookies() {
+  if (process.env.AUTH_USE_SECURE_COOKIES === "true") return true;
+  if (process.env.AUTH_USE_SECURE_COOKIES === "false") return false;
+  // NODE_ENV=production on local `next start` is still http — only secure cookies on real HTTPS deploy.
+  return process.env.VERCEL === "1" || process.env.AUTH_URL?.startsWith("https://") === true;
+}
 
 export const authConfig = {
   trustHost: true,
   secret: process.env.AUTH_SECRET,
-  // Local dev runs on http://localhost — must not use __Secure- cookies or login never sticks.
-  useSecureCookies: isProduction,
+  useSecureCookies: shouldUseSecureCookies(),
   pages: {
     signIn: "/login",
   },

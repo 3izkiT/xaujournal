@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { getAppSession } from "@/lib/app-session";
 import { isDatabaseConfigured } from "@/lib/db";
 import { prisma } from "@/lib/db";
 
@@ -8,8 +8,8 @@ export async function POST(request: Request) {
   if (!isDatabaseConfigured) {
     return NextResponse.json({ error: "Database is not configured." }, { status: 503 });
   }
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await getAppSession();
+  if (!session?.userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   const link = await prisma.shareLink.create({
     data: {
-      userId: session.user.id,
+      userId: session.userId,
       token,
       label,
       expiresAt,
@@ -39,13 +39,13 @@ export async function GET() {
   if (!isDatabaseConfigured) {
     return NextResponse.json({ error: "Database is not configured." }, { status: 503 });
   }
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await getAppSession();
+  if (!session?.userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const links = await prisma.shareLink.findMany({
-    where: { userId: session.user.id },
+    where: { userId: session.userId },
     orderBy: { createdAt: "desc" },
   });
 

@@ -1,18 +1,72 @@
+"use client";
+
 import Link from "next/link";
-import { loginAction } from "@/app/login/actions";
+import { FormEvent, useState } from "react";
 
 const DEMO_EMAIL = "demo@xaujournal.app";
 const DEMO_PASSWORD = "xaujournal2026";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  empty: "กรุณากรอกอีเมลและรหัสผ่าน",
-  invalid: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-  db: "เซิร์ฟเวอร์ยังไม่ได้เชื่อมฐานข้อมูล (DATABASE_URL)",
-  server: "เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง",
+  empty: "Please enter your email and password.",
+  invalid: "Invalid email or password.",
+  db: "Server database is not configured (DATABASE_URL).",
+  server: "Sign in failed. Please try again.",
 };
 
 export function LoginForm({ errorCode }: { errorCode?: string }) {
-  const error = errorCode ? ERROR_MESSAGES[errorCode] ?? "เกิดข้อผิดพลาด" : null;
+  const [email, setEmail] = useState(DEMO_EMAIL);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(errorCode ? ERROR_MESSAGES[errorCode] ?? "Something went wrong." : "");
+  const [loading, setLoading] = useState(false);
+
+  const signIn = async (loginEmail: string, loginPassword: string) => {
+    if (!loginEmail || !loginPassword) {
+      setError(ERROR_MESSAGES.empty);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+
+      let data: { error?: string; redirectTo?: string } = {};
+      try {
+        data = (await res.json()) as { error?: string; redirectTo?: string };
+      } catch {
+        setError(ERROR_MESSAGES.server);
+        return;
+      }
+
+      if (!res.ok) {
+        setError(data.error ?? ERROR_MESSAGES.invalid);
+        return;
+      }
+
+      window.location.href = data.redirectTo ?? "/dashboard";
+    } catch {
+      setError("Network error. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    void signIn(email.trim().toLowerCase(), password);
+  };
+
+  const handleDemo = () => {
+    setEmail(DEMO_EMAIL);
+    setPassword(DEMO_PASSWORD);
+    void signIn(DEMO_EMAIL, DEMO_PASSWORD);
+  };
 
   return (
     <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -28,46 +82,46 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
         </p>
       )}
 
-      <form action={loginAction} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
         <label className="block text-sm text-slate-600">
           Email
           <input
-            name="email"
             type="email"
             autoComplete="email"
-            defaultValue={DEMO_EMAIL}
             className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3"
             placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </label>
         <label className="block text-sm text-slate-600">
           Password
           <input
-            name="password"
             type="password"
             autoComplete="current-password"
             className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3"
-            placeholder="รหัสผ่าน"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </label>
         <button
           type="submit"
-          className="w-full rounded-2xl bg-sky-100 py-3 font-medium text-sky-800 hover:bg-sky-200"
+          disabled={loading}
+          className="w-full rounded-2xl bg-sky-100 py-3 font-medium text-sky-800 hover:bg-sky-200 disabled:cursor-wait disabled:opacity-60"
         >
-          Sign in
+          {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
-      <form action={loginAction} className="mt-3">
-        <input type="hidden" name="email" value={DEMO_EMAIL} />
-        <input type="hidden" name="password" value={DEMO_PASSWORD} />
-        <button
-          type="submit"
-          className="w-full rounded-2xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-medium text-amber-800 hover:bg-amber-100"
-        >
-          Sign in as demo (คลิกครั้งเดียว)
-        </button>
-      </form>
+      <button
+        type="button"
+        disabled={loading}
+        onClick={handleDemo}
+        className="mt-3 w-full rounded-2xl border border-amber-200 bg-amber-50 py-2.5 text-sm font-medium text-amber-800 hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60"
+      >
+        {loading ? "Signing in…" : "Sign in as demo"}
+      </button>
 
       <p className="mt-6 text-center text-sm text-slate-500">
         No account?{" "}

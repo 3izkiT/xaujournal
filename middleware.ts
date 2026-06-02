@@ -1,14 +1,11 @@
-import NextAuth from "next-auth";
-import { authConfig } from "@/auth.config";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default NextAuth(authConfig).auth;
+// Auth is enforced in app/(journal)/layout.tsx (Node.js) so session cookies work reliably.
+export function middleware(_request: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/journal-entry/:path*",
-    "/calendar/:path*",
-    "/gallery/:path*",
-    "/settings/:path*",
-  ],
+  matcher: [],
 };

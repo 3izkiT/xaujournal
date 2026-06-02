@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", desc: "KPI + insights" },
@@ -40,8 +39,20 @@ function SidebarNav({ pathname, onNavigate }: { pathname: string; onNavigate?: (
 
 export function XauJournalShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    void fetch("/api/auth/me", { credentials: "include", cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : { user: null }))
+      .then((data: { user?: { email?: string } }) => setUserEmail(data.user?.email ?? null))
+      .catch(() => setUserEmail(null));
+  }, []);
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    window.location.href = "/";
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
@@ -49,7 +60,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm lg:hidden">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">XAUJournal</p>
-          <p className="text-sm font-medium text-slate-800">{session?.user?.name ?? "Member"}</p>
+          <p className="text-sm font-medium text-slate-800">{userEmail ?? "Member"}</p>
         </div>
         <button
           type="button"
@@ -82,10 +93,10 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
             </div>
             <SidebarNav pathname={pathname} onNavigate={() => setMobileOpen(false)} />
             <div className="mt-auto space-y-2 border-t border-slate-100 pt-4">
-              <p className="text-xs text-slate-500">{session?.user?.email}</p>
+              <p className="text-xs text-slate-500">{userEmail}</p>
               <button
                 type="button"
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={() => void handleSignOut()}
                 className="w-full rounded-2xl bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-100"
               >
                 Sign out
@@ -104,10 +115,10 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           </div>
           <SidebarNav pathname={pathname} />
           <div className="mt-8 space-y-2 border-t border-slate-100 pt-4">
-            <p className="text-xs text-slate-500">{session?.user?.email}</p>
+            <p className="text-xs text-slate-500">{userEmail}</p>
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => void handleSignOut()}
               className="w-full rounded-2xl bg-rose-50 px-4 py-2 text-sm text-rose-700 transition hover:bg-rose-100"
             >
               Sign out
