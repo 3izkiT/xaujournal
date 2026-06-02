@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { calculateDisciplineScore } from "@/lib/data";
+import { isDatabaseConfigured } from "@/lib/db";
 import { addTradeForUser, getTradesForUser } from "@/lib/trades-store";
 import { JournalTrade } from "@/lib/types";
 
 export async function GET() {
+  if (!isDatabaseConfigured) {
+    return NextResponse.json(
+      { error: "Database is not configured. Please set DATABASE_URL." },
+      { status: 503 }
+    );
+  }
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,6 +22,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!isDatabaseConfigured) {
+    return NextResponse.json(
+      { error: "Database is not configured. Please set DATABASE_URL." },
+      { status: 503 }
+    );
+  }
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
