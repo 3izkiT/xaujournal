@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { registerUser } from "@/lib/auth-users";
-import { isDatabaseConfigured } from "@/lib/db";
+import { isDatabaseConfigured, prisma } from "@/lib/db";
 import { isEmailVerificationRequired } from "@/lib/email-config";
 import { sendEmailVerificationForUser } from "@/lib/send-verification";
 import { validateEmail, validatePassword } from "@/lib/auth-validation";
@@ -58,6 +58,7 @@ export async function POST(request: Request) {
         name: result.user.name,
       });
       if (!sent.ok) {
+        await prisma.user.delete({ where: { id: result.user.id } }).catch(() => {});
         return NextResponse.json({ error: sent.error }, { status: 503 });
       }
       return NextResponse.json({

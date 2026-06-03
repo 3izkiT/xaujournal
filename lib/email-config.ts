@@ -14,6 +14,10 @@ export function isLoginNotifyEnabled() {
   return process.env.LOGIN_NOTIFY_EMAIL !== "false";
 }
 
+/** Resend accepts `onboarding@resend.dev` or `Name <onboarding@resend.dev>`. */
 export function emailFromAddress() {
-  return process.env.EMAIL_FROM?.trim() ?? "";
+  const raw = process.env.EMAIL_FROM?.trim() ?? "";
+  if (!raw) return "";
+  if (raw.includes("@")) return raw;
+  return "onboarding@resend.dev";
 }

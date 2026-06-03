@@ -4,6 +4,29 @@ import { SITE_URL } from "@/lib/site";
 
 type SendResult = { ok: true } | { ok: false; error: string };
 
+function formatResendError(status: number, raw: string): string {
+  try {
+    const json = JSON.parse(raw) as { message?: string };
+    const msg = json.message?.trim();
+    if (msg) {
+      if (status === 403 && /only send testing emails/i.test(msg)) {
+        const match = msg.match(/\(([^)]+)\)/);
+        const allowed = match?.[1];
+        return allowed
+          ? `Email test mode: Resend can only send to ${allowed} until you verify a domain at resend.com/domains. Use that email to register, or verify your domain and set EMAIL_FROM.`
+          : "Email test mode: verify a domain at resend.com/domains and update EMAIL_FROM on Vercel before sending to other addresses.";
+      }
+      if (status === 422) {
+        return `Invalid email settings: ${msg}`;
+      }
+      return msg;
+    }
+  } catch {
+    /* not JSON */
+  }
+  return "Could not send email. Check RESEND_API_KEY and EMAIL_FROM on Vercel.";
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
@@ -45,7 +68,7 @@ async function sendEmail(to: string, subject: string, html: string): Promise<Sen
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
     console.error("[email] send failed", res.status, detail);
-    return { ok: false, error: "Could not send email." };
+    return { ok: false, error: formatResendError(res.status, detail) };
   }
 
   return { ok: true };
