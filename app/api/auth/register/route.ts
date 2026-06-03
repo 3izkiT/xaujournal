@@ -71,7 +71,31 @@ export async function POST(request: Request) {
       ok: true,
       message: "Account created. You can sign in now.",
     });
-  } catch {
-    return NextResponse.json({ error: "Registration failed." }, { status: 500 });
+  } catch (err) {
+    console.error("[register]", err);
+    const detail = err instanceof Error ? err.message : "";
+    if (
+      detail.includes("AuthToken") ||
+      detail.includes("emailVerifiedAt") ||
+      detail.includes("does not exist") ||
+      detail.includes("AuthTokenType")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Database is not up to date. Run prisma migrate deploy on production (migration 0002_auth_email).",
+        },
+        { status: 503 }
+      );
+    }
+    return NextResponse.json(
+      {
+        error:
+          process.env.NODE_ENV === "development" && detail
+            ? detail
+            : "Registration failed. Check server logs or try again shortly.",
+      },
+      { status: 500 }
+    );
   }
 }

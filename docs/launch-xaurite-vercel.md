@@ -6,6 +6,7 @@ Use the Vercel URL to test real interest. When metrics look good, buy a domain a
 
 1. Import repo → deploy `main`
 2. Confirm production URL: **https://xaurite.vercel.app** (Project → Settings → Domains)
+3. Each deploy runs `prisma migrate deploy` (see `vercel.json`) — if register returns **Registration failed**, open the deploy log and confirm migrations applied, or run locally: `DATABASE_URL="..." npm run db:migrate`
 
 ## 2. Environment variables (Production + Preview)
 
