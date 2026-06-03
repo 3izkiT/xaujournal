@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { BRAND_NAME } from "@/lib/brand";
 
 const faqs = [
   {
     q: "Why manual logging instead of MT5 sync?",
-    a: "Because your edge lives in decisions, not copy-paste. XAUJournal is built for traders who choose to reflect on each trade — discipline checklist, emotion, and chart study. We do not offer broker auto-sync.",
+    a: `Because your edge lives in decisions, not copy-paste. ${BRAND_NAME} is built for traders who choose to reflect on each trade — discipline checklist, emotion, and chart study. We do not offer broker auto-sync.`,
   },
   {
-    q: "Is XAUJournal only for XAUUSD (gold)?",
+    q: `Is ${BRAND_NAME} only for XAUUSD (gold)?`,
     a: "Yes — the product, analytics, and workflow are designed around gold. That focus keeps the journal calm and relevant for XAU traders.",
   },
   {

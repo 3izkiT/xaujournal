@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { LEGACY_TRADES_KEY_PREFIX, tradesStorageKey } from "@/lib/brand";
 import { calculateDisciplineScore } from "@/lib/data";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 import {
@@ -66,7 +67,22 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
   const [tradeCount, setTradeCount] = useState(0);
   const [canAddMore, setCanAddMore] = useState(true);
 
-  const storageKey = user?.id ? `xaujournal-trades-${user.id}` : null;
+  const storageKey = user?.id ? tradesStorageKey(user.id) : null;
+
+  const readCachedTrades = useCallback((userId: string): JournalTrade[] | null => {
+    if (typeof window === "undefined") return null;
+    const key = tradesStorageKey(userId);
+    const legacyKey = `${LEGACY_TRADES_KEY_PREFIX}${userId}`;
+    const raw = localStorage.getItem(key) ?? localStorage.getItem(legacyKey);
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as JournalTrade[];
+      if (!localStorage.getItem(key)) localStorage.setItem(key, raw);
+      return parsed;
+    } catch {
+      return null;
+    }
+  }, []);
 
   const applyMeta = useCallback(
     (data: { plan?: UserPlan; tradeLimit?: number | null; tradeCount?: number; canAddMore?: boolean }) => {
@@ -117,21 +133,21 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
         setTrades(data.trades);
         applyMeta(data);
         if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
-      } else if (storageKey) {
-        const cached = localStorage.getItem(storageKey);
-        if (cached) setTrades(JSON.parse(cached) as JournalTrade[]);
+      } else if (user?.id) {
+        const cached = readCachedTrades(user.id);
+        if (cached) setTrades(cached);
         setPlan(user.plan ?? "FREE");
       }
     } catch {
-      if (storageKey) {
-        const cached = localStorage.getItem(storageKey);
-        if (cached) setTrades(JSON.parse(cached) as JournalTrade[]);
+      if (user?.id) {
+        const cached = readCachedTrades(user.id);
+        if (cached) setTrades(cached);
       }
       setPlan(user.plan ?? "FREE");
     } finally {
       setLoading(false);
     }
-  }, [user?.id, user?.plan, storageKey, applyMeta]);
+  }, [user?.id, user?.plan, storageKey, applyMeta, readCachedTrades]);
 
   useEffect(() => {
     if (!authReady) return;

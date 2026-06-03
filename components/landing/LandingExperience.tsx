@@ -5,6 +5,7 @@ import { DeviceFrame } from "@/components/landing/DeviceFrame";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { BRAND_FOOTER, BRAND_NAME, BRAND_SLUG, BRAND_TAGLINE } from "@/lib/brand";
 import { MockCalendar } from "@/components/landing/screens/MockCalendar";
 import { MockDashboard } from "@/components/landing/screens/MockDashboard";
 import { MockGallery } from "@/components/landing/screens/MockGallery";
@@ -32,7 +33,7 @@ const chapters = [
   {
     step: "04",
     title: "The solution",
-    hook: "Meet XAUJournal.",
+    hook: `Meet ${BRAND_NAME}.`,
     body: "A manual, discipline-first XAUUSD journal — no MT5 sync, only trades you choose to understand.",
   },
 ];
@@ -112,7 +113,7 @@ export function LandingExperience() {
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-xs font-bold text-xau-ink">
               Au
             </span>
-            <span className="text-lg font-semibold tracking-tight">XAUJournal</span>
+            <span className="text-lg font-semibold tracking-tight">{BRAND_NAME}</span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-xau-muted md:flex">
             <a href="#story" className="hover:text-xau-ink">
@@ -144,16 +145,19 @@ export function LandingExperience() {
         <section className="landing-section flex min-h-[85vh] items-center py-12 md:py-16">
           <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 lg:grid-cols-2 lg:items-center">
             <ScrollReveal>
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-xau-muted">Exclusively for gold traders</p>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-xau-muted">
+                {BRAND_NAME} · Exclusively for gold traders
+              </p>
               <h1 className="mt-3 text-4xl font-semibold leading-[1.08] tracking-tight md:text-5xl lg:text-6xl">
                 Every trade tells a story.
                 <span className="mt-2 block bg-gradient-to-r from-xau-gold-accent to-amber-700 bg-clip-text text-transparent">
                   Write yours with discipline.
                 </span>
               </h1>
-              <p className="mt-4 max-w-lg text-base leading-relaxed text-xau-muted md:text-lg">
-                Log each XAUUSD trade with intention — discipline checklist, emotion, chart study, and analytics. No
-                MT5 sync: we believe self-improvement starts when you show up and write it down yourself.
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-xau-muted md:text-lg">{BRAND_TAGLINE}</p>
+              <p className="mt-2 max-w-lg text-sm leading-relaxed text-xau-muted">
+                Discipline checklist, emotion, chart study, and analytics — no MT5 sync. Self-improvement starts when you
+                log on purpose.
               </p>
               <p className="mt-2 flex flex-wrap items-center gap-3 text-xs text-xau-muted">
                 <span className="text-tv-profit font-medium">● Profit</span>
@@ -171,7 +175,7 @@ export function LandingExperience() {
               <p className="mt-3 text-xs text-xau-muted">Free tier · 10 trades · No card required</p>
             </ScrollReveal>
             <ScrollReveal delayMs={80}>
-              <DeviceFrame label="xaujournal — Dashboard">
+              <DeviceFrame label={`${BRAND_SLUG} — Dashboard`}>
                 <MockDashboard />
               </DeviceFrame>
             </ScrollReveal>
@@ -287,7 +291,7 @@ export function LandingExperience() {
       </main>
 
       <footer className="border-t border-xau-border py-6 text-center text-xs text-xau-muted">
-        © {new Date().getFullYear()} XAUJournal · Manual reflection for high-discipline gold trading
+        © {new Date().getFullYear()} {BRAND_NAME} · {BRAND_FOOTER}
       </footer>
     </div>
   );

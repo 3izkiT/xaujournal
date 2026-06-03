@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 
-export function DeviceFrame({ children, label = "XAUJournal" }: { children: ReactNode; label?: string }) {
+import { BRAND_NAME } from "@/lib/brand";
+
+export function DeviceFrame({ children, label = BRAND_NAME }: { children: ReactNode; label?: string }) {
   return (
     <div className="overflow-hidden rounded-[1.75rem] border border-xau-border bg-xau-card shadow-card">
       <div className="flex items-center gap-2 border-b border-xau-border bg-xau-app px-4 py-3">

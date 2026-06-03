@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { EmotionType, Plan, PrismaClient, SessionType, TradeType } from "@prisma/client";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "../lib/brand";
 import { mockTrades } from "../lib/data";
 
 const prisma = new PrismaClient();
@@ -28,17 +29,17 @@ function toEmotion(emotion: string): EmotionType {
 }
 
 async function main() {
-  const passwordHash = await bcrypt.hash("xaujournal2026", 10);
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
 
   const demoUser = await prisma.user.upsert({
-    where: { email: "demo@xaujournal.app" },
+    where: { email: DEMO_EMAIL },
     update: {
       name: "Demo Trader",
       passwordHash,
       plan: Plan.FREE,
     },
     create: {
-      email: "demo@xaujournal.app",
+      email: DEMO_EMAIL,
       name: "Demo Trader",
       passwordHash,
       plan: Plan.FREE,

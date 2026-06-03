@@ -1,6 +1,6 @@
-# XAUJournal
+# XAURite
 
-XAUUSD manual trading journal — discipline checklist, emotion, charts. TradingView profit/loss colors, light and dark mode. No MT5 sync.
+Your XAUUSD discipline rite — log every trade on purpose. Manual journal with checklist, emotion, charts. TradingView profit/loss colors, light and dark mode. No MT5 sync.
 
 ## Run locally
 
@@ -22,12 +22,12 @@ Open [http://localhost:3000](http://localhost:3000) (redirects to `/dashboard`).
 
 - **Sign in:** `/login`
 - **Register:** `/register`
-- Demo account: `demo@xaujournal.app` / `xaujournal2026`
+- Demo account: `demo@xaurite.app` / `xaurite2026`
 
 Set in Vercel (required):
 
 - `AUTH_SECRET` — random string (`openssl rand -base64 32`)
-- `AUTH_URL` — e.g. `https://xaujournal-nine.vercel.app`
+- `AUTH_URL` — your production URL (e.g. Vercel deployment URL)
 - `DATABASE_URL` — managed Postgres connection string
 
 ## Database setup (production-ready)
@@ -41,6 +41,10 @@ npm run db:seed
 Schema: `prisma/schema.prisma`  
 Migrations: `prisma/migrations/`  
 Seed data: `prisma/seed.ts` (includes demo account and sample trades)
+
+## Brand constants
+
+User-facing name and copy live in `lib/brand.ts` — update there to keep UI, SEO metadata, and demo credentials in sync.
 
 ## Scale-first checklist
 

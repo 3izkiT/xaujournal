@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { BRAND_NAME } from "@/lib/brand";
 
 type NavItem = {
   href: string;
@@ -141,7 +142,7 @@ function SidebarContent({
           Au
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-xau-ink">XAUJournal</p>
+          <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
           <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD · manual journal</p>
         </div>
       </div>
@@ -225,7 +226,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
             Au
           </span>
-          <span className="text-sm font-semibold">XAUJournal</span>
+          <span className="text-sm font-semibold">{BRAND_NAME}</span>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />

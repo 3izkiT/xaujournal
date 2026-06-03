@@ -1,6 +1,6 @@
 # Production database (Postgres)
 
-XAUJournal needs **`DATABASE_URL`** on Vercel before login, trades, and analytics persist.
+XAURite needs **`DATABASE_URL`** on Vercel before login, trades, and analytics persist.
 
 ## What I can do vs what you provide
 
@@ -15,10 +15,10 @@ XAUJournal needs **`DATABASE_URL`** on Vercel before login, trades, and analytic
 
 1. [neon.tech](https://neon.tech) → New project → copy **pooled** connection string  
    Format: `postgresql://user:pass@host/db?sslmode=require`
-2. Vercel → Project **xaujournal** → Settings → Environment Variables:
+2. Vercel → your project → Settings → Environment Variables:
    - `DATABASE_URL` = connection string (Production + Preview)
    - `AUTH_SECRET` = already set
-   - `AUTH_URL` = `https://xaujournal-nine.vercel.app`
+   - `AUTH_URL` = your production deployment URL
 
 ## 2. Migrate production
 
@@ -31,7 +31,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-Seed creates demo user: `demo@xaujournal.app` / `xaujournal2026`
+Seed creates demo user: `demo@xaurite.app` / `xaurite2026`
 
 ## 3. Verify end-to-end
 
