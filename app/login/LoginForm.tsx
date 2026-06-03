@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+import { AuthField } from "@/components/auth/AuthField";
+import { FormAlert } from "@/components/auth/FormAlert";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { PasswordField } from "@/components/auth/PasswordField";
 import { TurnstileField } from "@/components/auth/TurnstileField";
 import { BRAND_NAME, DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/brand";
 import { isTurnstileConfigured } from "@/lib/turnstile";
@@ -20,7 +23,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export function LoginForm({ errorCode }: { errorCode?: string }) {
-  const [email, setEmail] = useState(DEMO_EMAIL);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [error, setError] = useState(errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong.") : "");
@@ -86,9 +89,6 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
     void signIn(DEMO_EMAIL, DEMO_PASSWORD);
   };
 
-  const inputClass =
-    "mt-1 w-full rounded-2xl border border-xau-border bg-xau-card px-4 py-3 text-xau-ink outline-none transition focus:border-xau-gold focus:ring-2 focus:ring-xau-gold/30";
-
   return (
     <div className="xau-card-bordered w-full max-w-md p-8">
       <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
@@ -98,12 +98,9 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
       <p className="mt-2 text-sm text-xau-muted">Your personal Gold trading journal workspace.</p>
 
       {error && (
-        <p
-          className="mt-4 rounded-2xl border border-xau-border bg-xau-rose px-4 py-3 text-sm font-medium text-xau-loss"
-          role="alert"
-        >
-          {error}
-        </p>
+        <div className="mt-4">
+          <FormAlert variant="error">{error}</FormAlert>
+        </div>
       )}
 
       <div className="mt-6 space-y-3">
@@ -116,29 +113,38 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
-        <label className="block text-sm text-xau-muted">
-          Email
-          <input
-            type="email"
-            autoComplete="email"
-            className={inputClass}
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-        <label className="block text-sm text-xau-muted">
-          Password
-          <input
-            type="password"
+        <AuthField
+          id="login-email"
+          label="Email"
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <div>
+          <PasswordField
+            id="login-password"
+            label="Password"
+            name="password"
             autoComplete="current-password"
-            className={inputClass}
-            placeholder="Password"
+            required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
           />
-        </label>
+          <p className="mt-2 text-right text-xs">
+            <Link href="/forgot-password" className="text-xau-muted hover:text-xau-ink">
+              Forgot password?
+            </Link>
+          </p>
+        </div>
+
         <TurnstileField className="flex justify-center" onToken={setTurnstileToken} />
+
         <button type="submit" disabled={loading} className="xau-btn-gold w-full disabled:cursor-wait disabled:opacity-60">
           {loading ? "Signing in…" : "Sign in"}
         </button>
@@ -156,7 +162,7 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
       <p className="mt-6 text-center text-sm text-xau-muted">
         No account?{" "}
         <Link href="/register" className="font-medium text-xau-ink hover:text-xau-gold-accent">
-          Register
+          Create account
         </Link>
       </p>
       <p className="mt-4 rounded-2xl bg-xau-gold-soft px-3 py-2 text-xs text-xau-ink">

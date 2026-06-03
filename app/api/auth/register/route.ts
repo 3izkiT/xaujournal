@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { registerUser } from "@/lib/auth-users";
 import { isDatabaseConfigured } from "@/lib/db";
+import { validateEmail, validatePassword } from "@/lib/auth-validation";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
@@ -27,13 +28,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: turnstile.error }, { status: 400 });
     }
 
+    const email = (body.email ?? "").trim().toLowerCase();
+    if (!validateEmail(email)) {
+      return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+    }
+
     const password = body.password ?? "";
-    if (password.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.ok) {
+      return NextResponse.json({ error: passwordCheck.errors[0] }, { status: 400 });
     }
 
     const result = await registerUser({
-      email: body.email ?? "",
+      email,
       passwordHash: await bcrypt.hash(password, 10),
       name: body.name ?? "",
     });

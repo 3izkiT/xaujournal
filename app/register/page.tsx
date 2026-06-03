@@ -1,28 +1,63 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 
+import { AuthField } from "@/components/auth/AuthField";
+import { FormAlert } from "@/components/auth/FormAlert";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { PasswordField } from "@/components/auth/PasswordField";
+import { TermsConsent } from "@/components/auth/TermsConsent";
 import { TurnstileField } from "@/components/auth/TurnstileField";
 import { BRAND_NAME } from "@/lib/brand";
+import {
+  PASSWORD_MIN_LENGTH,
+  passwordsMatch,
+  validateEmail,
+  validatePassword,
+} from "@/lib/auth-validation";
 import { isTurnstileConfigured } from "@/lib/turnstile";
-
-const inputClass =
-  "w-full rounded-2xl border border-xau-border bg-xau-card px-4 py-3 text-xau-ink outline-none transition focus:border-xau-gold focus:ring-2 focus:ring-xau-gold/30";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreedTerms, setAgreedTerms] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState(false);
   const turnstileRequired = isTurnstileConfigured();
+
+  const passwordCheck = useMemo(() => validatePassword(password), [password]);
+  const showMismatch = touched && confirmPassword.length > 0 && !passwordsMatch(password, confirmPassword);
+
+  const validateForm = () => {
+    const next: Record<string, string> = {};
+
+    if (!name.trim()) next.name = "Enter your display name.";
+    if (!email.trim()) next.email = "Enter your email address.";
+    else if (!validateEmail(email)) next.email = "Enter a valid email address.";
+
+    if (!passwordCheck.ok) next.password = passwordCheck.errors[0] ?? "Choose a stronger password.";
+    if (!passwordsMatch(password, confirmPassword)) {
+      next.confirmPassword = "Passwords do not match.";
+    }
+    if (!agreedTerms) next.terms = "You must accept the Terms and Privacy Policy.";
+
+    setFieldErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    setTouched(true);
+
+    if (!validateForm()) return;
+
     if (turnstileRequired && !turnstileToken) {
       setError("Please complete the security check.");
       return;
@@ -35,7 +70,12 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, turnstileToken: turnstileToken ?? undefined }),
+      body: JSON.stringify({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+        turnstileToken: turnstileToken ?? undefined,
+      }),
     });
 
     const data = (await res.json()) as { error?: string; message?: string };
@@ -46,11 +86,13 @@ export default function RegisterPage() {
       return;
     }
 
-    setMessage(data.message ?? "Account created. Please sign in.");
+    setMessage(data.message ?? "Account created. You can sign in now.");
+    setPassword("");
+    setConfirmPassword("");
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-xau-app px-4">
+    <div className="flex min-h-screen items-center justify-center bg-xau-app px-4 py-10">
       <div className="xau-card-bordered w-full max-w-md p-8">
         <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
           ← Back to home
@@ -58,8 +100,21 @@ export default function RegisterPage() {
         <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Create your {BRAND_NAME} account</h1>
         <p className="mt-2 text-sm text-xau-muted">Early access: full journal features free while we grow with the community.</p>
 
-        {error && <p className="mt-4 text-sm font-medium text-xau-loss">{error}</p>}
-        {message && <p className="mt-4 text-sm font-medium text-tv-profit">{message}</p>}
+        {error && (
+          <div className="mt-4">
+            <FormAlert variant="error">{error}</FormAlert>
+          </div>
+        )}
+        {message && (
+          <div className="mt-4">
+            <FormAlert variant="success">{message}</FormAlert>
+            <p className="mt-3 text-center text-sm">
+              <Link href="/login" className="font-medium text-xau-ink underline hover:text-xau-gold-accent">
+                Sign in now →
+              </Link>
+            </p>
+          </div>
+        )}
 
         <div className="mt-6 space-y-3">
           <GoogleSignInButton
@@ -70,32 +125,74 @@ export default function RegisterPage() {
           <p className="text-center text-xs text-xau-muted">or register with email</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          <input className={inputClass} placeholder="Display name" value={name} onChange={(e) => setName(e.target.value)} />
-          <input
-            type="email"
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
+          <AuthField
+            id="register-name"
+            label="Display name"
+            name="name"
+            autoComplete="name"
             required
-            className={inputClass}
-            placeholder="Email"
+            placeholder="How we greet you in the app"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={fieldErrors.name}
+          />
+
+          <AuthField
+            id="register-email"
+            label="Email"
+            name="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            required
+            placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={fieldErrors.email}
           />
-          <input
-            type="password"
+
+          <PasswordField
+            id="register-password"
+            label="Password"
+            name="new-password"
+            autoComplete="new-password"
             required
-            minLength={8}
-            className={inputClass}
-            placeholder="Password (min 8 chars)"
+            minLength={PASSWORD_MIN_LENGTH}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
+            hint={`At least ${PASSWORD_MIN_LENGTH} characters, with letters and numbers.`}
+            error={touched ? fieldErrors.password : undefined}
           />
+
+          <PasswordField
+            id="register-confirm-password"
+            label="Confirm password"
+            name="confirm-password"
+            autoComplete="new-password"
+            required
+            minLength={PASSWORD_MIN_LENGTH}
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            error={
+              touched && (fieldErrors.confirmPassword || showMismatch) ? "Passwords do not match." : undefined
+            }
+          />
+
+          <TermsConsent
+            checked={agreedTerms}
+            onChange={setAgreedTerms}
+            error={touched ? fieldErrors.terms : undefined}
+          />
+
           <TurnstileField className="flex justify-center" onToken={setTurnstileToken} />
+
           <button
             type="submit"
             disabled={loading}
             className="xau-btn-gold w-full disabled:cursor-wait disabled:opacity-60"
           >
-            {loading ? "Creating…" : "Create account"}
+            {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
 
