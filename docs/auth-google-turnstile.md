@@ -13,10 +13,25 @@ npm run db:seed
 
 ## Google redirect URI (must match exactly)
 
+Add **every** URL users open (Google compares character-by-character):
+
 ```text
 https://xaurite.vercel.app/api/auth/google/callback
+https://xaujournal-nine.vercel.app/api/auth/google/callback
 http://localhost:3000/api/auth/google/callback
 ```
+
+**Authorized JavaScript origins** (same hosts, no path):
+
+```text
+https://xaurite.vercel.app
+https://xaujournal-nine.vercel.app
+http://localhost:3000
+```
+
+`Error 400: redirect_uri_mismatch` = this list is missing the exact callback URL the app sends. The app now uses the **same host as your browser** (fixes wrong `AUTH_URL` on Vercel).
+
+Set on Vercel: `AUTH_URL` and `NEXT_PUBLIC_SITE_URL` = `https://xaurite.vercel.app` (your main URL).
 
 ## Test checklist
 
@@ -28,6 +43,7 @@ http://localhost:3000/api/auth/google/callback
 
 | Symptom | Fix |
 |---------|-----|
-| `google_failed` | Redirect URI mismatch in Google Cloud |
+| `google_failed` | State/cookie issue or token exchange failed — check Vercel logs |
+| `redirect_uri_mismatch` (Google page) | Add callback URL above for the host you use in the browser |
 | `google_config` | Missing `GOOGLE_CLIENT_ID` / `SECRET` on Vercel |
 | Security check failed | Wrong Turnstile secret or hostname not listed in Turnstile site |
