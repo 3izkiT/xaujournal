@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <GoogleAnalytics />
         {ADSENSE_ENABLED && (
           <>
             <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
@@ -37,7 +38,6 @@ export default function RootLayout({
           {themeInitScript}
         </Script>
         <JsonLd />
-        <GoogleAnalytics />
         <AdSenseScript />
       </head>
       <body className={`${geistSans.className} antialiased`}>

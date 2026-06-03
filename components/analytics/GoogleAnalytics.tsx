@@ -1,21 +1,19 @@
 import Script from "next/script";
+import { buildGa4InlineConfigSnippet, GA_MEASUREMENT_ID } from "@/lib/ga4-config";
 
-/** GA4 — set NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXX for Search Console / Analytics verification. */
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? "";
-
+/** Single GA4 gtag install — only rendered from root layout <head>. */
 export function GoogleAnalytics() {
-  if (!GA_ID.startsWith("G-")) return null;
+  if (!GA_MEASUREMENT_ID.startsWith("G-")) return null;
 
   return (
     <>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+      <Script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        strategy="afterInteractive"
+      />
       <Script id="ga4-gtag" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA_ID}');
-        `}
+        {buildGa4InlineConfigSnippet(GA_MEASUREMENT_ID)}
       </Script>
     </>
   );
