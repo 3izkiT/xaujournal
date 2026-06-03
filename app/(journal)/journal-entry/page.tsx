@@ -10,6 +10,8 @@ import {
   sessionOptions,
   setupTagOptions,
   tradeTypeOptions,
+  XAU_SPOT_PRICE_MAX,
+  XAU_SPOT_PRICE_MIN,
 } from "@/lib/data";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
@@ -22,8 +24,8 @@ export default function JournalEntryPage() {
   const [type, setType] = useState<"Buy" | "Sell">("Buy");
   const [netProfitLoss, setNetProfitLoss] = useState("0");
   const [rMultiple, setRMultiple] = useState("+2R");
-  const [entryPrice, setEntryPrice] = useState("2380");
-  const [exitPrice, setExitPrice] = useState("2388");
+  const [entryPrice, setEntryPrice] = useState("");
+  const [exitPrice, setExitPrice] = useState("");
   const [mae, setMae] = useState("");
   const [mfe, setMfe] = useState("");
   const [session, setSession] = useState(sessionOptions[0]);
@@ -60,6 +62,17 @@ export default function JournalEntryPage() {
     if (!canAddMore) return;
     setSubmitError(null);
 
+    const entry = Number(entryPrice);
+    const exit = Number(exitPrice);
+    if (!Number.isFinite(entry) || entry < XAU_SPOT_PRICE_MIN || entry > XAU_SPOT_PRICE_MAX) {
+      setSubmitError(`Enter a valid entry price (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX}).`);
+      return;
+    }
+    if (!Number.isFinite(exit) || exit < XAU_SPOT_PRICE_MIN || exit > XAU_SPOT_PRICE_MAX) {
+      setSubmitError(`Enter a valid exit price (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX}).`);
+      return;
+    }
+
     const entryAt = new Date(`${date}T${entryTime}:00`).toISOString();
     const exitAt = exitTime ? new Date(`${date}T${exitTime}:00`).toISOString() : null;
     let holdTimeMinutes: number | null = null;
@@ -75,8 +88,8 @@ export default function JournalEntryPage() {
       type,
       netProfitLoss: Number(netProfitLoss),
       rMultiple,
-      entryPrice: Number(entryPrice),
-      exitPrice: Number(exitPrice),
+      entryPrice: entry,
+      exitPrice: exit,
       mae: mae !== "" ? Number(mae) : null,
       mfe: mfe !== "" ? Number(mfe) : null,
       session,
@@ -247,24 +260,28 @@ export default function JournalEntryPage() {
         <section className="xau-form-section">
           <h2 className="text-lg font-medium text-xau-ink">Prices &amp; excursions</h2>
           <div className="grid gap-5 sm:grid-cols-2">
-            <FormField label="Entry price">
+            <FormField label="Entry price" hint={`Spot XAUUSD, typically ${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX.toLocaleString()}`}>
               <input
                 type="number"
-                step="0.1"
-                min="2000"
-                max="2600"
+                step="0.01"
+                min={XAU_SPOT_PRICE_MIN}
+                max={XAU_SPOT_PRICE_MAX}
+                required
                 className="xau-field"
+                placeholder="e.g. 4448"
                 value={entryPrice}
                 onChange={(e) => setEntryPrice(e.target.value)}
               />
             </FormField>
-            <FormField label="Exit price">
+            <FormField label="Exit price" hint="Leave blank only if still open (use exit time)">
               <input
                 type="number"
-                step="0.1"
-                min="2000"
-                max="2600"
+                step="0.01"
+                min={XAU_SPOT_PRICE_MIN}
+                max={XAU_SPOT_PRICE_MAX}
+                required
                 className="xau-field"
+                placeholder="e.g. 4430"
                 value={exitPrice}
                 onChange={(e) => setExitPrice(e.target.value)}
               />

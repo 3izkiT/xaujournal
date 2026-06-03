@@ -29,6 +29,10 @@ export const sessionOptions: SessionType[] = [
 
 export const tradeTypeOptions: TradeType[] = ["Buy", "Sell"];
 
+/** Spot XAUUSD bounds for HTML validation — wide enough for current & future prices. */
+export const XAU_SPOT_PRICE_MIN = 500;
+export const XAU_SPOT_PRICE_MAX = 20_000;
+
 export function calculateDisciplineScore(checklist: DisciplineChecklist): 0 | 33 | 66 | 100 {
   const yesCount = [checklist.followedPlan, checklist.rrAtLeastOneToTwo, checklist.calmMindset].filter(Boolean).length;
   if (yesCount === 3) return 100;
