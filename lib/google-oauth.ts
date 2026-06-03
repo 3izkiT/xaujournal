@@ -3,6 +3,7 @@ import { findOrCreateGoogleUser } from "@/lib/auth-users";
 import { setSessionOnResponse, type AppSession } from "@/lib/app-session";
 import type { UserPlan } from "@/lib/types";
 import { NextResponse } from "next/server";
+import { SITE_URL } from "@/lib/site";
 
 const STATE_COOKIE = "xau_google_oauth_state";
 const SCOPES = ["openid", "email", "profile"].join(" ");
@@ -12,7 +13,11 @@ export function isGoogleAuthConfigured() {
 }
 
 export function getAuthBaseUrl() {
-  const url = process.env.AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const url =
+    process.env.AUTH_URL ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.VERCEL === "1" ? SITE_URL : "http://localhost:3000");
   return url.replace(/\/$/, "");
 }
 

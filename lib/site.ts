@@ -1,7 +1,21 @@
 import { BRAND_NAME, BRAND_SLUG, BRAND_TAGLINE } from "@/lib/brand";
 
-/** Canonical site URL — set NEXT_PUBLIC_SITE_URL on Vercel (e.g. https://xaurite.app) */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://xaurite.app").replace(/\/$/, "");
+/** Production alias while validating interest before a custom domain. */
+export const DEFAULT_PUBLIC_URL = "https://xaurite.vercel.app";
+
+function resolveSiteUrl() {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.AUTH_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+
+  return DEFAULT_PUBLIC_URL;
+}
+
+/** Canonical site URL for SEO, OAuth redirects, and share links. */
+export const SITE_URL = resolveSiteUrl();
 
 export const SITE_NAME = BRAND_NAME;
 export const SITE_DESCRIPTION = `${BRAND_TAGLINE} Manual XAUUSD journal with discipline checklist, emotion tracking, chart gallery, and TradingView-style analytics. No MT5 sync.`;

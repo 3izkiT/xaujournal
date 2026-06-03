@@ -14,7 +14,7 @@ npm run db:seed
 ## Google redirect URI (must match exactly)
 
 ```text
-https://YOUR-DOMAIN.vercel.app/api/auth/google/callback
+https://xaurite.vercel.app/api/auth/google/callback
 http://localhost:3000/api/auth/google/callback
 ```
 

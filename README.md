@@ -46,12 +46,16 @@ Seed data: `prisma/seed.ts` (includes demo account and sample trades)
 
 User-facing name and copy live in `lib/brand.ts` — update there to keep UI, SEO metadata, and demo credentials in sync.
 
-## Domain & SEO (Vercel env)
+## Launch URL (validate on Vercel first)
+
+Production alias: **https://xaurite.vercel.app** — see `docs/launch-xaurite-vercel.md` for env, OAuth, Turnstile, and metrics checklist.
 
 ```env
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
-AUTH_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_URL=https://xaurite.vercel.app
+AUTH_URL=https://xaurite.vercel.app
 ```
+
+Custom domain later: change only these two + Google/Turnstile hostnames.
 
 Early access (default): full features free, payments UI hidden. See `docs/monetization.md`.
 
