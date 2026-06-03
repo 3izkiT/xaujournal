@@ -15,20 +15,27 @@ Open [http://localhost:3000](http://localhost:3000) (redirects to `/dashboard`).
 
 - Next.js 15 (App Router), TypeScript, Tailwind CSS
 - Recharts for dashboard analytics
-- Auth.js (credentials) + PostgreSQL (Prisma)
+- Google sign-in (default) + optional email auth
+- PostgreSQL (Prisma)
 - 100% manual — no broker API
 
 ## Member login
 
-- **Sign in:** `/login`
-- **Register:** `/register`
-- Demo account: `demo@xaurite.app` / `xaurite2026`
+- **Sign in:** `/login` or home modal
+- Demo (if enabled): `demo@xaurite.app` / `xaurite2026`
 
 Set in Vercel (required):
 
 - `AUTH_SECRET` — random string (`openssl rand -base64 32`)
-- `AUTH_URL` — your production URL (e.g. Vercel deployment URL)
+- `AUTH_URL` — `https://xaurite.vercel.app`
+- `NEXT_PUBLIC_SITE_URL` — same as `AUTH_URL`
 - `DATABASE_URL` — managed Postgres connection string
+
+See `docs/launch-xaurite-vercel.md` for OAuth, Turnstile, and GA4.
+
+## Brand constants
+
+User-facing name and copy live in `lib/brand.ts` — update there to keep UI, SEO metadata, and demo credentials in sync.
 
 ## Database setup (production-ready)
 
@@ -42,32 +49,9 @@ Schema: `prisma/schema.prisma`
 Migrations: `prisma/migrations/`  
 Seed data: `prisma/seed.ts` (includes demo account and sample trades)
 
-## Brand constants
-
-User-facing name and copy live in `lib/brand.ts` — update there to keep UI, SEO metadata, and demo credentials in sync.
-
-## Launch URL (validate on Vercel first)
-
-Production alias: **https://xaurite.vercel.app** — see `docs/launch-xaurite-vercel.md` for env, OAuth, Turnstile, and metrics checklist.
-
-```env
-NEXT_PUBLIC_SITE_URL=https://xaurite.vercel.app
-AUTH_URL=https://xaurite.vercel.app
-```
-
-Custom domain later: change only these two + Google/Turnstile hostnames.
-
-Early access (default): full features free, payments UI hidden. See `docs/monetization.md`.
-
 ## Scale-first checklist
 
 - Use managed Postgres with pooling (Neon/Supabase/RDS + PgBouncer)
 - Add read replica when dashboard reads grow
 - Keep chart screenshots in object storage (S3/R2/Cloudinary), not DB blobs
 - Enable nightly backups + monthly restore drill (see `docs/backup-checklist.md`)
-
-## Deploy
-
-```bash
-npx vercel --prod
-```

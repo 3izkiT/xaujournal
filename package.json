@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "lighthouse:prod": "lighthouse https://xaujournal-nine.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json"
+    "lighthouse:prod": "lighthouse https://xaurite.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",

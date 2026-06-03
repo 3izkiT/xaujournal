@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { BRAND_NAME, BRAND_SHORT } from "@/lib/brand";
 
 type NavItem = {
   href: string;
@@ -140,8 +142,8 @@ function SidebarContent({
           Au
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-xau-ink">XAUJournal</p>
-          <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD terminal</p>
+          <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
+          <p className="text-[10px] uppercase tracking-wider text-xau-muted">{BRAND_SHORT}</p>
         </div>
       </div>
 
@@ -156,6 +158,7 @@ function SidebarContent({
       </nav>
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
+        <ThemeToggle className="w-full justify-center" />
         <Link
           href="/pricing"
           className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
@@ -221,17 +224,20 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
             Au
           </span>
-          <span className="text-sm font-semibold">XAUJournal</span>
+          <span className="text-sm font-semibold">{BRAND_NAME}</span>
         </Link>
-        <button
-          type="button"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-xau-border"
-          onClick={() => setMobileOpen((o) => !o)}
-        >
-          {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-xau-border"
+            onClick={() => setMobileOpen((o) => !o)}
+          >
+            {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </header>
 
       {/* Mobile drawer */}
@@ -258,7 +264,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
 
       {/* Main canvas — open background, no extra card wrapper */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8 lg:max-w-[1200px]">{children}</main>
+        <main className="w-full flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import { GoogleOnlyAuthPanel } from "@/components/auth/GoogleOnlyAuthPanel";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { PasswordField } from "@/components/auth/PasswordField";
 import { TurnstileField } from "@/components/auth/TurnstileField";
-import { BRAND_NAME, DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/brand";
+import { BRAND_NAME, DEMO_EMAIL, DEMO_PASSWORD, LEGACY_DEMO_EMAIL } from "@/lib/brand";
 import { EMAIL_AUTH_ENABLED } from "@/lib/auth-mode";
 import { isTurnstileConfigured } from "@/lib/turnstile";
 
@@ -60,7 +60,7 @@ function EmailLoginForm({ errorCode, verified }: { errorCode?: string; verified?
       return;
     }
 
-    const isDemo = loginEmail === DEMO_EMAIL || loginEmail === "demo@xaujournal.app";
+    const isDemo = loginEmail === DEMO_EMAIL || loginEmail === LEGACY_DEMO_EMAIL;
     if (turnstileRequired && !isDemo && !token) {
       setError("Please complete the security check.");
       return;
