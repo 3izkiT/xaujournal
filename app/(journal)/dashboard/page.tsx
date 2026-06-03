@@ -63,13 +63,13 @@ export default function DashboardPage() {
       </header>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Win rate" value={`${winRate}%`} accent="mint" />
+        <KpiCard label="Win rate" value={`${winRate}%`} accent="profit" />
         <KpiCard label="Discipline" value={`${avgDiscipline}%`} hint={`Month: ${monthlyDiscipline}%`} accent="calm" />
         <KpiCard
           label="Net P&L"
           value={`${totalPnl >= 0 ? "+" : "-"}$${Math.abs(totalPnl).toFixed(2)}`}
-          accent={totalPnl >= 0 ? "mint" : "rose"}
-          valueClassName={totalPnl >= 0 ? "text-xau-profit" : "text-xau-loss"}
+          accent={totalPnl >= 0 ? "profit" : "loss"}
+          valueClassName={totalPnl >= 0 ? "text-tv-profit" : "text-tv-loss"}
         />
         <KpiCard label="Profit factor" value={String(profitFactor)} accent="gold" />
       </div>
@@ -96,7 +96,7 @@ export default function DashboardPage() {
                       {t.type} · {t.disciplineScore}% discipline
                     </p>
                   </div>
-                  <p className={`shrink-0 font-semibold ${t.netProfitLoss >= 0 ? "text-xau-profit" : "text-xau-loss"}`}>
+                  <p className={`shrink-0 font-semibold ${t.netProfitLoss >= 0 ? "text-tv-profit" : "text-tv-loss"}`}>
                     {t.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(t.netProfitLoss).toFixed(2)}
                   </p>
                 </li>

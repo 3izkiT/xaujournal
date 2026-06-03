@@ -52,14 +52,14 @@ function StatCard({
   tone?: "neutral" | "rose" | "mint";
 }) {
   const toneClass =
-    tone === "rose" ? "xau-kpi-rose" : tone === "mint" ? "xau-kpi-mint" : "xau-card-bordered";
+    tone === "rose" ? "xau-kpi-loss" : tone === "mint" ? "xau-kpi-profit" : "xau-card-bordered";
 
   return (
     <article className={`flex min-h-[88px] flex-col justify-center p-4 ${toneClass}`}>
       <p className="text-xs text-xau-muted">{label}</p>
       <p
         className={`mt-1 text-xl font-semibold sm:text-2xl ${
-          tone === "rose" ? "text-xau-loss" : tone === "mint" ? "text-xau-profit" : "text-xau-ink"
+          tone === "rose" ? "text-tv-loss" : tone === "mint" ? "text-tv-profit" : "text-xau-ink"
         }`}
       >
         {value}

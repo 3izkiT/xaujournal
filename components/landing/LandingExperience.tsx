@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DeviceFrame } from "@/components/landing/DeviceFrame";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { MockCalendar } from "@/components/landing/screens/MockCalendar";
 import { MockDashboard } from "@/components/landing/screens/MockDashboard";
 import { MockGallery } from "@/components/landing/screens/MockGallery";
@@ -32,7 +33,7 @@ const chapters = [
     step: "04",
     title: "The solution",
     hook: "Meet XAUJournal.",
-    body: "A manual, discipline-first journal built only for XAUUSD — clarity without broker noise.",
+    body: "A manual, discipline-first XAUUSD journal — no MT5 sync, only trades you choose to understand.",
   },
 ];
 
@@ -42,20 +43,24 @@ const features = [
     body: "Score every trade against your plan before you save — no autopilot logging.",
   },
   {
+    title: "TradingView-style P&L",
+    body: "Green #089981 and red #f23645 in light and dark mode — the same language as your charts.",
+  },
+  {
     title: "Deep analytics",
-    body: "Equity curve, setup win rate, session P&L, and day×hour heatmaps in one calm dashboard.",
+    body: "Equity curve, setup quality, session P&L, and heatmaps — when you have enough intentional logs.",
   },
   {
     title: "Trade calendar",
-    body: "Pastel daily blocks show consistency at a glance — mint, rose, and gold for each day.",
+    body: "Daily blocks colored by profit or loss — consistency at a glance.",
   },
   {
     title: "Chart gallery",
     body: "Before and after screenshots side by side — study what your memory forgets.",
   },
   {
-    title: "Private by design",
-    body: "Your journal is yours. Manual entry means you control every field that enters the record.",
+    title: "No broker sync",
+    body: "We will not auto-import trades. You log on purpose — that is how discipline compounds.",
   },
   {
     title: "Session intelligence",
@@ -84,7 +89,7 @@ const productSections = [
     id: "calendar",
     eyebrow: "Calendar",
     hook: "Your consistency, color-coded.",
-    body: "Daily P&L blocks turn routine into visual truth — soft pastels, no harsh red/green neon.",
+    body: "Daily P&L blocks use TradingView green and red — the same profit/loss language as your charts.",
     shot: <MockCalendar />,
     reverse: false,
   },
@@ -123,8 +128,9 @@ export function LandingExperience() {
               FAQ
             </a>
           </nav>
-          <div className="flex gap-2">
-            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm text-xau-muted sm:inline-block hover:bg-xau-card">
+          <div className="flex items-center gap-2">
+            <ThemeToggle className="hidden sm:flex" />
+            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm text-xau-muted md:inline-block hover:bg-xau-card">
               Sign in
             </Link>
             <Link href="/register" className="xau-btn-gold rounded-full px-4 py-2">
@@ -146,8 +152,13 @@ export function LandingExperience() {
                 </span>
               </h1>
               <p className="mt-4 max-w-lg text-base leading-relaxed text-xau-muted md:text-lg">
-                XAUJournal is a manual, reflection-first workspace for XAUUSD — checklist scoring, pastel analytics, and
-                chart study without broker clutter.
+                Log each XAUUSD trade with intention — discipline checklist, emotion, chart study, and analytics. No
+                MT5 sync: we believe self-improvement starts when you show up and write it down yourself.
+              </p>
+              <p className="mt-2 flex flex-wrap items-center gap-3 text-xs text-xau-muted">
+                <span className="text-tv-profit font-medium">● Profit</span>
+                <span className="text-tv-loss font-medium">● Loss</span>
+                <span>TradingView colors · Light &amp; dark</span>
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/register" className="xau-btn-gold rounded-full px-7 py-3.5 shadow-card">
@@ -253,7 +264,7 @@ export function LandingExperience() {
           </div>
         </section>
 
-        <section className="landing-section bg-xau-ink py-16 text-xau-card md:py-20">
+        <section className="landing-section bg-[#131722] py-16 text-[#d1d4dc] md:py-20">
           <ScrollReveal className="mx-auto max-w-3xl px-6 text-center">
             <p className="text-xs uppercase tracking-[0.2em] text-xau-gold">Built for XAUUSD traders</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">Stop guessing. Start knowing.</h2>

@@ -36,7 +36,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         </header>
 
         <section className="grid gap-4 sm:grid-cols-3">
-          <article className="xau-kpi-mint p-4 text-center">
+          <article className="xau-kpi-profit p-4 text-center">
             <p className="text-xs text-xau-muted">Win rate</p>
             <p className="text-2xl font-semibold text-xau-ink">{getWinRate(trades)}%</p>
           </article>
@@ -58,7 +58,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                 <span>
                   {t.date} · {t.type} · {t.disciplineScore}%
                 </span>
-                <span className={`font-medium ${t.netProfitLoss >= 0 ? "text-xau-profit" : "text-xau-loss"}`}>
+                <span className={`font-medium ${t.netProfitLoss >= 0 ? "text-tv-profit" : "text-tv-loss"}`}>
                   ${t.netProfitLoss.toFixed(2)}
                 </span>
               </li>

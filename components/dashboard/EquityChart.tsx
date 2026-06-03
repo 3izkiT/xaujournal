@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
-import { XAU_CHART } from "@/lib/chart-colors";
+import { useChartPalette } from "@/lib/use-chart-palette";
 
 export type EquityPoint = {
   date: string;
@@ -50,7 +50,7 @@ function EquityTooltip({
     <div className="rounded-xl border border-xau-border bg-xau-card px-3 py-2 text-xs shadow-card">
       <p className="font-medium text-xau-ink">{point.label}</p>
       <p className="text-xau-muted">Cumulative: {formatUsd(point.equity)}</p>
-      <p className={point.change >= 0 ? "font-medium text-xau-profit" : "font-medium text-xau-loss"}>
+      <p className={point.change >= 0 ? "text-tv-profit font-medium" : "text-tv-loss font-medium"}>
         Trade: {point.change >= 0 ? "+" : ""}
         {formatUsd(point.change)}
       </p>
@@ -59,6 +59,7 @@ function EquityTooltip({
 }
 
 export function EquityChart({ equityCurve }: { equityCurve: EquityPoint[] }) {
+  const palette = useChartPalette();
   const tradeCount = Math.max(0, equityCurve.length - 1);
   const equityMinWidth = Math.max(320, tradeCount * 52);
 
@@ -84,29 +85,29 @@ export function EquityChart({ equityCurve }: { equityCurve: EquityPoint[] }) {
           <div className="h-full" style={{ minWidth: equityMinWidth }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={equityCurve} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
-                <CartesianGrid stroke={XAU_CHART.grid} strokeDasharray="3 3" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11, fill: XAU_CHART.tick }}
+                    <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 11, fill: palette.tick }}
                   interval={tradeCount > 14 ? Math.floor(tradeCount / 10) : 0}
                   angle={tradeCount > 8 ? -35 : 0}
                   textAnchor={tradeCount > 8 ? "end" : "middle"}
                   height={tradeCount > 8 ? 52 : 28}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: XAU_CHART.tick }}
-                  tickFormatter={(v) => formatUsd(Number(v))}
-                  width={72}
-                />
-                <Tooltip content={<EquityTooltip />} />
-                <ReferenceLine y={0} stroke={XAU_CHART.zeroLine} strokeDasharray="4 4" />
-                <Line
-                  type="monotone"
-                  dataKey="equity"
-                  stroke={XAU_CHART.equityLine}
-                  strokeWidth={2.5}
-                  dot={{ r: tradeCount > 20 ? 2 : 4, fill: XAU_CHART.equityDot, strokeWidth: 0 }}
-                  activeDot={{ r: 6, fill: XAU_CHART.equityDot }}
+                      tick={{ fontSize: 11, fill: palette.tick }}
+                      tickFormatter={(v) => formatUsd(Number(v))}
+                      width={72}
+                    />
+                    <Tooltip content={<EquityTooltip />} />
+                    <ReferenceLine y={0} stroke={palette.zeroLine} strokeDasharray="4 4" />
+                    <Line
+                      type="monotone"
+                      dataKey="equity"
+                      stroke={palette.equityLine}
+                      strokeWidth={2.5}
+                      dot={{ r: tradeCount > 20 ? 2 : 4, fill: palette.equityDot, strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: palette.equityDot }}
                 />
               </LineChart>
             </ResponsiveContainer>

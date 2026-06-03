@@ -52,7 +52,7 @@ export default function HistoryPage() {
                   <td className="hidden px-4 py-3 md:table-cell">
                     {trade.holdTimeMinutes != null ? `${trade.holdTimeMinutes}m` : "—"}
                   </td>
-                  <td className={`px-4 py-3 font-semibold ${trade.netProfitLoss >= 0 ? "text-xau-profit" : "text-xau-loss"}`}>
+                  <td className={`px-4 py-3 font-semibold ${trade.netProfitLoss >= 0 ? "text-tv-profit" : "text-tv-loss"}`}>
                     {trade.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(trade.netProfitLoss).toFixed(2)}
                   </td>
                   <td className="px-4 py-3">{trade.disciplineScore}%</td>

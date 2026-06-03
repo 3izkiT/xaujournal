@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
-import { XAU_CHART } from "@/lib/chart-colors";
+import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SetupRow = { setup: string; winRate: number; mistakes: number };
 
@@ -30,13 +30,14 @@ function SetupTooltip({
   return (
     <div className="rounded-xl border border-xau-border bg-xau-card px-3 py-2 text-xs shadow-card">
       <p className="font-medium text-xau-ink">{label}</p>
-      <p className="font-medium text-xau-profit">Win rate: {winRate}%</p>
-      <p className="font-medium text-xau-loss">Mistake trades: {mistakes}</p>
+      <p className="text-tv-profit font-medium">Win rate: {winRate}%</p>
+      <p className="text-tv-loss font-medium">Mistake trades: {mistakes}</p>
     </div>
   );
 }
 
 export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[] }) {
+  const palette = useChartPalette();
   const setupCount = setupVsMistakes.length;
   const setupMinWidth = Math.max(320, setupCount * 120);
   const hasSetupData = setupVsMistakes.some((row) => row.winRate > 0 || row.mistakes > 0);
@@ -57,17 +58,17 @@ export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[
             <div className="h-full" style={{ minWidth: setupMinWidth }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={setupVsMistakes} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
-                  <CartesianGrid stroke={XAU_CHART.grid} strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="setup" tick={{ fontSize: 11, fill: XAU_CHART.tick }} interval={0} />
-                  <YAxis tick={{ fontSize: 11, fill: XAU_CHART.tick }} allowDecimals={false} width={40} />
-                  <Tooltip content={<SetupTooltip />} />
-                  <Legend
-                    verticalAlign="top"
-                    height={28}
-                    formatter={(value) => (value === "winRate" ? "Win rate %" : "Mistakes")}
-                  />
-                  <Bar dataKey="winRate" name="winRate" fill={XAU_CHART.winRate} radius={[6, 6, 0, 0]} maxBarSize={48} />
-                  <Bar dataKey="mistakes" name="mistakes" fill={XAU_CHART.mistakes} radius={[6, 6, 0, 0]} maxBarSize={48} />
+                    <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="setup" tick={{ fontSize: 11, fill: palette.tick }} interval={0} />
+                    <YAxis tick={{ fontSize: 11, fill: palette.tick }} allowDecimals={false} width={40} />
+                    <Tooltip content={<SetupTooltip />} />
+                    <Legend
+                      verticalAlign="top"
+                      height={28}
+                      formatter={(value) => (value === "winRate" ? "Win rate %" : "Mistakes")}
+                    />
+                    <Bar dataKey="winRate" name="winRate" fill={palette.winRate} radius={[6, 6, 0, 0]} maxBarSize={48} />
+                    <Bar dataKey="mistakes" name="mistakes" fill={palette.mistakes} radius={[6, 6, 0, 0]} maxBarSize={48} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

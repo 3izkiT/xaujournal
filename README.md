@@ -1,6 +1,6 @@
 # XAUJournal
 
-Premium XAUUSD trading journal and discipline tracker — light theme, manual trade logs, pastel analytics.
+XAUUSD manual trading journal — discipline checklist, emotion, charts. TradingView profit/loss colors, light and dark mode. No MT5 sync.
 
 ## Run locally
 

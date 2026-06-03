@@ -4,24 +4,24 @@ import { useState } from "react";
 
 const faqs = [
   {
+    q: "Why manual logging instead of MT5 sync?",
+    a: "Because your edge lives in decisions, not copy-paste. XAUJournal is built for traders who choose to reflect on each trade — discipline checklist, emotion, and chart study. We do not offer broker auto-sync.",
+  },
+  {
     q: "Is XAUJournal only for XAUUSD (gold)?",
-    a: "Yes. Every field, tag, and dashboard view is tuned for gold traders — not a generic multi-asset spreadsheet.",
+    a: "Yes — the product, analytics, and workflow are designed around gold. That focus keeps the journal calm and relevant for XAU traders.",
   },
   {
-    q: "Do you sync MT4 or MT5 automatically?",
-    a: "Not yet. XAUJournal is discipline-first manual logging: you reflect on each trade with checklist, emotion, and charts. Broker sync may come later on Premium.",
-  },
-  {
-    q: "How is this different from a Notion template?",
-    a: "Built-in discipline scoring, equity curve, session heatmaps, and gallery — no setup required. Your data lives in a private journal, not a doc you maintain yourself.",
+    q: "Do profit and loss colors match TradingView?",
+    a: "Yes. Green (#089981) and red (#f23645) match TradingView defaults, in both light and dark mode, so P&L feels familiar on every screen.",
   },
   {
     q: "What does the free tier include?",
-    a: "Up to 10 trade logs, full checklist, dashboard analytics, calendar, and gallery. Upgrade when you need unlimited history.",
+    a: "Up to 10 intentional trade logs with full checklist scoring, dashboard, calendar, gallery, and analytics — no card required.",
   },
   {
-    q: "Will animations slow down the app?",
-    a: "Landing uses lightweight CSS scroll reveals only. The signed-in dashboard avoids heavy motion so charts stay fast.",
+    q: "Who is this for?",
+    a: "Traders who believe logging on purpose builds discipline and long-term improvement — not traders who only want autopilot statistics.",
   },
 ];
 

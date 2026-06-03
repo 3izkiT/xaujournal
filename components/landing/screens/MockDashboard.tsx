@@ -23,22 +23,22 @@ export function MockDashboard() {
           <span className="rounded-xl bg-xau-gold-soft px-3 py-1.5 text-[10px] font-medium text-xau-ink">Log new trade</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-xl border border-xau-border bg-xau-mint p-2">
+          <div className="rounded-xl border border-xau-border bg-xau-calm p-2">
             <p className="text-[9px] text-xau-muted">Win Rate</p>
             <p className="text-sm font-semibold text-xau-ink">50%</p>
           </div>
-          <div className="rounded-xl border border-xau-border bg-xau-calm p-2">
+          <div className="rounded-xl border border-xau-border bg-xau-gold-soft p-2">
             <p className="text-[9px] text-xau-muted">Discipline</p>
             <p className="text-sm font-semibold text-xau-ink">67%</p>
           </div>
-          <div className="rounded-xl border border-xau-border bg-xau-mint p-2">
+          <div className="rounded-xl border border-xau-border bg-xau-profit-bg p-2">
             <p className="text-[9px] text-xau-muted">Net P&L</p>
-            <p className="text-sm font-semibold text-xau-profit">+$845</p>
+            <p className="text-sm font-semibold text-tv-profit">+$845</p>
           </div>
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="h-20 rounded-xl bg-gradient-to-t from-xau-calm to-xau-app" />
-          <div className="h-20 rounded-xl bg-gradient-to-t from-xau-mint to-xau-app" />
+          <div className="h-20 rounded-xl bg-gradient-to-t from-xau-profit-bg to-xau-app" />
         </div>
         <div className="overflow-hidden rounded-xl border border-xau-border bg-xau-card">
           <p className="border-b border-xau-border px-2 py-1.5 text-[10px] font-medium text-xau-ink">Recent trades</p>
@@ -58,7 +58,7 @@ export function MockDashboard() {
                   <td className="px-1 py-1 text-center">{row.type}</td>
                   <td className="px-1 py-1 text-center">{row.r}</td>
                   <td
-                    className={`px-1 py-1 text-center font-medium ${row.net.startsWith("+") ? "text-xau-profit" : "text-xau-loss"}`}
+                    className={`px-1 py-1 text-center font-medium ${row.net.startsWith("+") ? "text-tv-profit" : "text-tv-loss"}`}
                   >
                     {row.net}
                   </td>

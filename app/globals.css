@@ -2,26 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Canvas & typography */
-  --xau-app: #f9f9fb;
+/* TradingView-inspired tokens — light default */
+:root,
+[data-theme="light"] {
+  --xau-app: #f0f3fa;
   --xau-card: #ffffff;
-  --xau-ink: #2d3142;
-  --xau-muted: #6b7280;
-  --xau-border: #ededed;
+  --xau-ink: #131722;
+  --xau-muted: #787b86;
+  --xau-border: #e0e3eb;
 
-  /* Muted pastel accents */
-  --xau-mint: #e2f0d9;
-  --xau-rose: #fadbd8;
-  --xau-calm: #e1ebf5;
+  --xau-profit: #089981;
+  --xau-loss: #f23645;
+  --xau-profit-bg: rgba(8, 153, 129, 0.12);
+  --xau-loss-bg: rgba(242, 54, 69, 0.1);
+  --xau-calm-bg: rgba(41, 98, 255, 0.08);
+  --xau-gold: #d4af37;
+  --xau-gold-accent: #b8860b;
+  --xau-gold-soft: rgba(212, 175, 55, 0.14);
 
-  /* Champagne gold */
-  --xau-gold: #e8d7a5;
-  --xau-gold-accent: #e5c158;
-  --xau-gold-soft: #f5f0e3;
+  --xau-shadow-card: 0 1px 2px rgba(19, 23, 34, 0.04), 0 4px 16px rgba(19, 23, 34, 0.06);
+}
 
-  --xau-profit: #4a6354;
-  --xau-loss: #7d5a56;
+[data-theme="dark"] {
+  --xau-app: #131722;
+  --xau-card: #1e222d;
+  --xau-ink: #d1d4dc;
+  --xau-muted: #787b86;
+  --xau-border: #2a2e39;
+
+  --xau-profit: #089981;
+  --xau-loss: #f23645;
+  --xau-profit-bg: rgba(8, 153, 129, 0.18);
+  --xau-loss-bg: rgba(242, 54, 69, 0.16);
+  --xau-calm-bg: rgba(41, 98, 255, 0.12);
+  --xau-gold: #d4af37;
+  --xau-gold-accent: #e8c547;
+  --xau-gold-soft: rgba(212, 175, 55, 0.12);
+
+  --xau-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
@@ -33,35 +51,61 @@
 
 @layer components {
   .xau-card {
-    @apply rounded-2xl bg-xau-card shadow-card;
+    border-radius: 1rem;
+    background: var(--xau-card);
+    box-shadow: var(--xau-shadow-card);
   }
 
   .xau-card-bordered {
     @apply xau-card border border-xau-border;
   }
 
-  .xau-kpi-mint {
-    @apply rounded-2xl border border-xau-border bg-xau-mint p-5;
+  .xau-kpi-profit {
+    @apply rounded-2xl border border-xau-border p-5;
+    background: var(--xau-profit-bg);
+  }
+
+  .xau-kpi-loss {
+    @apply rounded-2xl border border-xau-border p-5;
+    background: var(--xau-loss-bg);
   }
 
   .xau-kpi-calm {
-    @apply rounded-2xl border border-xau-border bg-xau-calm p-5;
-  }
-
-  .xau-kpi-rose {
-    @apply rounded-2xl border border-xau-border bg-xau-rose p-5;
+    @apply rounded-2xl border border-xau-border p-5;
+    background: var(--xau-calm-bg);
   }
 
   .xau-kpi-gold {
-    @apply rounded-2xl border border-xau-border bg-xau-gold-soft p-5;
+    @apply rounded-2xl border border-xau-border p-5;
+    background: var(--xau-gold-soft);
   }
 
   .xau-btn-gold {
-    @apply rounded-xl bg-xau-gold-accent px-4 py-2.5 text-sm font-semibold text-xau-ink shadow-sm transition hover:brightness-95;
+    @apply rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:brightness-95;
+    background: var(--xau-gold-accent);
+    color: var(--xau-ink);
+  }
+
+  [data-theme="dark"] .xau-btn-gold {
+    color: #131722;
   }
 
   .xau-btn-ghost {
-    @apply rounded-xl border border-xau-border bg-xau-card px-4 py-2.5 text-sm font-medium text-xau-ink transition hover:bg-xau-app;
+    @apply rounded-xl border border-xau-border px-4 py-2.5 text-sm font-medium transition;
+    background: var(--xau-card);
+    color: var(--xau-ink);
+  }
+
+  .xau-btn-ghost:hover {
+    background: var(--xau-app);
+  }
+
+  .text-tv-profit {
+    color: var(--xau-profit);
+  }
+
+  .text-tv-loss {
+    color: var(--xau-loss);
   }
 }
 
@@ -84,7 +128,6 @@ html {
   animation: rise-up 700ms ease-out both;
 }
 
-/* Scroll reveal (landing) — transform/opacity only for GPU-friendly motion */
 .xau-scroll-reveal {
   opacity: 0;
   transform: translateY(20px);
@@ -104,18 +147,15 @@ html {
     scroll-behavior: auto;
   }
 
-  .animate-rise-up {
-    animation: none;
-  }
-
-  .landing-scroll {
-    scroll-snap-type: none;
-  }
-
+  .animate-rise-up,
   .landing-reveal {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+
+  .landing-scroll {
+    scroll-snap-type: none;
   }
 
   .xau-scroll-reveal {
@@ -124,8 +164,6 @@ html {
     transition: none;
   }
 }
-
-/* ─── Apple Lite landing (fullpage) ───────────────────────────────────────── */
 
 .landing-scroll {
   scroll-snap-type: y proximity;

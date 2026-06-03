@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import { useXauJournal } from "@/components/XauJournalContext";
 
 function pnlTone(value: number) {
-  if (value > 0) return "bg-xau-mint text-xau-profit";
-  if (value < 0) return "bg-xau-rose text-xau-loss";
+  if (value > 0) return "bg-[var(--xau-profit-bg)] text-tv-profit";
+  if (value < 0) return "bg-[var(--xau-loss-bg)] text-tv-loss";
   return "bg-xau-gold-soft text-xau-ink";
 }
 
@@ -34,7 +34,9 @@ export default function CalendarPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-semibold text-xau-ink">Calendar View</h2>
-        <p className="mt-2 text-sm text-xau-muted">Visualize consistency with daily pastel P&L blocks.</p>
+        <p className="mt-2 text-sm text-xau-muted">
+          Daily blocks in TradingView profit/loss colors — built from trades you log on purpose.
+        </p>
       </div>
       <div className="grid grid-cols-7 gap-2 text-center text-sm">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((name) => (

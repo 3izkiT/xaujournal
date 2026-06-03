@@ -47,7 +47,7 @@ export default function AnalyticsPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Deep dive</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">Analytics</h1>
         <p className="mt-1 text-sm text-xau-muted">
-          Setup quality, sessions, rule breaks, and timing — based on {tradeCount} logged trade{tradeCount === 1 ? "" : "s"}.
+          For traders who log on purpose — {tradeCount} intentional XAUUSD trade{tradeCount === 1 ? "" : "s"} so far.
         </p>
       </header>
 

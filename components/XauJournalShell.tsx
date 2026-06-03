@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavItem = {
   href: string;
@@ -19,10 +20,7 @@ const mainNav: NavItem[] = [
   { href: "/gallery", label: "Gallery", icon: <IconImage /> },
 ];
 
-const secondaryNav: NavItem[] = [
-  { href: "/sync", label: "Sync", icon: <IconSync /> },
-  { href: "/settings", label: "Settings", icon: <IconGear /> },
-];
+const secondaryNav: NavItem[] = [{ href: "/settings", label: "Settings", icon: <IconGear /> }];
 
 function IconGrid() {
   return (
@@ -74,15 +72,6 @@ function IconImage() {
       <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
       <circle cx="9" cy="10" r="2" stroke="currentColor" strokeWidth="1.5" />
       <path d="M21 16l-5-5-4 4-2-2-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconSync() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M4 12a8 8 0 0 1 13.5-5.5M20 12a8 8 0 0 1-13.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M16 5h3.5V1.5M4 19h3.5V22.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -153,7 +142,7 @@ function SidebarContent({
         </span>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-xau-ink">XAUJournal</p>
-          <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD terminal</p>
+          <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD · manual journal</p>
         </div>
       </div>
 
@@ -168,6 +157,9 @@ function SidebarContent({
       </nav>
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
+        <div className="px-1">
+          <ThemeToggle className="w-full justify-center" />
+        </div>
         <Link
           href="/pricing"
           className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
@@ -179,7 +171,7 @@ function SidebarContent({
         <button
           type="button"
           onClick={onSignOut}
-          className="w-full rounded-xl px-3 py-2 text-left text-sm text-xau-loss hover:bg-xau-rose"
+          className="w-full rounded-xl px-3 py-2 text-left text-sm text-tv-loss hover:bg-[var(--xau-loss-bg)]"
         >
           Sign out
         </button>
@@ -235,6 +227,8 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           </span>
           <span className="text-sm font-semibold">XAUJournal</span>
         </Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
         <button
           type="button"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -244,6 +238,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
         >
           {mobileOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
+        </div>
       </header>
 
       {/* Mobile drawer */}

@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
-import { XAU_CHART } from "@/lib/chart-colors";
+import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SessionRow = { name: string; value: number };
 
@@ -15,6 +15,7 @@ function formatUsd(value: number) {
 }
 
 export function SessionMini({ sessionData }: { sessionData: SessionRow[] }) {
+  const palette = useChartPalette();
   const hasData = sessionData.some((s) => s.value !== 0);
 
   return (
@@ -29,9 +30,9 @@ export function SessionMini({ sessionData }: { sessionData: SessionRow[] }) {
         <ChartContainer className="mt-3 min-h-[180px] flex-1">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sessionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-              <CartesianGrid stroke={XAU_CHART.grid} strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: XAU_CHART.tick }} />
-              <YAxis tickFormatter={(v) => formatUsd(Number(v))} width={52} tick={{ fontSize: 9, fill: XAU_CHART.tick }} />
+              <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: palette.tick }} />
+              <YAxis tickFormatter={(v) => formatUsd(Number(v))} width={52} tick={{ fontSize: 9, fill: palette.tick }} />
               <Tooltip formatter={(value) => formatUsd(Number(value ?? 0))} />
               <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={40}>
                 {sessionData.map((entry, index) => (
@@ -39,8 +40,8 @@ export function SessionMini({ sessionData }: { sessionData: SessionRow[] }) {
                     key={entry.name}
                     fill={
                       entry.value >= 0
-                        ? XAU_CHART.sessionPositive[index % XAU_CHART.sessionPositive.length]
-                        : XAU_CHART.sessionLoss
+                        ? palette.sessionPositive[index % palette.sessionPositive.length]
+                        : palette.sessionLoss
                     }
                   />
                 ))}

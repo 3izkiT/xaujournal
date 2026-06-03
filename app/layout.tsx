@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { themeInitScript } from "@/lib/theme";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -9,9 +11,9 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "XAUJournal — Gold Trading Journal",
+  title: "XAUJournal — Intentional Gold Trading Journal",
   description:
-    "A discipline-first XAUUSD trading journal with checklist scoring, analytics, and chart study gallery.",
+    "Manual, discipline-first XAUUSD journal. Checklist, emotion, and chart study — built for traders who log on purpose, not autopilot sync.",
 };
 
 export default function RootLayout({
@@ -20,7 +22,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script id="xau-theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
+      </head>
       <body className={`${geistSans.className} antialiased`}>
         <Providers>{children}</Providers>
       </body>
