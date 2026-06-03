@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED } from "@/lib/monetization";
 
 type Props = {
-  slot: string;
+  slotId?: string;
   className?: string;
-  format?: "auto" | "rectangle" | "horizontal";
+  format?: "auto" | "rectangle" | "horizontal" | "fluid";
+  minHeight?: number;
+  label?: boolean;
 };
 
 declare global {
@@ -15,30 +17,42 @@ declare global {
   }
 }
 
-export function AdSlot({ slot, className = "", format = "auto" }: Props) {
+export function AdSlot({
+  slotId,
+  className = "",
+  format = "auto",
+  minHeight = 90,
+  label = true,
+}: Props) {
+  const pushed = useRef(false);
+
   useEffect(() => {
-    if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID) return;
+    if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID || !slotId || pushed.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
+      pushed.current = true;
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [slotId]);
 
-  if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID) {
+  if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID || !slotId) {
     return null;
   }
 
   return (
-    <div className={className}>
+    <aside className={className} aria-label="Advertisement">
+      {label && (
+        <p className="mb-1 text-center text-[10px] uppercase tracking-wider text-xau-muted">Advertisement</p>
+      )}
       <ins
-        className="adsbygoogle block"
-        style={{ display: "block" }}
+        className="adsbygoogle block w-full"
+        style={{ display: "block", minHeight }}
         data-ad-client={ADSENSE_CLIENT_ID}
-        data-ad-slot={slot}
+        data-ad-slot={slotId}
         data-ad-format={format}
         data-full-width-responsive="true"
       />
-    </div>
+    </aside>
   );
 }

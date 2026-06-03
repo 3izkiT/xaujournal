@@ -9,9 +9,11 @@ export const OPEN_ACCESS_MODE = process.env.NEXT_PUBLIC_OPEN_ACCESS_MODE !== "fa
 
 export const PAYMENTS_ENABLED = process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "true";
 
-export const ADSENSE_ENABLED = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true";
-
 export const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "";
+
+/** On when `ca-pub-…` is set; set `NEXT_PUBLIC_ADSENSE_ENABLED=false` to force off. */
+export const ADSENSE_ENABLED =
+  process.env.NEXT_PUBLIC_ADSENSE_ENABLED !== "false" && ADSENSE_CLIENT_ID.startsWith("ca-pub-");
 
 /** Treat every user as premium (unlimited logs, full analytics). */
 export function isOpenAccessActive() {

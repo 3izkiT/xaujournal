@@ -6,8 +6,9 @@ import { LandingFaq } from "@/components/landing/LandingFaq";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SiteFooter } from "@/components/SiteFooter";
-import { AdSlot } from "@/components/ads/AdSlot";
-import { BRAND_NAME, BRAND_SLUG, BRAND_TAGLINE } from "@/lib/brand";
+import { LandingAdBottom, LandingAdMid, LandingAdTop } from "@/components/ads/LandingAds";
+import { BRAND_NAME, BRAND_SLUG } from "@/lib/brand";
+import { HOME_HERO_SEO_LINE } from "@/lib/seo-home";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { MockCalendar } from "@/components/landing/screens/MockCalendar";
 import { MockDashboard } from "@/components/landing/screens/MockDashboard";
@@ -145,6 +146,7 @@ export function LandingExperience() {
       </header>
 
       <main className="landing-scroll pt-14">
+        <LandingAdTop />
         <section className="landing-section flex min-h-[85vh] items-center py-12 md:py-16">
           <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 lg:grid-cols-2 lg:items-center">
             <ScrollReveal>
@@ -152,12 +154,12 @@ export function LandingExperience() {
                 {BRAND_NAME} · Exclusively for gold traders
               </p>
               <h1 className="mt-3 text-4xl font-semibold leading-[1.08] tracking-tight md:text-5xl lg:text-6xl">
-                Every trade tells a story.
+                XAUUSD gold trading journal — every trade tells a story.
                 <span className="mt-2 block bg-gradient-to-r from-xau-gold-accent to-amber-700 bg-clip-text text-transparent">
                   Write yours with discipline.
                 </span>
               </h1>
-              <p className="mt-4 max-w-lg text-base leading-relaxed text-xau-muted md:text-lg">{BRAND_TAGLINE}</p>
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-xau-muted md:text-lg">{HOME_HERO_SEO_LINE}</p>
               <p className="mt-2 max-w-lg text-sm leading-relaxed text-xau-muted">
                 Discipline checklist, emotion, chart study, and analytics — no MT5 sync. Self-improvement starts when you
                 log on purpose.
@@ -207,6 +209,8 @@ export function LandingExperience() {
             </div>
           </div>
         </section>
+
+        <LandingAdMid />
 
         <section id="features" className="py-14 md:py-20">
           <div className="mx-auto max-w-6xl px-6">
@@ -299,9 +303,7 @@ export function LandingExperience() {
         </section>
       </main>
 
-      <div className="mx-auto max-w-3xl px-6 pb-8">
-        <AdSlot slot="landing-footer" className="min-h-[90px]" format="horizontal" />
-      </div>
+      <LandingAdBottom />
       <SiteFooter />
     </div>
   );
