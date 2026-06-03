@@ -11,7 +11,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="xau-page-wide">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Trade log</p>
@@ -31,8 +31,8 @@ export default function HistoryPage() {
           </Link>
         </div>
       ) : (
-        <div className="xau-card-bordered overflow-hidden">
-          <table className="min-w-full text-left text-sm">
+        <div className="xau-card-bordered overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-xau-border bg-xau-app text-xs uppercase tracking-wide text-xau-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Date</th>

@@ -26,8 +26,8 @@
 [data-theme="dark"] {
   --xau-app: #131722;
   --xau-card: #1e222d;
-  --xau-ink: #d1d4dc;
-  --xau-muted: #787b86;
+  --xau-ink: #e0e3eb;
+  --xau-muted: #9598a6;
   --xau-border: #2a2e39;
 
   --xau-profit: #089981;
@@ -107,6 +107,48 @@
   .text-tv-loss {
     color: var(--xau-loss);
   }
+
+  .xau-field {
+    @apply w-full rounded-2xl border border-xau-border bg-xau-card px-4 py-3 text-sm text-xau-ink outline-none transition;
+    @apply placeholder:text-xau-muted focus:border-xau-gold focus:ring-2 focus:ring-xau-gold-soft;
+  }
+
+  .xau-field:disabled {
+    @apply cursor-not-allowed opacity-70;
+  }
+
+  .xau-textarea {
+    @apply xau-field min-h-[5.5rem] resize-y leading-relaxed;
+  }
+
+  .xau-select {
+    @apply xau-field;
+  }
+
+  .xau-form-section {
+    @apply xau-card-bordered space-y-5 p-5 md:p-6;
+  }
+
+  .xau-panel-accent {
+    @apply space-y-4 rounded-2xl border border-xau-border p-5 md:p-6;
+    background: var(--xau-calm-bg);
+  }
+
+  .xau-page-form {
+    @apply mx-auto w-full max-w-4xl space-y-8 pb-10;
+  }
+
+  .xau-page-wide {
+    @apply mx-auto w-full max-w-6xl space-y-6;
+  }
+}
+
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] select {
+  color-scheme: dark;
 }
 
 html {

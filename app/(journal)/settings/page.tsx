@@ -69,11 +69,11 @@ export default function SettingsPage() {
         <p className="mt-2 text-sm text-xau-muted">Custom checklist, tags, risk model, and coach share link.</p>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6 rounded-2xl border border-xau-border bg-white p-6">
+      <form onSubmit={handleSave} className="xau-form-section space-y-6">
         <div>
           <label className="text-sm font-medium text-xau-ink">Template preset</label>
           <select
-            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
+            className="xau-select mt-2"
             value={settings.templatePreset}
             onChange={(e) => setSettings({ ...settings, templatePreset: e.target.value })}
           >
@@ -86,7 +86,7 @@ export default function SettingsPage() {
         <div>
           <label className="text-sm font-medium text-xau-ink">Risk model</label>
           <select
-            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
+            className="xau-select mt-2"
             value={settings.riskModel}
             onChange={(e) => setSettings({ ...settings, riskModel: e.target.value })}
           >
@@ -99,7 +99,7 @@ export default function SettingsPage() {
         <div>
           <label className="text-sm font-medium text-xau-ink">Custom setup tags (comma-separated)</label>
           <input
-            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
+            className="xau-field mt-2"
             value={settings.customSetupTags.join(", ")}
             onChange={(e) =>
               setSettings({
@@ -113,7 +113,7 @@ export default function SettingsPage() {
         <div>
           <label className="text-sm font-medium text-xau-ink">Custom error tags (comma-separated)</label>
           <input
-            className="mt-2 w-full rounded-2xl border border-xau-border px-4 py-3"
+            className="xau-field mt-2"
             value={settings.customErrorTags.join(", ")}
             onChange={(e) =>
               setSettings({
@@ -130,21 +130,13 @@ export default function SettingsPage() {
         {message && <p className="text-sm text-xau-muted">{message}</p>}
       </form>
 
-      <section className="rounded-2xl border border-violet-200 bg-violet-50/40 p-6">
+      <section className="xau-panel-accent">
         <h3 className="text-lg font-medium text-xau-ink">Team / coach mode</h3>
-        <p className="mt-2 text-sm text-xau-muted">Generate a read-only link for your mentor (30-day expiry).</p>
-        <button
-          type="button"
-          onClick={() => void createCoachLink()}
-          className="mt-4 rounded-2xl bg-violet-100 px-6 py-3 text-sm font-medium text-violet-800"
-        >
+        <p className="text-sm text-xau-muted">Generate a read-only link for your mentor (30-day expiry).</p>
+        <button type="button" onClick={() => void createCoachLink()} className="xau-btn-ghost mt-2">
           Create share link
         </button>
-        {coachUrl && (
-          <p className="mt-3 break-all text-xs text-violet-900">
-            {coachUrl}
-          </p>
-        )}
+        {coachUrl && <p className="break-all text-xs text-xau-ink">{coachUrl}</p>}
       </section>
     </div>
   );
