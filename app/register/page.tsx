@@ -78,7 +78,7 @@ export default function RegisterPage() {
       }),
     });
 
-    const data = (await res.json()) as { error?: string; message?: string };
+    const data = (await res.json()) as { error?: string; message?: string; needsVerification?: boolean };
     setLoading(false);
 
     if (!res.ok) {
@@ -86,7 +86,12 @@ export default function RegisterPage() {
       return;
     }
 
-    setMessage(data.message ?? "Account created. You can sign in now.");
+    setMessage(
+      data.message ??
+        (data.needsVerification
+          ? "Check your email to verify your account before signing in."
+          : "Account created. You can sign in now.")
+    );
     setPassword("");
     setConfirmPassword("");
   };
@@ -110,7 +115,7 @@ export default function RegisterPage() {
             <FormAlert variant="success">{message}</FormAlert>
             <p className="mt-3 text-center text-sm">
               <Link href="/login" className="font-medium text-xau-ink underline hover:text-xau-gold-accent">
-                Sign in now →
+                Go to sign in →
               </Link>
             </p>
           </div>

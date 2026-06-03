@@ -7,6 +7,7 @@ export type StoredUser = {
   name: string;
   passwordHash: string | null;
   plan: Plan;
+  emailVerifiedAt: string | null;
   createdAt: string;
 };
 
@@ -16,6 +17,7 @@ function normalizeUser(user: {
   name: string;
   passwordHash: string | null;
   plan: Plan;
+  emailVerifiedAt: Date | null;
   createdAt: Date;
 }): StoredUser {
   return {
@@ -24,6 +26,7 @@ function normalizeUser(user: {
     name: user.name,
     passwordHash: user.passwordHash,
     plan: user.plan,
+    emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
     createdAt: user.createdAt.toISOString(),
   };
 }
@@ -34,9 +37,19 @@ export async function findOrCreateGoogleUser(profile: {
   name: string;
 }): Promise<StoredUser> {
   const email = profile.email.toLowerCase();
+  const verifiedNow = new Date();
 
   const byGoogle = await prisma.user.findUnique({ where: { googleId: profile.sub } });
-  if (byGoogle) return normalizeUser(byGoogle);
+  if (byGoogle) {
+    if (!byGoogle.emailVerifiedAt) {
+      const updated = await prisma.user.update({
+        where: { id: byGoogle.id },
+        data: { emailVerifiedAt: verifiedNow },
+      });
+      return normalizeUser(updated);
+    }
+    return normalizeUser(byGoogle);
+  }
 
   const byEmail = await prisma.user.findUnique({ where: { email } });
   if (byEmail) {
@@ -45,6 +58,7 @@ export async function findOrCreateGoogleUser(profile: {
       data: {
         googleId: profile.sub,
         name: byEmail.name || profile.name,
+        emailVerifiedAt: byEmail.emailVerifiedAt ?? verifiedNow,
       },
     });
     return normalizeUser(updated);
@@ -56,6 +70,7 @@ export async function findOrCreateGoogleUser(profile: {
       name: profile.name,
       googleId: profile.sub,
       passwordHash: null,
+      emailVerifiedAt: verifiedNow,
     },
   });
 
@@ -98,8 +113,23 @@ export async function registerUser(input: {
       email,
       name: input.name.trim() || email.split("@")[0],
       passwordHash: input.passwordHash,
+      emailVerifiedAt: null,
     },
   });
 
   return { ok: true, user: normalizeUser(user) };
+}
+
+export async function markUserEmailVerified(userId: string) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { emailVerifiedAt: new Date() },
+  });
+}
+
+export async function updateUserPassword(userId: string, passwordHash: string) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash },
+  });
 }

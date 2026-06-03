@@ -90,29 +90,67 @@ enum TemplatePreset {
 
 
 
+enum AuthTokenType {
+
+  EMAIL_VERIFY
+
+  PASSWORD_RESET
+
+}
+
+
+
 model User {
 
-  id           String        @id @default(cuid())
+  id              String        @id @default(cuid())
 
-  email        String        @unique
+  email           String        @unique
 
-  name         String
+  name            String
 
-  passwordHash String?
+  passwordHash    String?
 
-  googleId     String?       @unique
+  googleId        String?       @unique
 
-  plan         Plan          @default(FREE)
+  emailVerifiedAt DateTime?
 
-  createdAt    DateTime      @default(now())
+  plan            Plan          @default(FREE)
 
-  updatedAt    DateTime      @updatedAt
+  createdAt       DateTime      @default(now())
 
-  trades       Trade[]
+  updatedAt       DateTime      @updatedAt
 
-  settings     UserSettings?
+  trades          Trade[]
 
-  shareLinks   ShareLink[]
+  settings        UserSettings?
+
+  shareLinks      ShareLink[]
+
+  authTokens      AuthToken[]
+
+}
+
+
+
+model AuthToken {
+
+  id        String        @id @default(cuid())
+
+  userId    String
+
+  type      AuthTokenType
+
+  tokenHash String        @unique
+
+  expiresAt DateTime
+
+  createdAt DateTime      @default(now())
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+
+
+  @@index([userId, type])
 
 }
 

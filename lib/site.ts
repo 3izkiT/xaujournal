@@ -7,6 +7,11 @@ function resolveSiteUrl() {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.AUTH_URL;
   if (explicit) return explicit.replace(/\/$/, "");
 
+  // Production deploys without env should not canonicalize to *.vercel.app deployment URLs.
+  if (process.env.VERCEL_ENV === "production") {
+    return DEFAULT_PUBLIC_URL;
+  }
+
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
   }

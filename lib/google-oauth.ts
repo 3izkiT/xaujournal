@@ -1,5 +1,6 @@
 import { randomBytes } from "crypto";
 import { findOrCreateGoogleUser } from "@/lib/auth-users";
+import { notifyLoginByEmail } from "@/lib/auth-notify";
 import { setSessionOnResponse, type AppSession } from "@/lib/app-session";
 import type { UserPlan } from "@/lib/types";
 import { NextResponse } from "next/server";
@@ -111,11 +112,14 @@ export async function exchangeGoogleCode(code: string) {
   };
 }
 
-export async function loginResponseForGoogleUser(profile: {
-  sub: string;
-  email: string;
-  name: string;
-}) {
+export async function loginResponseForGoogleUser(
+  profile: {
+    sub: string;
+    email: string;
+    name: string;
+  },
+  request: Request
+) {
   const user = await findOrCreateGoogleUser(profile);
   const session: AppSession = {
     userId: user.id,
@@ -123,6 +127,7 @@ export async function loginResponseForGoogleUser(profile: {
     name: user.name,
     plan: user.plan as UserPlan,
   };
+  notifyLoginByEmail(request, { email: user.email, name: user.name });
   const response = NextResponse.redirect(`${getAuthBaseUrl()}/dashboard`);
   return setSessionOnResponse(response, session);
 }

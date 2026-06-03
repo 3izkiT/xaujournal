@@ -3,9 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { BRAND_NAME } from "@/lib/brand";
-import { PAYMENTS_ENABLED } from "@/lib/monetization";
 
 type NavItem = {
   href: string;
@@ -143,8 +140,8 @@ function SidebarContent({
           Au
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
-          <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD · manual journal</p>
+          <p className="truncate text-sm font-semibold text-xau-ink">XAUJournal</p>
+          <p className="text-[10px] uppercase tracking-wider text-xau-muted">XAUUSD terminal</p>
         </div>
       </div>
 
@@ -159,23 +156,18 @@ function SidebarContent({
       </nav>
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
-        <div className="px-1">
-          <ThemeToggle className="w-full justify-center" />
-        </div>
-        {PAYMENTS_ENABLED && (
-          <Link
-            href="/pricing"
-            className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
-            onClick={onNavigate}
-          >
-            Plans
-          </Link>
-        )}
+        <Link
+          href="/pricing"
+          className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
+          onClick={onNavigate}
+        >
+          Upgrade plan
+        </Link>
         <p className="truncate px-3 text-[11px] text-xau-muted">{userEmail}</p>
         <button
           type="button"
           onClick={onSignOut}
-          className="w-full rounded-xl px-3 py-2 text-left text-sm text-tv-loss hover:bg-[var(--xau-loss-bg)]"
+          className="w-full rounded-xl px-3 py-2 text-left text-sm text-xau-loss hover:bg-xau-rose"
         >
           Sign out
         </button>
@@ -229,10 +221,8 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
             Au
           </span>
-          <span className="text-sm font-semibold">{BRAND_NAME}</span>
+          <span className="text-sm font-semibold">XAUJournal</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
         <button
           type="button"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -242,7 +232,6 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
         >
           {mobileOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
-        </div>
       </header>
 
       {/* Mobile drawer */}

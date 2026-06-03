@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { registerUser } from "@/lib/auth-users";
 import { isDatabaseConfigured } from "@/lib/db";
+import { isEmailVerificationRequired } from "@/lib/email-config";
+import { sendEmailVerificationForUser } from "@/lib/send-verification";
 import { validateEmail, validatePassword } from "@/lib/auth-validation";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
@@ -47,6 +49,22 @@ export async function POST(request: Request) {
 
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+
+    if (isEmailVerificationRequired()) {
+      const sent = await sendEmailVerificationForUser({
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name,
+      });
+      if (!sent.ok) {
+        return NextResponse.json({ error: sent.error }, { status: 503 });
+      }
+      return NextResponse.json({
+        ok: true,
+        needsVerification: true,
+        message: "Account created. Check your email to verify before signing in.",
+      });
     }
 
     return NextResponse.json({

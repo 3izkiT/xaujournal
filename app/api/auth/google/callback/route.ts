@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
   try {
     const profile = await exchangeGoogleCode(code);
-    const response = await loginResponseForGoogleUser(profile);
+    const response = await loginResponseForGoogleUser(profile, request);
     return clearOAuthStateCookie(response);
   } catch {
     return redirectLoginError("google_failed");

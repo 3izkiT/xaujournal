@@ -8,6 +8,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { DEMO_EMAIL, LEGACY_DEMO_EMAIL } from "@/lib/brand";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { setSessionOnResponse, type AppSession } from "@/lib/app-session";
+import { notifyLoginByEmail } from "@/lib/auth-notify";
+import { mustVerifyEmailBeforeLogin } from "@/lib/email-verification";
 import type { UserPlan } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -72,6 +74,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
 
+  if (mustVerifyEmailBeforeLogin(user)) {
+    return NextResponse.json(
+      {
+        error: "Verify your email before signing in. Check your inbox or request a new link.",
+        code: "EMAIL_NOT_VERIFIED",
+        email: user.email,
+      },
+      { status: 403 }
+    );
+  }
+
   user = await migrateDemoUserAfterLogin(user);
 
   const session: AppSession = {
@@ -82,5 +95,6 @@ export async function POST(request: Request) {
   };
 
   const response = NextResponse.json({ ok: true, redirectTo: "/dashboard" });
+  notifyLoginByEmail(request, { email: user.email, name: user.name });
   return setSessionOnResponse(response, session);
 }

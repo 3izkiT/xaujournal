@@ -20,14 +20,19 @@ const ERROR_MESSAGES: Record<string, string> = {
   google_denied: "Google sign-in was cancelled.",
   google_failed: "Google sign-in failed. Check redirect URI in Google Cloud.",
   turnstile: "Complete the security check, then try Google again.",
+  verify_failed: "Email verification link is invalid or expired. Request a new one below.",
 };
 
-export function LoginForm({ errorCode }: { errorCode?: string }) {
+export function LoginForm({ errorCode, verified }: { errorCode?: string; verified?: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [error, setError] = useState(errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong.") : "");
+  const [info] = useState(verified ? "Email verified. You can sign in now." : "");
+  const [pendingVerifyEmail, setPendingVerifyEmail] = useState<string | null>(null);
+  const [resendMessage, setResendMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const turnstileRequired = isTurnstileConfigured();
 
   const signIn = async (loginEmail: string, loginPassword: string, token?: string | null) => {
@@ -57,15 +62,20 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
         }),
       });
 
-      let data: { error?: string; redirectTo?: string } = {};
+      let data: { error?: string; redirectTo?: string; code?: string; email?: string } = {};
       try {
-        data = (await res.json()) as { error?: string; redirectTo?: string };
+        data = (await res.json()) as { error?: string; redirectTo?: string; code?: string; email?: string };
       } catch {
         setError(ERROR_MESSAGES.server);
         return;
       }
 
       if (!res.ok) {
+        if (data.code === "EMAIL_NOT_VERIFIED") {
+          setPendingVerifyEmail(data.email ?? loginEmail);
+          setError(data.error ?? "Verify your email before signing in.");
+          return;
+        }
         setError(data.error ?? ERROR_MESSAGES.invalid);
         return;
       }
@@ -89,6 +99,37 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
     void signIn(DEMO_EMAIL, DEMO_PASSWORD);
   };
 
+  const handleResendVerification = async () => {
+    const target = pendingVerifyEmail ?? email.trim().toLowerCase();
+    if (!target) {
+      setError("Enter your email, then try again.");
+      return;
+    }
+
+    if (turnstileRequired && !turnstileToken) {
+      setError("Complete the security check before requesting a new verification email.");
+      return;
+    }
+
+    setResendLoading(true);
+    setResendMessage("");
+    const res = await fetch("/api/auth/resend-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: target, turnstileToken: turnstileToken ?? undefined }),
+    });
+    const data = (await res.json()) as { error?: string; message?: string };
+    setResendLoading(false);
+
+    if (!res.ok) {
+      setError(data.error ?? "Could not resend verification email.");
+      return;
+    }
+
+    setError("");
+    setResendMessage(data.message ?? "Verification email sent.");
+  };
+
   return (
     <div className="xau-card-bordered w-full max-w-md p-8">
       <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
@@ -100,6 +141,26 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
       {error && (
         <div className="mt-4">
           <FormAlert variant="error">{error}</FormAlert>
+          {pendingVerifyEmail && (
+            <button
+              type="button"
+              disabled={resendLoading}
+              onClick={() => void handleResendVerification()}
+              className="mt-3 w-full rounded-2xl border border-xau-border py-2.5 text-sm font-medium text-xau-ink hover:bg-xau-app disabled:opacity-60"
+            >
+              {resendLoading ? "Sending…" : "Resend verification email"}
+            </button>
+          )}
+        </div>
+      )}
+      {info && (
+        <div className="mt-4">
+          <FormAlert variant="success">{info}</FormAlert>
+        </div>
+      )}
+      {resendMessage && (
+        <div className="mt-4">
+          <FormAlert variant="success">{resendMessage}</FormAlert>
         </div>
       )}
 
