@@ -98,7 +98,9 @@ model User {
 
   name         String
 
-  passwordHash String
+  passwordHash String?
+
+  googleId     String?       @unique
 
   plan         Plan          @default(FREE)
 

@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { TurnstileField } from "@/components/auth/TurnstileField";
+import { BRAND_NAME } from "@/lib/brand";
+import { isTurnstileConfigured } from "@/lib/turnstile";
+
 const inputClass =
   "w-full rounded-2xl border border-xau-border bg-xau-card px-4 py-3 text-xau-ink outline-none transition focus:border-xau-gold focus:ring-2 focus:ring-xau-gold/30";
 
@@ -10,12 +15,19 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const turnstileRequired = isTurnstileConfigured();
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (turnstileRequired && !turnstileToken) {
+      setError("Please complete the security check.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setMessage("");
@@ -23,7 +35,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, turnstileToken: turnstileToken ?? undefined }),
     });
 
     const data = (await res.json()) as { error?: string; message?: string };
@@ -43,10 +55,22 @@ export default function RegisterPage() {
         <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
           ← Back to home
         </Link>
-        <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Create your account</h1>
+        <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Create your {BRAND_NAME} account</h1>
         <p className="mt-2 text-sm text-xau-muted">Free tier includes 10 trade logs and full discipline tracking.</p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        {error && <p className="mt-4 text-sm font-medium text-xau-loss">{error}</p>}
+        {message && <p className="mt-4 text-sm font-medium text-tv-profit">{message}</p>}
+
+        <div className="mt-6 space-y-3">
+          <GoogleSignInButton
+            turnstileToken={turnstileToken}
+            disabled={loading}
+            onNeedTurnstile={() => setError("Complete the security check before Google sign-up.")}
+          />
+          <p className="text-center text-xs text-xau-muted">or register with email</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <input className={inputClass} placeholder="Display name" value={name} onChange={(e) => setName(e.target.value)} />
           <input
             type="email"
@@ -65,8 +89,7 @@ export default function RegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="text-sm font-medium text-xau-loss">{error}</p>}
-          {message && <p className="text-sm font-medium text-xau-profit">{message}</p>}
+          <TurnstileField className="flex justify-center" onToken={setTurnstileToken} />
           <button
             type="submit"
             disabled={loading}

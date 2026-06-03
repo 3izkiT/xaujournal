@@ -21,7 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!email || !password) return null;
 
         const user = await findUserByEmail(email);
-        if (!user) return null;
+        if (!user?.passwordHash) return null;
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
 

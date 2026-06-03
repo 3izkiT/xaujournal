@@ -19,6 +19,7 @@ export async function findUserForLogin(email: string): Promise<StoredUser | null
 }
 
 export async function verifyLoginPassword(user: StoredUser, password: string): Promise<boolean> {
+  if (!user.passwordHash) return false;
   if (await bcrypt.compare(password, user.passwordHash)) return true;
   if (!isDemoEmail(user.email)) return false;
 

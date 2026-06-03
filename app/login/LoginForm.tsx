@@ -3,24 +3,39 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { TurnstileField } from "@/components/auth/TurnstileField";
 import { BRAND_NAME, DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/brand";
+import { isTurnstileConfigured } from "@/lib/turnstile";
 
 const ERROR_MESSAGES: Record<string, string> = {
   empty: "Please enter your email and password.",
   invalid: "Invalid email or password.",
   db: "Server database is not configured (DATABASE_URL).",
   server: "Sign in failed. Please try again.",
+  google_config: "Google sign-in is not configured on the server yet.",
+  google_denied: "Google sign-in was cancelled.",
+  google_failed: "Google sign-in failed. Check redirect URI in Google Cloud.",
+  turnstile: "Complete the security check, then try Google again.",
 };
 
 export function LoginForm({ errorCode }: { errorCode?: string }) {
   const [email, setEmail] = useState(DEMO_EMAIL);
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(errorCode ? ERROR_MESSAGES[errorCode] ?? "Something went wrong." : "");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [error, setError] = useState(errorCode ? (ERROR_MESSAGES[errorCode] ?? "Something went wrong.") : "");
   const [loading, setLoading] = useState(false);
+  const turnstileRequired = isTurnstileConfigured();
 
-  const signIn = async (loginEmail: string, loginPassword: string) => {
+  const signIn = async (loginEmail: string, loginPassword: string, token?: string | null) => {
     if (!loginEmail || !loginPassword) {
       setError(ERROR_MESSAGES.empty);
+      return;
+    }
+
+    const isDemo = loginEmail === DEMO_EMAIL || loginEmail === "demo@xaujournal.app";
+    if (turnstileRequired && !isDemo && !token) {
+      setError("Please complete the security check.");
       return;
     }
 
@@ -32,7 +47,11 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+          turnstileToken: token ?? undefined,
+        }),
       });
 
       let data: { error?: string; redirectTo?: string } = {};
@@ -58,7 +77,7 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    void signIn(email.trim().toLowerCase(), password);
+    void signIn(email.trim().toLowerCase(), password, turnstileToken);
   };
 
   const handleDemo = () => {
@@ -87,7 +106,16 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+      <div className="mt-6 space-y-3">
+        <GoogleSignInButton
+          turnstileToken={turnstileToken}
+          disabled={loading}
+          onNeedTurnstile={() => setError("Complete the security check before Google sign-in.")}
+        />
+        <p className="text-center text-xs text-xau-muted">or sign in with email</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
         <label className="block text-sm text-xau-muted">
           Email
           <input
@@ -110,6 +138,7 @@ export function LoginForm({ errorCode }: { errorCode?: string }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
+        <TurnstileField className="flex justify-center" onToken={setTurnstileToken} />
         <button type="submit" disabled={loading} className="xau-btn-gold w-full disabled:cursor-wait disabled:opacity-60">
           {loading ? "Signing in…" : "Sign in"}
         </button>

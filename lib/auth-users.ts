@@ -5,7 +5,7 @@ export type StoredUser = {
   id: string;
   email: string;
   name: string;
-  passwordHash: string;
+  passwordHash: string | null;
   plan: Plan;
   createdAt: string;
 };
@@ -14,7 +14,7 @@ function normalizeUser(user: {
   id: string;
   email: string;
   name: string;
-  passwordHash: string;
+  passwordHash: string | null;
   plan: Plan;
   createdAt: Date;
 }): StoredUser {
@@ -26,6 +26,40 @@ function normalizeUser(user: {
     plan: user.plan,
     createdAt: user.createdAt.toISOString(),
   };
+}
+
+export async function findOrCreateGoogleUser(profile: {
+  sub: string;
+  email: string;
+  name: string;
+}): Promise<StoredUser> {
+  const email = profile.email.toLowerCase();
+
+  const byGoogle = await prisma.user.findUnique({ where: { googleId: profile.sub } });
+  if (byGoogle) return normalizeUser(byGoogle);
+
+  const byEmail = await prisma.user.findUnique({ where: { email } });
+  if (byEmail) {
+    const updated = await prisma.user.update({
+      where: { id: byEmail.id },
+      data: {
+        googleId: profile.sub,
+        name: byEmail.name || profile.name,
+      },
+    });
+    return normalizeUser(updated);
+  }
+
+  const created = await prisma.user.create({
+    data: {
+      email,
+      name: profile.name,
+      googleId: profile.sub,
+      passwordHash: null,
+    },
+  });
+
+  return normalizeUser(created);
 }
 
 export async function findUserByEmail(email: string): Promise<StoredUser | null> {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { registerUser } from "@/lib/auth-users";
 import { isDatabaseConfigured } from "@/lib/db";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
   if (!isDatabaseConfigured) {
@@ -11,7 +12,21 @@ export async function POST(request: Request) {
     );
   }
   try {
-    const body = (await request.json()) as { email?: string; password?: string; name?: string };
+    const body = (await request.json()) as {
+      email?: string;
+      password?: string;
+      name?: string;
+      turnstileToken?: string;
+    };
+
+    const turnstile = await verifyTurnstileToken(
+      body.turnstileToken,
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    );
+    if (!turnstile.ok) {
+      return NextResponse.json({ error: turnstile.error }, { status: 400 });
+    }
+
     const password = body.password ?? "";
     if (password.length < 8) {
       return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
