@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rejectIfGoogleOnlyEmailAuth } from "@/lib/auth-api-guard";
 import { findUserByEmail } from "@/lib/auth-users";
 import { isDatabaseConfigured } from "@/lib/db";
 import { mustVerifyEmailBeforeLogin } from "@/lib/email-verification";
@@ -7,6 +8,9 @@ import { validateEmail } from "@/lib/auth-validation";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
+  const blocked = rejectIfGoogleOnlyEmailAuth();
+  if (blocked) return blocked;
+
   if (!isDatabaseConfigured) {
     return NextResponse.json({ error: "Database is not configured." }, { status: 503 });
   }

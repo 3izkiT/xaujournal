@@ -14,6 +14,10 @@ export const landingFaqs = [
     a: "Yes. Green (#089981) and red (#f23645) match TradingView defaults, in both light and dark mode, so P&L feels familiar on every screen.",
   },
   {
+    q: "How do I sign up?",
+    a: `Use Continue with Google on the sign-in page — one click, no password. We use Google sign-in only during early access (no email/password registration).`,
+  },
+  {
     q: "Is it free?",
     a: "During early access, every feature is free: unlimited trade logs, dashboard, calendar, gallery, analytics, and discipline scoring — no card required.",
   },

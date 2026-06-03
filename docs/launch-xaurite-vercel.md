@@ -31,9 +31,16 @@ NEXT_PUBLIC_ADSENSE_SLOT_HOME_BOTTOM=
 NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=k9MTRy1E07AzN-DpNy8UvRHtmR5vQ-ETMKJua-dPbdA
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-4NN8W5FDRK
 
-RESEND_API_KEY=
-EMAIL_FROM=XAURite <noreply@yourdomain.com>
+# Auth: Google-only by default (no email/password sign-up, no Resend required)
+# NEXT_PUBLIC_EMAIL_AUTH_ENABLED=true
+# NEXT_PUBLIC_DEMO_AUTH_ENABLED=true
+
+# Optional — only if NEXT_PUBLIC_EMAIL_AUTH_ENABLED=true
+# RESEND_API_KEY=
+# EMAIL_FROM=onboarding@resend.dev
 ```
+
+**Sign-up:** Users use **Continue with Google** only unless you set `NEXT_PUBLIC_EMAIL_AUTH_ENABLED=true`.
 
 See `docs/adsense-seo-speed.md` for AdSense approval and SEO checklist.
 

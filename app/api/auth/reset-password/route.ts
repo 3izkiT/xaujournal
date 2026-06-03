@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { rejectIfGoogleOnlyEmailAuth } from "@/lib/auth-api-guard";
 import { AuthTokenType } from "@prisma/client";
 import { consumeAuthToken } from "@/lib/auth-tokens";
 import { updateUserPassword } from "@/lib/auth-users";
@@ -7,6 +8,9 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { validatePassword } from "@/lib/auth-validation";
 
 export async function POST(request: Request) {
+  const blocked = rejectIfGoogleOnlyEmailAuth();
+  if (blocked) return blocked;
+
   if (!isDatabaseConfigured) {
     return NextResponse.json({ error: "Database is not configured." }, { status: 503 });
   }

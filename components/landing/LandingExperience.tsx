@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { LandingAdBottom, LandingAdMid, LandingAdTop } from "@/components/ads/LandingAds";
 import { BRAND_NAME, BRAND_SLUG } from "@/lib/brand";
 import { HOME_HERO_SEO_LINE } from "@/lib/seo-home";
+import { authStartPath } from "@/lib/auth-mode";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { MockCalendar } from "@/components/landing/screens/MockCalendar";
 import { MockDashboard } from "@/components/landing/screens/MockDashboard";
@@ -138,7 +139,7 @@ export function LandingExperience() {
             <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm text-xau-muted md:inline-block hover:bg-xau-card">
               Sign in
             </Link>
-            <Link href="/register" className="xau-btn-gold rounded-full px-4 py-2">
+            <Link href={authStartPath()} className="xau-btn-gold rounded-full px-4 py-2">
               Start free
             </Link>
           </div>
@@ -170,8 +171,8 @@ export function LandingExperience() {
                 <span>TradingView colors · Light &amp; dark</span>
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/register" className="xau-btn-gold rounded-full px-7 py-3.5 shadow-card">
-                  Start your journal
+                <Link href={authStartPath()} className="xau-btn-gold rounded-full px-7 py-3.5 shadow-card">
+                  Start with Google
                 </Link>
                 <Link href="/login" className="xau-btn-ghost rounded-full px-7 py-3.5">
                   Sign in
@@ -179,8 +180,8 @@ export function LandingExperience() {
               </div>
               <p className="mt-3 text-xs text-xau-muted">
                 {isOpenAccessActive()
-                  ? "Early access · Full features free · No card required"
-                  : "Free tier · No card required"}
+                  ? "Early access · Sign in with Google · Full features free"
+                  : "Free tier · Sign in with Google"}
               </p>
             </ScrollReveal>
             <ScrollReveal delayMs={80}>
@@ -253,7 +254,7 @@ export function LandingExperience() {
                   <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">{section.hook}</h2>
                   <p className="max-w-md text-base leading-relaxed text-xau-muted">{section.body}</p>
                   <Link
-                    href="/register"
+                    href={authStartPath()}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-xau-ink transition hover:text-xau-gold-accent"
                   >
                     Try it free <span aria-hidden>→</span>
@@ -287,8 +288,8 @@ export function LandingExperience() {
               Manual reflection that compounds — discipline first, analytics second.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/register" className="xau-btn-gold rounded-full px-8 py-3.5">
-                Create free account
+              <Link href={authStartPath()} className="xau-btn-gold rounded-full px-8 py-3.5">
+                Get started with Google
               </Link>
               {PAYMENTS_ENABLED && (
                 <Link

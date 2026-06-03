@@ -5,10 +5,12 @@ import { FormEvent, useState } from "react";
 
 import { AuthField } from "@/components/auth/AuthField";
 import { FormAlert } from "@/components/auth/FormAlert";
+import { GoogleOnlyAuthPanel } from "@/components/auth/GoogleOnlyAuthPanel";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { PasswordField } from "@/components/auth/PasswordField";
 import { TurnstileField } from "@/components/auth/TurnstileField";
 import { BRAND_NAME, DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/brand";
+import { EMAIL_AUTH_ENABLED } from "@/lib/auth-mode";
 import { isTurnstileConfigured } from "@/lib/turnstile";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -24,6 +26,23 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export function LoginForm({ errorCode, verified }: { errorCode?: string; verified?: boolean }) {
+  if (!EMAIL_AUTH_ENABLED) {
+    return (
+      <div className="xau-card-bordered w-full max-w-md p-8">
+        <Link href="/" className="text-sm font-medium text-xau-ink hover:text-xau-gold-accent">
+          ← Back to home
+        </Link>
+        <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Sign in to {BRAND_NAME}</h1>
+        <p className="mt-2 text-sm text-xau-muted">Use your Google account — fast, secure, no password to manage.</p>
+        <GoogleOnlyAuthPanel variant="login" errorCode={errorCode} />
+      </div>
+    );
+  }
+
+  return <EmailLoginForm errorCode={errorCode} verified={verified} />;
+}
+
+function EmailLoginForm({ errorCode, verified }: { errorCode?: string; verified?: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);

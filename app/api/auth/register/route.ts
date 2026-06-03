@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { rejectIfGoogleOnlyEmailAuth } from "@/lib/auth-api-guard";
 import { registerUser } from "@/lib/auth-users";
 import { isDatabaseConfigured, prisma } from "@/lib/db";
 import { isEmailVerificationRequired } from "@/lib/email-config";
@@ -8,6 +9,9 @@ import { validateEmail, validatePassword } from "@/lib/auth-validation";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
+  const blocked = rejectIfGoogleOnlyEmailAuth();
+  if (blocked) return blocked;
+
   if (!isDatabaseConfigured) {
     return NextResponse.json(
       { error: "Database is not configured. Please set DATABASE_URL." },

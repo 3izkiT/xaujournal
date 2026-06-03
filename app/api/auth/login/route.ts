@@ -6,11 +6,16 @@ import {
 } from "@/lib/demo-auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { DEMO_EMAIL, LEGACY_DEMO_EMAIL } from "@/lib/brand";
+import { isGoogleOnlyAuth } from "@/lib/auth-mode";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { setSessionOnResponse, type AppSession } from "@/lib/app-session";
 import { notifyLoginByEmail } from "@/lib/auth-notify";
 import { mustVerifyEmailBeforeLogin } from "@/lib/email-verification";
 import type { UserPlan } from "@/lib/types";
+
+function isDemoLoginEmail(email: string) {
+  return email === DEMO_EMAIL || email === LEGACY_DEMO_EMAIL;
+}
 
 export async function POST(request: Request) {
   if (!isDatabaseConfigured) {
@@ -39,8 +44,7 @@ export async function POST(request: Request) {
     email = body.email?.trim().toLowerCase() ?? "";
     password = body.password ?? "";
 
-    const isDemoLogin = email === DEMO_EMAIL || email === LEGACY_DEMO_EMAIL;
-    if (!isDemoLogin) {
+    if (!isDemoLoginEmail(email)) {
       const turnstile = await verifyTurnstileToken(
         body.turnstileToken,
         request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
@@ -55,6 +59,13 @@ export async function POST(request: Request) {
 
   if (!email || !password) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
+  }
+
+  if (isGoogleOnlyAuth() && !isDemoLoginEmail(email)) {
+    return NextResponse.json(
+      { error: "Email sign-in is disabled. Use Continue with Google." },
+      { status: 403 }
+    );
   }
 
   let user = await findUserForLogin(email);

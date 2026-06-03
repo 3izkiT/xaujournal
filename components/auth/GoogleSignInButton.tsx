@@ -5,11 +5,20 @@ import { isTurnstileConfigured } from "@/lib/turnstile";
 type Props = {
   turnstileToken: string | null;
   onNeedTurnstile?: () => void;
+  onBeforeNavigate?: () => boolean;
   disabled?: boolean;
+  label?: string;
 };
 
-export function GoogleSignInButton({ turnstileToken, onNeedTurnstile, disabled }: Props) {
+export function GoogleSignInButton({
+  turnstileToken,
+  onNeedTurnstile,
+  onBeforeNavigate,
+  disabled,
+  label = "Continue with Google",
+}: Props) {
   const handleClick = () => {
+    if (onBeforeNavigate && !onBeforeNavigate()) return;
     if (isTurnstileConfigured() && !turnstileToken) {
       onNeedTurnstile?.();
       return;
@@ -29,7 +38,7 @@ export function GoogleSignInButton({ turnstileToken, onNeedTurnstile, disabled }
       className="flex w-full items-center justify-center gap-3 rounded-2xl border border-xau-border bg-xau-card py-3 text-sm font-medium text-xau-ink transition hover:bg-xau-app disabled:cursor-wait disabled:opacity-60"
     >
       <GoogleIcon />
-      Continue with Google
+      {label}
     </button>
   );
 }

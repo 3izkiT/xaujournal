@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { AuthTokenType } from "@prisma/client";
+import { rejectIfGoogleOnlyEmailAuth } from "@/lib/auth-api-guard";
 import { issueAuthToken } from "@/lib/auth-tokens";
 import { findUserByEmail } from "@/lib/auth-users";
 import { isDatabaseConfigured } from "@/lib/db";
@@ -12,6 +13,9 @@ const GENERIC_OK =
   "If an account exists for that email, we sent a password reset link. Check your inbox.";
 
 export async function POST(request: Request) {
+  const blocked = rejectIfGoogleOnlyEmailAuth();
+  if (blocked) return blocked;
+
   if (!isDatabaseConfigured) {
     return NextResponse.json({ error: "Database is not configured." }, { status: 503 });
   }
