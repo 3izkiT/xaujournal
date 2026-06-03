@@ -31,13 +31,25 @@ Already wired:
 - FAQ + WebSite + SoftwareApplication JSON-LD
 - Keyword-rich `<h1>` on hero
 
-Optional Search Console:
+### Search Console (xaurite.vercel.app)
+
+**DNS TXT does not work** on `*.vercel.app` — you do not control Vercel’s DNS zone.
+
+Use **HTML tag** in Search Console instead:
+
+1. Property URL: `https://xaurite.vercel.app`
+2. Verification method: **HTML tag** (not DNS)
+3. Deploy — meta tag is already in the site (`lib/google-verification.ts`)
+
+Override token via env if Google gives a new one:
 
 ```env
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your-verification-code
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=mnXu7T1zXJUJwNHNCqs0Gq3Of5Br2O9oaCAegfV2Doc
 ```
 
-Then add property `https://xaurite.vercel.app` and submit `https://xaurite.vercel.app/sitemap.xml`.
+After verified, submit sitemap: `https://xaurite.vercel.app/sitemap.xml`
+
+When you buy a **custom domain**, DNS TXT verification will work on that domain’s registrar.
 
 ## Speed
 

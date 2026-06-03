@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BRAND_NAME, BRAND_TAGLINE } from "@/lib/brand";
+import { googleVerificationMeta } from "@/lib/google-verification";
 import { SITE_URL } from "@/lib/site";
 
 const HOME_TITLE = `${BRAND_NAME} — XAUUSD Gold Trading Journal | Discipline Log`;
@@ -43,13 +44,7 @@ export const homePageMetadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-    ? {
-        other: {
-          "google-site-verification": process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-        },
-      }
-    : {}),
+  other: googleVerificationMeta,
 };
 
 export const HOME_HERO_SEO_LINE = `${BRAND_TAGLINE} The intentional XAUUSD (gold) journal — checklist, charts, and analytics.`;

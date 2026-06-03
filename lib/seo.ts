@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { googleVerificationMeta } from "@/lib/google-verification";
 import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const OG_IMAGE_PATH = "/opengraph-image";
@@ -63,6 +64,7 @@ export function buildSiteMetadata(overrides?: Partial<Metadata>): Metadata {
       apple: [{ url: "/apple-icon.png", type: "image/png" }],
     },
     manifest: "/manifest.webmanifest",
+    other: googleVerificationMeta,
     ...overrides,
   };
 }
