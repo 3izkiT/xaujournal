@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { AuthModalOverlay } from "@/components/auth/AuthModalOverlay";
 import type { AuthModalMode } from "@/components/auth/AuthModalContent";
 
-export function RegisterPageClient() {
+export function LoginPageClient({ errorCode }: { errorCode?: string }) {
   const router = useRouter();
-  const [mode, setMode] = useState<AuthModalMode>("register");
+  const [mode, setMode] = useState<AuthModalMode>("login");
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -21,7 +21,12 @@ export function RegisterPageClient() {
 
   return (
     <div className="min-h-screen bg-xau-app">
-      <AuthModalOverlay mode={mode} onClose={handleClose} onSwitchMode={setMode} />
+      <AuthModalOverlay
+        mode={mode}
+        errorCode={errorCode}
+        onClose={handleClose}
+        onSwitchMode={setMode}
+      />
     </div>
   );
 }

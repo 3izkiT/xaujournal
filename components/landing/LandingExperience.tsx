@@ -1,6 +1,8 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
+import { HomeAuthQueryModal } from "@/components/auth/HomeAuthQueryModal";
 import { DeviceFrame } from "@/components/landing/DeviceFrame";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
@@ -9,7 +11,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { LandingAdBottom, LandingAdMid, LandingAdTop } from "@/components/ads/LandingAds";
 import { BRAND_NAME, BRAND_SLUG } from "@/lib/brand";
 import { HOME_HERO_SEO_LINE } from "@/lib/seo-home";
-import { authStartPath } from "@/lib/auth-mode";
+import { AuthModalTrigger } from "@/components/auth/AuthModalTrigger";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { MockCalendar } from "@/components/landing/screens/MockCalendar";
 import { MockDashboard } from "@/components/landing/screens/MockDashboard";
@@ -112,6 +114,9 @@ const productSections = [
 export function LandingExperience() {
   return (
     <div className="landing-root bg-xau-app text-xau-ink">
+      <Suspense fallback={null}>
+        <HomeAuthQueryModal />
+      </Suspense>
       <header className="landing-nav fixed inset-x-0 top-0 z-50 border-b border-xau-border/60 bg-xau-app/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <Link href="/" className="flex items-center gap-2">
@@ -136,12 +141,15 @@ export function LandingExperience() {
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle className="hidden sm:flex" />
-            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm text-xau-muted md:inline-block hover:bg-xau-card">
+            <AuthModalTrigger
+              mode="login"
+              className="hidden rounded-full px-4 py-2 text-sm text-xau-muted md:inline-block hover:bg-xau-card"
+            >
               Sign in
-            </Link>
-            <Link href={authStartPath()} className="xau-btn-gold rounded-full px-4 py-2">
+            </AuthModalTrigger>
+            <AuthModalTrigger mode="register" className="xau-btn-gold rounded-full px-4 py-2">
               Start free
-            </Link>
+            </AuthModalTrigger>
           </div>
         </div>
       </header>
@@ -171,12 +179,12 @@ export function LandingExperience() {
                 <span>TradingView colors · Light &amp; dark</span>
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={authStartPath()} className="xau-btn-gold rounded-full px-7 py-3.5 shadow-card">
+                <AuthModalTrigger mode="register" className="xau-btn-gold rounded-full px-7 py-3.5 shadow-card">
                   Start with Google
-                </Link>
-                <Link href="/login" className="xau-btn-ghost rounded-full px-7 py-3.5">
+                </AuthModalTrigger>
+                <AuthModalTrigger mode="login" className="xau-btn-ghost rounded-full px-7 py-3.5">
                   Sign in
-                </Link>
+                </AuthModalTrigger>
               </div>
               <p className="mt-3 text-xs text-xau-muted">
                 {isOpenAccessActive()
@@ -253,12 +261,12 @@ export function LandingExperience() {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-xau-muted">{section.eyebrow}</p>
                   <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">{section.hook}</h2>
                   <p className="max-w-md text-base leading-relaxed text-xau-muted">{section.body}</p>
-                  <Link
-                    href={authStartPath()}
+                  <AuthModalTrigger
+                    mode="register"
                     className="inline-flex items-center gap-2 text-sm font-semibold text-xau-ink transition hover:text-xau-gold-accent"
                   >
                     Try it free <span aria-hidden>→</span>
-                  </Link>
+                  </AuthModalTrigger>
                 </ScrollReveal>
                 <ScrollReveal delayMs={80} className={section.reverse ? "lg:[direction:ltr]" : ""}>
                   <DeviceFrame>{section.shot}</DeviceFrame>
@@ -288,9 +296,9 @@ export function LandingExperience() {
               Manual reflection that compounds — discipline first, analytics second.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href={authStartPath()} className="xau-btn-gold rounded-full px-8 py-3.5">
+              <AuthModalTrigger mode="register" className="xau-btn-gold rounded-full px-8 py-3.5">
                 Get started with Google
-              </Link>
+              </AuthModalTrigger>
               {PAYMENTS_ENABLED && (
                 <Link
                   href="/pricing"

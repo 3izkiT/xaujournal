@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthModalTrigger } from "@/components/auth/AuthModalTrigger";
 import { BRAND_FOOTER, BRAND_NAME } from "@/lib/brand";
 
 export function SiteFooter() {
@@ -15,9 +16,9 @@ export function SiteFooter() {
           <Link href="/terms" className="hover:text-xau-ink">
             Terms
           </Link>
-          <Link href="/login" className="hover:text-xau-ink">
+          <AuthModalTrigger mode="login" className="hover:text-xau-ink">
             Sign in
-          </Link>
+          </AuthModalTrigger>
         </nav>
       </div>
     </footer>

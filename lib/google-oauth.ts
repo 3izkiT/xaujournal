@@ -133,7 +133,7 @@ export async function loginResponseForGoogleUser(
 }
 
 export function redirectLoginError(code: string) {
-  return NextResponse.redirect(`${getAuthBaseUrl()}/login?error=${code}`);
+  return NextResponse.redirect(`${getAuthBaseUrl()}/?auth=login&error=${encodeURIComponent(code)}`);
 }
 
 export function setOAuthStateCookie(response: NextResponse, state: string) {

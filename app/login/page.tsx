@@ -1,4 +1,6 @@
 import { LoginForm } from "@/app/login/LoginForm";
+import { LoginPageClient } from "@/app/login/LoginPageClient";
+import { EMAIL_AUTH_ENABLED } from "@/lib/auth-mode";
 
 type Props = {
   searchParams: Promise<{ error?: string; verified?: string }>;
@@ -6,9 +8,14 @@ type Props = {
 
 export default async function LoginPage({ searchParams }: Props) {
   const params = await searchParams;
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-xau-app px-4">
-      <LoginForm errorCode={params.error} verified={params.verified === "1"} />
-    </div>
-  );
+
+  if (EMAIL_AUTH_ENABLED) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-xau-app px-4">
+        <LoginForm errorCode={params.error} verified={params.verified === "1"} />
+      </div>
+    );
+  }
+
+  return <LoginPageClient errorCode={params.error} />;
 }
