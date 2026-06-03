@@ -166,9 +166,10 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
 
       const disciplineScore = calculateDisciplineScore(payload.disciplineChecklist);
       const entryAt = payload.entryAt ?? new Date(`${payload.date}T12:00:00`).toISOString();
+      const optimisticId = `t-${Date.now()}`;
       const optimistic: JournalTrade = {
         ...payload,
-        id: `t-${Date.now()}`,
+        id: optimisticId,
         asset: "XAUUSD (Gold)",
         disciplineScore,
         entryAt,
@@ -176,6 +177,14 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
         holdTimeMinutes: payload.holdTimeMinutes ?? null,
         mae: payload.mae ?? null,
         mfe: payload.mfe ?? null,
+      };
+
+      const rollbackOptimistic = () => {
+        setTrades((prev) => {
+          const next = prev.filter((t) => t.id !== optimisticId);
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next));
+          return next;
+        });
       };
 
       setTrades((prev) => {
@@ -205,11 +214,13 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
           if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
           return { ok: true };
         }
+        rollbackOptimistic();
         if (data.trades) setTrades(data.trades);
         applyMeta(data);
         return { ok: false, error: data.error ?? "Failed to save trade." };
       } catch {
-        return { ok: false, error: "Network error." };
+        rollbackOptimistic();
+        return { ok: false, error: "Network error. Check your connection and try again." };
       }
     },
     [user?.id, canAddMore, storageKey, applyMeta]

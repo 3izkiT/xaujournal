@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormField } from "@/components/journal/FormField";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
@@ -17,7 +18,9 @@ import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 
 export default function JournalEntryPage() {
+  const router = useRouter();
   const { addTrade, canAddMore, tradeCount, tradeLimit, plan } = useXauJournal();
+  const [saving, setSaving] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [entryTime, setEntryTime] = useState("13:00");
   const [exitTime, setExitTime] = useState("");
@@ -80,6 +83,7 @@ export default function JournalEntryPage() {
       holdTimeMinutes = Math.max(0, Math.round((new Date(exitAt).getTime() - new Date(entryAt).getTime()) / 60000));
     }
 
+    setSaving(true);
     const result = await addTrade({
       date,
       entryAt,
@@ -111,9 +115,14 @@ export default function JournalEntryPage() {
       noteNextAction,
     });
 
+    setSaving(false);
+
     if (!result.ok) {
       setSubmitError(result.error ?? "Could not save trade.");
+      return;
     }
+
+    router.push("/history?saved=1");
   };
 
   const handleFileSelect = (file: File | null, target: "before" | "after") => {
@@ -172,12 +181,13 @@ export default function JournalEntryPage() {
         <section className="xau-panel-accent">
           <div>
             <h2 className="text-lg font-medium text-xau-ink">Reflection notes</h2>
-            <p className="mt-1 text-xs text-xau-muted">Min 3 characters each — context, mistake, next action.</p>
+            <p className="mt-1 text-xs leading-relaxed text-xau-muted">
+              Optional but recommended — builds discipline. If you fill a field, use at least 3 characters (e.g.
+              &quot;none&quot; for mistakes).
+            </p>
           </div>
           <div className="space-y-4">
             <textarea
-              required
-              minLength={3}
               rows={3}
               className="xau-textarea"
               placeholder="Context: What was the market telling you?"
@@ -185,8 +195,6 @@ export default function JournalEntryPage() {
               onChange={(e) => setNoteContext(e.target.value)}
             />
             <textarea
-              required
-              minLength={3}
               rows={3}
               className="xau-textarea"
               placeholder="Mistake: What went wrong (or 'none')?"
@@ -194,8 +202,6 @@ export default function JournalEntryPage() {
               onChange={(e) => setNoteMistake(e.target.value)}
             />
             <textarea
-              required
-              minLength={3}
               rows={3}
               className="xau-textarea"
               placeholder="Next action: What will you do differently?"
@@ -389,12 +395,18 @@ export default function JournalEntryPage() {
         </section>
 
         <div className="flex flex-col gap-3 border-t border-xau-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <button type="submit" disabled={!canAddMore} className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60">
-            {canAddMore
-              ? "Save trade log"
-              : PAYMENTS_ENABLED
-                ? `Upgrade for more than ${FREE_TRADE_LIMIT} logs`
-                : "Log limit reached"}
+          <button
+            type="submit"
+            disabled={!canAddMore || saving}
+            className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {saving
+              ? "Saving…"
+              : canAddMore
+                ? "Save trade log"
+                : PAYMENTS_ENABLED
+                  ? `Upgrade for more than ${FREE_TRADE_LIMIT} logs`
+                  : "Log limit reached"}
           </button>
           {!canAddMore && PAYMENTS_ENABLED && (
             <p className="text-sm text-xau-muted">

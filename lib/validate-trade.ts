@@ -1,5 +1,6 @@
 const MIN_NOTE_LEN = 3;
 
+/** Reflection notes are optional; if you start a field, finish it (min 3 chars). */
 export function validateTradeNotes(notes: {
   noteContext?: string;
   noteMistake?: string;
@@ -12,8 +13,8 @@ export function validateTradeNotes(notes: {
   ];
 
   for (const field of fields) {
-    if (field.value.length < MIN_NOTE_LEN) {
-      return `${field.key} note must be at least ${MIN_NOTE_LEN} characters.`;
+    if (field.value.length > 0 && field.value.length < MIN_NOTE_LEN) {
+      return `${field.key} note must be at least ${MIN_NOTE_LEN} characters (or leave it empty).`;
     }
   }
   return null;

@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useXauJournal } from "@/components/XauJournalContext";
 
 export default function HistoryPage() {
+  const searchParams = useSearchParams();
+  const justSaved = searchParams.get("saved") === "1";
   const { trades, loading } = useXauJournal();
 
   if (loading) {
@@ -22,6 +25,15 @@ export default function HistoryPage() {
           Log new trade
         </Link>
       </header>
+
+      {justSaved && (
+        <div
+          className="rounded-2xl border border-xau-profit bg-xau-profit-bg px-4 py-3 text-sm text-xau-ink"
+          role="status"
+        >
+          Trade saved. Your log appears below.
+        </div>
+      )}
 
       {trades.length === 0 ? (
         <div className="xau-card-bordered px-6 py-12 text-center text-sm text-xau-muted">
