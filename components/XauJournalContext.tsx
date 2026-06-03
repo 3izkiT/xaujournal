@@ -160,7 +160,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
       if (!canAddMore) {
         return {
           ok: false,
-          error: `Free tier limit (${FREE_TRADE_LIMIT} logs). Upgrade for unlimited.`,
+          error: `Trade log limit reached (${FREE_TRADE_LIMIT} on free tier).`,
         };
       }
 

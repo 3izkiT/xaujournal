@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getAppSession } from "@/lib/app-session";
 import { calculateDisciplineScore } from "@/lib/data";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getTradeLimit, FREE_TRADE_LIMIT } from "@/lib/plans";
+import { canAddMoreTrades, effectiveTradeLimit, isOpenAccessActive } from "@/lib/monetization";
+import { FREE_TRADE_LIMIT } from "@/lib/plans";
 import { addTradeForUser, countTradesForUser, getTradesForUser, getUserPlan } from "@/lib/trades-store";
 import { JournalTrade } from "@/lib/types";
 import { validateTradeNotes } from "@/lib/validate-trade";
@@ -10,12 +11,13 @@ import { Plan } from "@prisma/client";
 
 async function journalMeta(userId: string) {
   const [plan, tradeCount] = await Promise.all([getUserPlan(userId), countTradesForUser(userId)]);
-  const tradeLimit = getTradeLimit(plan);
+  const tradeLimit = effectiveTradeLimit(plan);
   return {
     plan: plan as Plan,
     tradeCount,
     tradeLimit,
-    canAddMore: tradeLimit == null || tradeCount < tradeLimit,
+    canAddMore: canAddMoreTrades(plan, tradeCount),
+    openAccess: isOpenAccessActive(),
   };
 }
 
@@ -56,7 +58,9 @@ export async function POST(request: Request) {
     if (!meta.canAddMore) {
       return NextResponse.json(
         {
-          error: `Free tier limit reached (${FREE_TRADE_LIMIT} logs). Upgrade to Premium for unlimited logs.`,
+          error: isOpenAccessActive()
+            ? "Trade limit reached. Please contact support."
+            : `Free tier limit reached (${FREE_TRADE_LIMIT} logs). Upgrade to Premium for unlimited logs.`,
           code: "TRADE_LIMIT_REACHED",
           ...meta,
         },

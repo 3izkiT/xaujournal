@@ -2,19 +2,18 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import { Providers } from "@/components/Providers";
-import { BRAND_NAME, BRAND_SHORT, BRAND_TAGLINE } from "@/lib/brand";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { themeInitScript } from "@/lib/theme";
+import { buildSiteMetadata } from "@/lib/seo";
 
 const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
 });
 
-export const metadata: Metadata = {
-  title: `${BRAND_NAME} — ${BRAND_SHORT}`,
-  description: `${BRAND_TAGLINE} Checklist, emotion, and chart study — no broker auto-sync.`,
-};
+export const metadata: Metadata = buildSiteMetadata();
 
 export default function RootLayout({
   children,
@@ -27,6 +26,8 @@ export default function RootLayout({
         <Script id="xau-theme-init" strategy="beforeInteractive">
           {themeInitScript}
         </Script>
+        <JsonLd />
+        <AdSenseScript />
       </head>
       <body className={`${geistSans.className} antialiased`}>
         <Providers>{children}</Providers>

@@ -56,7 +56,7 @@ export default function RegisterPage() {
           ← Back to home
         </Link>
         <h1 className="mt-4 text-2xl font-semibold text-xau-ink">Create your {BRAND_NAME} account</h1>
-        <p className="mt-2 text-sm text-xau-muted">Free tier includes 10 trade logs and full discipline tracking.</p>
+        <p className="mt-2 text-sm text-xau-muted">Early access: full journal features free while we grow with the community.</p>
 
         {error && <p className="mt-4 text-sm font-medium text-xau-loss">{error}</p>}
         {message && <p className="mt-4 text-sm font-medium text-tv-profit">{message}</p>}

@@ -10,6 +10,7 @@ import {
   setupTagOptions,
   tradeTypeOptions,
 } from "@/lib/data";
+import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 
 export default function JournalEntryPage() {
@@ -42,8 +43,12 @@ export default function JournalEntryPage() {
     [followedPlan, rrAtLeastOneToTwo, calmMindset]
   );
 
-  const limitLabel =
-    tradeLimit != null ? `${tradeCount}/${tradeLimit} logs` : `${tradeCount} logs (Premium)`;
+  const openAccess = isOpenAccessActive();
+  const limitLabel = openAccess
+    ? `${tradeCount} logs · Full access`
+    : tradeLimit != null
+      ? `${tradeCount}/${tradeLimit} logs`
+      : `${tradeCount} logs (Premium)`;
 
   const handleSetupTagChange = (tag: string) => {
     setSetupTags((prev) => (prev.includes(tag) ? prev.filter((v) => v !== tag) : [...prev, tag]));
@@ -112,7 +117,7 @@ export default function JournalEntryPage() {
           <p className="mt-2 text-sm text-xau-muted">Complete the discipline checklist and reflection notes before saving.</p>
         </div>
         <div className="rounded-2xl border border-xau-gold bg-xau-gold-soft px-4 py-2 text-sm text-xau-ink">
-          {plan === "PREMIUM_GOLD" ? "Premium · " : "Free · "}
+          {openAccess ? "Early access · " : plan === "PREMIUM_GOLD" ? "Premium · " : "Free · "}
           {limitLabel}
         </div>
       </div>
@@ -342,14 +347,18 @@ export default function JournalEntryPage() {
           disabled={!canAddMore}
           className="rounded-2xl bg-xau-calm px-6 py-3 font-medium text-xau-ink transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {canAddMore ? "Save Trade Log" : `Upgrade for more than ${FREE_TRADE_LIMIT} logs`}
+          {canAddMore
+            ? "Save Trade Log"
+            : PAYMENTS_ENABLED
+              ? `Upgrade for more than ${FREE_TRADE_LIMIT} logs`
+              : "Log limit reached"}
         </button>
-        {!canAddMore && (
+        {!canAddMore && PAYMENTS_ENABLED && (
           <p className="text-sm text-xau-muted">
             <Link href="/pricing" className="text-xau-ink underline">
-              View Premium
+              View plans
             </Link>{" "}
-            for unlimited logs and cloud chart storage (coming soon).
+            for unlimited logs.
           </p>
         )}
       </form>

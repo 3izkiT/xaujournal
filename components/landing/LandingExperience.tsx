@@ -5,7 +5,10 @@ import { DeviceFrame } from "@/components/landing/DeviceFrame";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { BRAND_FOOTER, BRAND_NAME, BRAND_SLUG, BRAND_TAGLINE } from "@/lib/brand";
+import { SiteFooter } from "@/components/SiteFooter";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { BRAND_NAME, BRAND_SLUG, BRAND_TAGLINE } from "@/lib/brand";
+import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { MockCalendar } from "@/components/landing/screens/MockCalendar";
 import { MockDashboard } from "@/components/landing/screens/MockDashboard";
 import { MockGallery } from "@/components/landing/screens/MockGallery";
@@ -172,7 +175,11 @@ export function LandingExperience() {
                   Sign in
                 </Link>
               </div>
-              <p className="mt-3 text-xs text-xau-muted">Free tier · 10 trades · No card required</p>
+              <p className="mt-3 text-xs text-xau-muted">
+                {isOpenAccessActive()
+                  ? "Early access · Full features free · No card required"
+                  : "Free tier · No card required"}
+              </p>
             </ScrollReveal>
             <ScrollReveal delayMs={80}>
               <DeviceFrame label={`${BRAND_SLUG} — Dashboard`}>
@@ -279,20 +286,23 @@ export function LandingExperience() {
               <Link href="/register" className="xau-btn-gold rounded-full px-8 py-3.5">
                 Create free account
               </Link>
-              <Link
-                href="/pricing"
-                className="rounded-full border border-xau-gold/40 px-8 py-3.5 text-sm font-medium transition hover:border-xau-gold"
-              >
-                View pricing
-              </Link>
+              {PAYMENTS_ENABLED && (
+                <Link
+                  href="/pricing"
+                  className="rounded-full border border-xau-gold/40 px-8 py-3.5 text-sm font-medium transition hover:border-xau-gold"
+                >
+                  View pricing
+                </Link>
+              )}
             </div>
           </ScrollReveal>
         </section>
       </main>
 
-      <footer className="border-t border-xau-border py-6 text-center text-xs text-xau-muted">
-        © {new Date().getFullYear()} {BRAND_NAME} · {BRAND_FOOTER}
-      </footer>
+      <div className="mx-auto max-w-3xl px-6 pb-8">
+        <AdSlot slot="landing-footer" className="min-h-[90px]" format="horizontal" />
+      </div>
+      <SiteFooter />
     </div>
   );
 }

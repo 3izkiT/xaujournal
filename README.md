@@ -46,6 +46,15 @@ Seed data: `prisma/seed.ts` (includes demo account and sample trades)
 
 User-facing name and copy live in `lib/brand.ts` — update there to keep UI, SEO metadata, and demo credentials in sync.
 
+## Domain & SEO (Vercel env)
+
+```env
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+AUTH_URL=https://your-domain.com
+```
+
+Early access (default): full features free, payments UI hidden. See `docs/monetization.md`.
+
 ## Scale-first checklist
 
 - Use managed Postgres with pooling (Neon/Supabase/RDS + PgBouncer)

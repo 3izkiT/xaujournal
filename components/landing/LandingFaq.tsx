@@ -17,8 +17,8 @@ const faqs = [
     a: "Yes. Green (#089981) and red (#f23645) match TradingView defaults, in both light and dark mode, so P&L feels familiar on every screen.",
   },
   {
-    q: "What does the free tier include?",
-    a: "Up to 10 intentional trade logs with full checklist scoring, dashboard, calendar, gallery, and analytics — no card required.",
+    q: "Is it free?",
+    a: "During early access, every feature is free: unlimited trade logs, dashboard, calendar, gallery, analytics, and discipline scoring — no card required. Optional paid plans may be introduced later.",
   },
   {
     q: "Who is this for?",

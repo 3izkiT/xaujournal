@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BRAND_NAME } from "@/lib/brand";
+import { PAYMENTS_ENABLED } from "@/lib/monetization";
 
 type NavItem = {
   href: string;
@@ -161,13 +162,15 @@ function SidebarContent({
         <div className="px-1">
           <ThemeToggle className="w-full justify-center" />
         </div>
-        <Link
-          href="/pricing"
-          className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
-          onClick={onNavigate}
-        >
-          Upgrade plan
-        </Link>
+        {PAYMENTS_ENABLED && (
+          <Link
+            href="/pricing"
+            className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
+            onClick={onNavigate}
+          >
+            Plans
+          </Link>
+        )}
         <p className="truncate px-3 text-[11px] text-xau-muted">{userEmail}</p>
         <button
           type="button"
