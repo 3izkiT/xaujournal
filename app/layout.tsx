@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -36,6 +37,7 @@ export default function RootLayout({
           {themeInitScript}
         </Script>
         <JsonLd />
+        <GoogleAnalytics />
         <AdSenseScript />
       </head>
       <body className={`${geistSans.className} antialiased`}>

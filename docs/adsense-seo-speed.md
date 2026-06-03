@@ -41,10 +41,15 @@ Use **HTML tag** in Search Console instead:
 2. Verification method: **HTML tag** (not DNS)
 3. Deploy — meta tag is already in the site (`lib/google-verification.ts`)
 
-Override token via env if Google gives a new one:
+Verification (pick **one** method in Search Console):
+
+1. **HTML file** — `https://xaurite.vercel.app/googleff0d26e06bfa3e67.html` (in `/public`)
+2. **HTML meta tag** — `k9MTRy1E07AzN-DpNy8UvRHtmR5vQ-ETMKJua-dPbdA` in `<head>`
+3. **Google Analytics** (optional) — set `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXX` (same Google account as Search Console)
 
 ```env
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=mnXu7T1zXJUJwNHNCqs0Gq3Of5Br2O9oaCAegfV2Doc
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=k9MTRy1E07AzN-DpNy8UvRHtmR5vQ-ETMKJua-dPbdA
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXX
 ```
 
 After verified, submit sitemap: `https://xaurite.vercel.app/sitemap.xml`
