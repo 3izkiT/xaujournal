@@ -3,8 +3,14 @@
 import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ChartImage } from "@/components/journal/ChartImage";
 import { FormField } from "@/components/journal/FormField";
 import { useXauJournal } from "@/components/XauJournalContext";
+import {
+  afterPlaceholder,
+  beforePlaceholder,
+  readImageFileAsDataUrl,
+} from "@/lib/chart-upload";
 import {
   calculateDisciplineScore,
   emotionOptions,
@@ -43,6 +49,7 @@ export default function JournalEntryPage() {
   const [noteMistake, setNoteMistake] = useState("");
   const [noteNextAction, setNoteNextAction] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [chartUploadError, setChartUploadError] = useState<string | null>(null);
 
   const score = useMemo(
     () => calculateDisciplineScore({ followedPlan, rrAtLeastOneToTwo, calmMindset }),
@@ -99,12 +106,8 @@ export default function JournalEntryPage() {
       session,
       setupTags: setupTags as ("Liquidity Sweep" | "FVG Mitigation" | "Break of Structure" | "Order Block")[],
       emotion: emotion as "Calm" | "Greed" | "Fear" | "FOMO" | "Revenge Trading" | "Overlot",
-      beforeChartUrl:
-        beforeChartUrl ||
-        "https://images.unsplash.com/photo-1642543348745-f0466dbf8348?auto=format&fit=crop&w=1200&q=80",
-      afterChartUrl:
-        afterChartUrl ||
-        "https://images.unsplash.com/photo-1642790551116-f2f5204f9ec6?auto=format&fit=crop&w=1200&q=80",
+      beforeChartUrl: beforeChartUrl.trim() || beforePlaceholder,
+      afterChartUrl: afterChartUrl.trim() || afterPlaceholder,
       disciplineChecklist: {
         followedPlan,
         rrAtLeastOneToTwo,
@@ -125,11 +128,16 @@ export default function JournalEntryPage() {
     router.push("/history?saved=1");
   };
 
-  const handleFileSelect = (file: File | null, target: "before" | "after") => {
+  const handleFileSelect = async (file: File | null, target: "before" | "after") => {
     if (!file) return;
-    const localUrl = URL.createObjectURL(file);
-    if (target === "before") setBeforeChartUrl(localUrl);
-    else setAfterChartUrl(localUrl);
+    setChartUploadError(null);
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file);
+      if (target === "before") setBeforeChartUrl(dataUrl);
+      else setAfterChartUrl(dataUrl);
+    } catch (err) {
+      setChartUploadError(err instanceof Error ? err.message : "Could not load image.");
+    }
   };
 
   return (
@@ -292,7 +300,10 @@ export default function JournalEntryPage() {
                 onChange={(e) => setExitPrice(e.target.value)}
               />
             </FormField>
-            <FormField label="MAE ($)" hint="Max adverse excursion">
+            <FormField
+              label="MAE ($)"
+              hint="Maximum Adverse Excursion — worst unrealized loss ($) while the trade was open. Optional; fill after close from your platform."
+            >
               <input
                 type="number"
                 step="0.1"
@@ -302,7 +313,10 @@ export default function JournalEntryPage() {
                 onChange={(e) => setMae(e.target.value)}
               />
             </FormField>
-            <FormField label="MFE ($)" hint="Max favorable excursion">
+            <FormField
+              label="MFE ($)"
+              hint="Maximum Favorable Excursion — best unrealized profit ($) before exit. Optional."
+            >
               <input
                 type="number"
                 step="0.1"
@@ -346,6 +360,14 @@ export default function JournalEntryPage() {
 
         <section className="xau-form-section">
           <h2 className="text-lg font-medium text-xau-ink">Chart screenshots</h2>
+          <p className="text-xs text-xau-muted">
+            Upload saves into your log (max 2.5 MB). Or paste a public https:// image link. Leave empty for a placeholder.
+          </p>
+          {chartUploadError && (
+            <p className="text-sm text-xau-loss" role="alert">
+              {chartUploadError}
+            </p>
+          )}
           <div className="grid gap-5 md:grid-cols-2">
             <label
               className="space-y-3 rounded-2xl border border-dashed border-xau-border bg-xau-calm p-4"
@@ -364,10 +386,15 @@ export default function JournalEntryPage() {
               />
               <input
                 className="xau-field text-xs"
-                placeholder="Or paste image URL"
-                value={beforeChartUrl}
+                placeholder="Or paste https:// image URL"
+                value={beforeChartUrl.startsWith("data:") ? "" : beforeChartUrl}
                 onChange={(e) => setBeforeChartUrl(e.target.value)}
               />
+              {beforeChartUrl && (
+                <div className="relative h-32 overflow-hidden rounded-xl bg-xau-app">
+                  <ChartImage src={beforeChartUrl} alt="Before preview" />
+                </div>
+              )}
             </label>
             <label
               className="space-y-3 rounded-2xl border border-dashed border-xau-border bg-xau-profit-bg p-4"
@@ -386,10 +413,15 @@ export default function JournalEntryPage() {
               />
               <input
                 className="xau-field text-xs"
-                placeholder="Or paste image URL"
-                value={afterChartUrl}
+                placeholder="Or paste https:// image URL"
+                value={afterChartUrl.startsWith("data:") ? "" : afterChartUrl}
                 onChange={(e) => setAfterChartUrl(e.target.value)}
               />
+              {afterChartUrl && (
+                <div className="relative h-32 overflow-hidden rounded-xl bg-xau-app">
+                  <ChartImage src={afterChartUrl} alt="After preview" />
+                </div>
+              )}
             </label>
           </div>
         </section>

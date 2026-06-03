@@ -90,12 +90,12 @@ export default function DashboardPage() {
             <ul className="divide-y divide-xau-border">
               {recentTrades.map((t) => (
                 <li key={t.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                  <div className="min-w-0">
+                  <Link href={`/history?trade=${encodeURIComponent(t.id)}`} className="min-w-0 hover:underline">
                     <p className="font-medium text-xau-ink">{t.date}</p>
                     <p className="text-xs text-xau-muted">
                       {t.type} · {t.disciplineScore}% discipline
                     </p>
-                  </div>
+                  </Link>
                   <p className={`shrink-0 font-semibold ${t.netProfitLoss >= 0 ? "text-tv-profit" : "text-tv-loss"}`}>
                     {t.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(t.netProfitLoss).toFixed(2)}
                   </p>

@@ -288,6 +288,13 @@ function computeHoldMinutes(entryAt: Date, exitAt: Date | null | undefined, expl
 
 
 
+export async function deleteTradeForUser(userId: string, tradeId: string): Promise<boolean> {
+  const result = await prisma.trade.deleteMany({
+    where: { id: tradeId, userId },
+  });
+  return result.count > 0;
+}
+
 export async function addTradeForUser(userId: string, trade: JournalTrade) {
 
   const entryAt = new Date(trade.entryAt || trade.date);

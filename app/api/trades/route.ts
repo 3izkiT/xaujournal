@@ -6,6 +6,7 @@ import { canAddMoreTrades, effectiveTradeLimit, isOpenAccessActive } from "@/lib
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 import { addTradeForUser, countTradesForUser, getTradesForUser, getUserPlan } from "@/lib/trades-store";
 import { JournalTrade } from "@/lib/types";
+import { afterPlaceholder, beforePlaceholder, sanitizeChartUrl } from "@/lib/chart-upload";
 import { validateTradeNotes } from "@/lib/validate-trade";
 import { Plan } from "@prisma/client";
 
@@ -74,6 +75,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: noteError }, { status: 400 });
     }
 
+    let beforeChartUrl: string;
+    let afterChartUrl: string;
+    try {
+      beforeChartUrl = sanitizeChartUrl(body.beforeChartUrl, beforePlaceholder);
+      afterChartUrl = sanitizeChartUrl(body.afterChartUrl, afterPlaceholder);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Invalid chart image.";
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
+
     const disciplineChecklist = body.disciplineChecklist;
     const disciplineScore = calculateDisciplineScore(disciplineChecklist);
     const entryAt = body.entryAt ? new Date(body.entryAt).toISOString() : new Date(`${body.date}T12:00:00`).toISOString();
@@ -96,8 +107,8 @@ export async function POST(request: Request) {
       session: body.session,
       setupTags: body.setupTags,
       emotion: body.emotion,
-      beforeChartUrl: body.beforeChartUrl,
-      afterChartUrl: body.afterChartUrl,
+      beforeChartUrl,
+      afterChartUrl,
       disciplineChecklist,
       disciplineScore,
       noteContext: body.noteContext,

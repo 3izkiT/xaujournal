@@ -52,6 +52,7 @@ type XauJournalContextValue = {
   tradeCount: number;
   canAddMore: boolean;
   addTrade: (payload: AddTradePayload) => Promise<{ ok: boolean; error?: string }>;
+  removeTrade: (tradeId: string) => Promise<{ ok: boolean; error?: string }>;
   refreshTrades: () => Promise<void>;
 };
 
@@ -226,6 +227,37 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     [user?.id, canAddMore, storageKey, applyMeta]
   );
 
+  const removeTrade = useCallback(
+    async (tradeId: string): Promise<{ ok: boolean; error?: string }> => {
+      if (!user?.id) return { ok: false, error: "Not signed in." };
+
+      try {
+        const res = await fetch(`/api/trades/${encodeURIComponent(tradeId)}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        const data = (await res.json()) as {
+          trades?: JournalTrade[];
+          error?: string;
+          plan?: UserPlan;
+          tradeLimit?: number | null;
+          tradeCount?: number;
+          canAddMore?: boolean;
+        };
+        if (res.ok && data.trades) {
+          setTrades(data.trades);
+          applyMeta(data);
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+          return { ok: true };
+        }
+        return { ok: false, error: data.error ?? "Failed to delete trade." };
+      } catch {
+        return { ok: false, error: "Network error." };
+      }
+    },
+    [user?.id, storageKey, applyMeta]
+  );
+
   const value = useMemo(
     () => ({
       trades,
@@ -235,9 +267,10 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
       tradeCount,
       canAddMore,
       addTrade,
+      removeTrade,
       refreshTrades,
     }),
-    [trades, loading, plan, tradeLimit, tradeCount, canAddMore, addTrade, refreshTrades]
+    [trades, loading, plan, tradeLimit, tradeCount, canAddMore, addTrade, removeTrade, refreshTrades]
   );
 
   return <XauJournalContext.Provider value={value}>{children}</XauJournalContext.Provider>;

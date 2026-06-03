@@ -1,8 +1,8 @@
 import { DisciplineChecklist, EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
 
-const beforePlaceholder =
+export const beforePlaceholder =
   "https://images.unsplash.com/photo-1642543348745-f0466dbf8348?auto=format&fit=crop&w=1200&q=80";
-const afterPlaceholder =
+export const afterPlaceholder =
   "https://images.unsplash.com/photo-1642790551116-f2f5204f9ec6?auto=format&fit=crop&w=1200&q=80";
 
 export const setupTagOptions: SetupTag[] = [
