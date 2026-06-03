@@ -1,6 +1,9 @@
-import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import { findUserByEmail } from "@/lib/auth-users";
+import {
+  findUserForLogin,
+  migrateDemoUserAfterLogin,
+  verifyLoginPassword,
+} from "@/lib/demo-auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { setSessionOnResponse, type AppSession } from "@/lib/app-session";
 import type { UserPlan } from "@/lib/types";
@@ -35,15 +38,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
-  const user = await findUserByEmail(email);
+  let user = await findUserForLogin(email);
   if (!user) {
     return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
 
-  const valid = await bcrypt.compare(password, user.passwordHash);
+  const valid = await verifyLoginPassword(user, password);
   if (!valid) {
     return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
+
+  user = await migrateDemoUserAfterLogin(user);
 
   const session: AppSession = {
     userId: user.id,

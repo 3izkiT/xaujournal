@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { EmotionType, Plan, PrismaClient, SessionType, TradeType } from "@prisma/client";
-import { DEMO_EMAIL, DEMO_PASSWORD } from "../lib/brand";
+import { DEMO_EMAIL, DEMO_PASSWORD, LEGACY_DEMO_EMAIL } from "../lib/brand";
 import { mockTrades } from "../lib/data";
 
 const prisma = new PrismaClient();
@@ -28,10 +28,23 @@ function toEmotion(emotion: string): EmotionType {
   }
 }
 
-async function main() {
+async function ensureDemoUser() {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
+  const legacy = await prisma.user.findUnique({ where: { email: LEGACY_DEMO_EMAIL } });
 
-  const demoUser = await prisma.user.upsert({
+  if (legacy) {
+    return prisma.user.update({
+      where: { id: legacy.id },
+      data: {
+        email: DEMO_EMAIL,
+        name: "Demo Trader",
+        passwordHash,
+        plan: Plan.FREE,
+      },
+    });
+  }
+
+  return prisma.user.upsert({
     where: { email: DEMO_EMAIL },
     update: {
       name: "Demo Trader",
@@ -45,6 +58,10 @@ async function main() {
       plan: Plan.FREE,
     },
   });
+}
+
+async function main() {
+  const demoUser = await ensureDemoUser();
 
   await prisma.trade.deleteMany({ where: { userId: demoUser.id } });
 
