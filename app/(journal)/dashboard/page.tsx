@@ -81,7 +81,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="xau-page-dashboard">
       <header id="overview" className="scroll-mt-24 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -117,20 +117,19 @@ export default function DashboardPage() {
         <KpiCard label="Profit factor" value={String(profitFactor)} accent="gold" tooltipTerm="profitFactor" />
       </div>
 
-      <EquityChart equityCurve={equityCurve} />
-
-      <div className="grid gap-4 lg:grid-cols-5">
-        <div className="lg:col-span-3">
+      {/* Desktop: left = charts & log, right = session & calendar */}
+      <div className="grid gap-6 xl:grid-cols-12 xl:items-start">
+        <div className="space-y-6 xl:col-span-7 2xl:col-span-8">
+          <EquityChart equityCurve={equityCurve} />
           <RecentTradesPanel trades={trades} />
         </div>
-        <div className="lg:col-span-2">
+        <aside className="space-y-6 xl:col-span-5 2xl:col-span-4">
           <SessionMini sessionData={sessionData} />
-        </div>
+          <TradeCalendarPanel trades={trades} />
+        </aside>
       </div>
 
-      <TradeCalendarPanel trades={trades} />
-
-      <section id="analytics" className="scroll-mt-24 space-y-6">
+      <section id="analytics" className="scroll-mt-24 space-y-6 border-t border-xau-border pt-8 xl:pt-10">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Deep dive</p>
           <PanelHeading
@@ -150,16 +149,18 @@ export default function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <>
+          <div className="space-y-6">
             <SetupAnalytics setupVsMistakes={setupVsMistakes} />
-            <ExecutionAnalytics
-              sessionData={sessionData}
-              avgHoldMinutes={avgHoldMinutes}
-              avgMae={avgMae}
-              avgMfe={avgMfe}
-            />
-            <DisciplineAnalytics ruleBreaks={ruleBreaks} heatmap={heatmap} />
-          </>
+            <div className="grid gap-6 2xl:grid-cols-2 2xl:items-start">
+              <ExecutionAnalytics
+                sessionData={sessionData}
+                avgHoldMinutes={avgHoldMinutes}
+                avgMae={avgMae}
+                avgMfe={avgMfe}
+              />
+              <DisciplineAnalytics ruleBreaks={ruleBreaks} heatmap={heatmap} />
+            </div>
+          </div>
         )}
       </section>
     </div>
