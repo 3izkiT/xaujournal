@@ -167,7 +167,7 @@ function SidebarContent({
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
         <ThemeToggle className="w-full justify-center" />
-        <LanguageSwitcher className="mx-auto lg:hidden" />
+        <LanguageSwitcher className="mx-auto lg:hidden" menuPlacement="above" />
         {PAYMENTS_ENABLED && (
           <Link
             href="/pricing"
