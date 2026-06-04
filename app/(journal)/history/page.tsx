@@ -81,8 +81,7 @@ function HistoryPageContent() {
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Trade log</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">History</h1>
           <p className="mt-1 text-sm text-xau-muted">
-            {trades.length} total entries · click <span className="font-medium text-xau-ink">View</span> for full notes
-            and charts
+            {trades.length} total entries · click <span className="font-medium text-xau-ink">View</span> for notes and charts (tap images to expand)
           </p>
         </div>
         <Link href="/journal-entry" className="xau-btn-gold">
