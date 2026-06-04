@@ -13,11 +13,11 @@ export function ChartContainer({ children, className = "h-72" }: { children: Rea
     setMounted(true);
   }, []);
 
-  const sizeClass = hasExplicitHeight(className) ? className : `${className} min-h-[288px]`;
+  const sizeClass = hasExplicitHeight(className) ? className : `${className} min-h-[12rem]`;
 
   if (!mounted) {
     return <div className={`${sizeClass} min-w-0 w-full animate-pulse rounded-2xl bg-xau-app`} aria-hidden="true" />;
   }
 
-  return <div className={`${sizeClass} min-w-0 w-full`}>{children}</div>;
+  return <div className={`${sizeClass} relative min-w-0 w-full`}>{children}</div>;
 }

@@ -23,7 +23,7 @@ export function RecentTradesPanel({ trades, maxItems = 5 }: Props) {
     .slice(0, maxItems);
 
   return (
-    <article className="xau-card-bordered flex h-full flex-col">
+    <article className="xau-card-bordered flex flex-col">
       <div className="flex items-center justify-between gap-2 border-b border-xau-border px-4 py-3">
         <PanelHeading as="h2" title="Recent trades" term="recentTrades" className="min-w-0" />
         <Link href="/history" className="shrink-0 text-xs font-medium text-xau-muted hover:text-xau-ink">
@@ -80,8 +80,8 @@ export function RecentTradesPanel({ trades, maxItems = 5 }: Props) {
             ))}
           </ul>
 
-          <div className="hidden min-h-0 flex-1 md:block">
-            <div className="overflow-x-auto overflow-y-visible">
+          <div className="hidden md:block">
+            <div className="overflow-x-auto">
               <table className="w-full min-w-[520px] text-left text-sm">
                 <thead className="border-b border-xau-border bg-xau-app/80 text-[11px] uppercase tracking-wide text-xau-muted [&_th]:overflow-visible">
                   <tr>

@@ -134,7 +134,7 @@ export default function DashboardPage() {
           id="dashboard-panel-overview"
           role="tabpanel"
           aria-labelledby="dashboard-tab-overview"
-          className="animate-rise-up grid gap-5 lg:grid-cols-12 lg:items-start lg:gap-6"
+          className="grid gap-5 lg:grid-cols-12 lg:items-start lg:gap-6"
         >
           <div className="lg:col-span-8">
             <EquityChart equityCurve={equityCurve} />
@@ -155,7 +155,7 @@ export default function DashboardPage() {
           id="dashboard-panel-calendar"
           role="tabpanel"
           aria-labelledby="dashboard-tab-calendar"
-          className="animate-rise-up"
+          className="min-h-0"
         >
           <TradeCalendarPanel trades={trades} />
         </section>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
           id="dashboard-panel-analytics"
           role="tabpanel"
           aria-labelledby="dashboard-tab-analytics"
-          className="animate-rise-up"
+          className="min-h-0"
         >
           <div className="xau-card-bordered space-y-6 p-5 md:p-6 lg:p-8">
             <div className="border-b border-xau-border pb-4">
