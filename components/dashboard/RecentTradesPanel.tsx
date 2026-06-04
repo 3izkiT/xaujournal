@@ -81,9 +81,9 @@ export function RecentTradesPanel({ trades, maxItems = 5 }: Props) {
           </ul>
 
           <div className="hidden min-h-0 flex-1 md:block">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-visible">
               <table className="w-full min-w-[520px] text-left text-sm">
-                <thead className="border-b border-xau-border bg-xau-app/80 text-[11px] uppercase tracking-wide text-xau-muted">
+                <thead className="border-b border-xau-border bg-xau-app/80 text-[11px] uppercase tracking-wide text-xau-muted [&_th]:overflow-visible">
                   <tr>
                     <th className="px-4 py-2.5 font-medium">Date</th>
                     <th className="px-3 py-2.5 font-medium">Type</th>
