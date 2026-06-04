@@ -13,13 +13,14 @@ import {
   beforePlaceholder,
   readImageFileAsDataUrl,
 } from "@/lib/chart-upload";
-import { calculateDisciplineScore, sessionOptions, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from "@/lib/data";
+import { calculateDisciplineScore, sessionOptions } from "@/lib/data";
 import { JOURNAL_FORM_INTRO } from "@/lib/journal-form-copy";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
-import { formatRMultipleStored } from "@/lib/trade-metrics-input";
+import { resolveEntryExitPrices, resolveRMultiple } from "@/lib/resolve-trade-fields";
 import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { EmotionType, SessionType, SetupTag, TradeType } from "@/lib/types";
+import { validateTradeNotes } from "@/lib/validate-trade";
 import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
 
 const DISCIPLINE_TERMS: TooltipTerm[] = ["followedPlan", "riskRewardRule", "calmMindsetRule"];
@@ -98,14 +99,19 @@ export default function JournalEntryPage() {
     if (!canAddMore) return;
     setSubmitError(null);
 
-    const entry = Number(entryPrice);
-    const exit = Number(exitPrice);
-    if (!Number.isFinite(entry) || entry < XAU_SPOT_PRICE_MIN || entry > XAU_SPOT_PRICE_MAX) {
-      setSubmitError(`กรอกราคาเข้าให้ถูกต้อง (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX})`);
+    const noteError = validateTradeNotes({
+      noteContext,
+      noteMistake,
+      noteNextAction,
+    });
+    if (noteError) {
+      setSubmitError(noteError);
       return;
     }
-    if (!Number.isFinite(exit) || exit < XAU_SPOT_PRICE_MIN || exit > XAU_SPOT_PRICE_MAX) {
-      setSubmitError(`กรอกราคาออกให้ถูกต้อง (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX})`);
+
+    const prices = resolveEntryExitPrices(entryPrice, exitPrice);
+    if (prices.error) {
+      setSubmitError(prices.error);
       return;
     }
 
@@ -124,9 +130,9 @@ export default function JournalEntryPage() {
       holdTimeMinutes,
       type,
       netProfitLoss: Number(netProfitLoss),
-      rMultiple: formatRMultipleStored(rMultiple),
-      entryPrice: entry,
-      exitPrice: exit,
+      rMultiple: resolveRMultiple(rMultiple),
+      entryPrice: prices.entry,
+      exitPrice: prices.exit,
       mae: mae !== "" ? Number(mae) : null,
       mfe: mfe !== "" ? Number(mfe) : null,
       session,
@@ -145,10 +151,12 @@ export default function JournalEntryPage() {
     });
 
     setSaving(false);
+
     if (!result.ok) {
       setSubmitError(result.error ?? "Could not save trade.");
       return;
     }
+
     router.push("/history?saved=1");
   };
 
@@ -156,7 +164,7 @@ export default function JournalEntryPage() {
     <div className="xau-page-form">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-xau-ink md:text-3xl">บันทึกเทรด</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-xau-ink md:text-3xl">Log trade</h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-xau-muted">{JOURNAL_FORM_INTRO}</p>
         </div>
         <div className="shrink-0 rounded-2xl border border-xau-gold bg-xau-gold-soft px-4 py-2 text-sm text-xau-ink">
@@ -165,9 +173,9 @@ export default function JournalEntryPage() {
         </div>
       </header>
 
-      {submitError && (
+      {submitError ? (
         <div className="rounded-2xl border border-xau-border bg-xau-rose px-4 py-3 text-sm text-xau-loss">{submitError}</div>
-      )}
+      ) : null}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <TradeLogFormSections
@@ -221,20 +229,20 @@ export default function JournalEntryPage() {
             className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {saving
-              ? "กำลังบันทึก…"
+              ? "Saving…"
               : canAddMore
-                ? "บันทึกเทรด"
+                ? "Save trade log"
                 : PAYMENTS_ENABLED
-                  ? `อัปเกรดเพื่อบันทึกเกิน ${FREE_TRADE_LIMIT} ไม้`
-                  : "ถึงลิมิตบันทึกแล้ว"}
+                  ? `Upgrade for more than ${FREE_TRADE_LIMIT} logs`
+                  : "Log limit reached"}
           </button>
-          {!canAddMore && PAYMENTS_ENABLED && (
+          {!canAddMore && PAYMENTS_ENABLED ? (
             <p className="text-sm text-xau-muted">
               <Link href="/pricing" className="font-medium text-xau-ink underline-offset-2 hover:underline">
-                ดูแพ็กเกจ
+                View plans
               </Link>
             </p>
-          )}
+          ) : null}
         </div>
       </form>
     </div>

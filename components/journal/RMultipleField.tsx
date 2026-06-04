@@ -17,11 +17,11 @@ export function RMultipleField({ value, onChange, id }: Props) {
         inputMode="decimal"
         autoComplete="off"
         className="xau-field"
-        placeholder="เช่น +3 หรือ -1"
+        placeholder="e.g. +3 or -1"
         value={value}
         onChange={(e) => onChange(sanitizeRMultipleDraft(e.target.value))}
       />
-      <p className="text-xs text-xau-muted">พิมพ์แค่ +/− กับตัวเลข — ระบบเติม R ให้อัตโนมัติเมื่อบันทึก (เช่น +3 → +3R)</p>
+      <p className="text-xs text-xau-muted">Type +/− and the number only — we add R on save (e.g. +3 → +3R).</p>
     </div>
   );
 }

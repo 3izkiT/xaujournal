@@ -12,11 +12,13 @@ import {
   beforePlaceholder,
   readImageFileAsDataUrl,
 } from "@/lib/chart-upload";
-import { calculateDisciplineScore, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from "@/lib/data";
+import { calculateDisciplineScore } from "@/lib/data";
 import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
 import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
-import { formatRMultipleStored, rMultipleForEdit } from "@/lib/trade-metrics-input";
+import { rMultipleForEdit } from "@/lib/trade-metrics-input";
+import { resolveEntryExitPrices, resolveRMultiple } from "@/lib/resolve-trade-fields";
+import { validateTradeNotes } from "@/lib/validate-trade";
 
 type Props = {
   trade: JournalTrade;
@@ -120,20 +122,16 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
     event.preventDefault();
     setError(null);
 
-    const entry = Number(entryPrice);
-    if (!Number.isFinite(entry) || entry < XAU_SPOT_PRICE_MIN || entry > XAU_SPOT_PRICE_MAX) {
-      setError(`Enter a valid entry price (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX}).`);
+    const noteError = validateTradeNotes({ noteContext, noteMistake, noteNextAction });
+    if (noteError) {
+      setError(noteError);
       return;
     }
 
-    let exit = Number(exitPrice);
-    if (exitTime) {
-      if (!Number.isFinite(exit) || exit < XAU_SPOT_PRICE_MIN || exit > XAU_SPOT_PRICE_MAX) {
-        setError(`Enter a valid exit price (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX}).`);
-        return;
-      }
-    } else if (!Number.isFinite(exit)) {
-      exit = entry;
+    const prices = resolveEntryExitPrices(entryPrice, exitPrice);
+    if (prices.error) {
+      setError(prices.error);
+      return;
     }
 
     setSaveOverlay("saving");
@@ -152,9 +150,9 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
       holdTimeMinutes,
       type,
       netProfitLoss: Number(netProfitLoss),
-      rMultiple: formatRMultipleStored(rMultiple),
-      entryPrice: entry,
-      exitPrice: exit,
+      rMultiple: resolveRMultiple(rMultiple),
+      entryPrice: prices.entry,
+      exitPrice: prices.exit,
       mae: mae !== "" ? Number(mae) : null,
       mfe: mfe !== "" ? Number(mfe) : null,
       session,
@@ -197,7 +195,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
           <div>
             <h3 className="text-lg font-semibold text-xau-ink">Edit trade log</h3>
             <p className="mt-1 text-sm text-xau-muted">
-              ฟอร์มเดียวกับตอนบันทึกใหม่ — เติมเวลาออก ผลเทรด และบทเรียนเมื่อปิดออเดอร์แล้ว
+              Same A / B / C panels as a new log — add exit, P&amp;L, and charts when the trade is done.
               the entry.
             </p>
           </div>
@@ -252,7 +250,6 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
           setAfterChartUrl={setAfterChartUrl}
           chartUploadError={chartUploadError}
           onChartFile={handleChartFile}
-          exitPriceOptional
         />
 
         <div className="flex flex-col gap-3 border-t border-xau-border pt-6 sm:flex-row sm:items-center sm:justify-between">

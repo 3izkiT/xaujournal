@@ -1,35 +1,28 @@
-/** Trader-focused journal form copy (Thai + short English where useful). */
+/** Journal form copy — international English, simple gold-trader terms. */
 
 export const JOURNAL_FORM_INTRO =
-  "บันทึกหลังปิดออเดอร์ — กรอกเฉพาะสิ่งที่นักเทรดส่วนใหญ่ใช้รีวิว: เมื่อไหร่ · ผลเทรด · วินัย · เหตุผล · บทเรียน";
+  "Log what matters to you. Panels A–C are optional — add charts anytime (portrait or landscape).";
 
-export const JOURNAL_SECTIONS = {
-  trade: {
-    title: "1 · เทรดนี้",
-    description: "เมื่อไหร่ · ทิศทาง · ช่วงตลาด (Session)",
-  },
-  outcome: {
-    title: "2 · ผลลัพธ์",
-    description: "กำไร/ขาดทุน · R · ราคาเข้า–ออก (อ้างอิงจากแพลตฟอร์ม)",
-  },
-  discipline: {
-    title: "3 · วินัยก่อนเข้า",
-    description: "ตอบตามความจริงตอนกดเข้า — ใช้คำนวณคะแนนวินัย",
-  },
-  context: {
-    title: "4 · เหตุผล & อารมณ์",
-    description: "เซ็ตอัปที่ใช้ + อารมณ์ตอนเทรด (ช่วยดู pattern ใน Analytics)",
-  },
-  notes: {
-    title: "5 · บันทึกหลังเทรด",
-    description: "ไม่บังคับ แต่แนะนำ — สั้นๆ ก็พอ ถ้ากรอกต้องอย่างน้อย 3 ตัวอักษร",
-  },
-  advanced: {
-    title: "ข้อมูลเพิ่มเติม (ไม่บังคับ)",
-    description: "MAE/MFE จาก MT5 หรือ TradingView — ส่วนใหญ่ข้ามได้",
-  },
-  charts: {
-    title: "รูปชาร์ต (ไม่บังคับ)",
-    description: "แนวตั้ง/แนวนอนจากมือถือได้ · อัปโหลดหรือวางลิงก์ https",
-  },
+export const JOURNAL_CHARTS = {
+  title: "Chart screenshots",
+  description:
+    "Before and after shots from phone or desktop. Portrait and landscape both fit — nothing is cropped away.",
+} as const;
+
+export const JOURNAL_PANEL_A = {
+  badge: "A",
+  title: "Quick log",
+  description: "~30 seconds: when you traded, side, session, and result in $ and R.",
+} as const;
+
+export const JOURNAL_PANEL_B = {
+  badge: "B",
+  title: "Review & mindset",
+  description: "Discipline, setup, emotion, and short notes — for pattern review in Analytics.",
+} as const;
+
+export const JOURNAL_PANEL_C = {
+  badge: "C",
+  title: "Execution detail",
+  description: "Entry/exit price and MAE/MFE from your platform — skip if you only track P&L.",
 } as const;

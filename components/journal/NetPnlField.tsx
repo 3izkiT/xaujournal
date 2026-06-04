@@ -39,7 +39,7 @@ export function NetPnlField({ value, onChange, id }: Props) {
               : "border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
           }`}
         >
-          กำไร (+)
+          Profit (+)
         </button>
         <button
           type="button"
@@ -50,7 +50,7 @@ export function NetPnlField({ value, onChange, id }: Props) {
               : "border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
           }`}
         >
-          ขาดทุน (−)
+          Loss (−)
         </button>
       </div>
       <input
@@ -59,12 +59,12 @@ export function NetPnlField({ value, onChange, id }: Props) {
         inputMode="decimal"
         autoComplete="off"
         className="xau-field"
-        placeholder="จำนวนเงิน เช่น 420"
+        placeholder="e.g. 420"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
       />
       <p className="text-xs text-xau-muted">
-        บนมือถือไม่ต้องพิมพ์ +/− — เลือกกำไรหรือขาดทุนแล้วใส่ตัวเลข
+        Tap Profit or Loss, then enter the amount — no need to type +/− on mobile.
       </p>
     </div>
   );

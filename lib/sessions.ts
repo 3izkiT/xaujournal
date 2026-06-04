@@ -37,7 +37,7 @@ export type SessionType = (typeof TRADING_SESSIONS)[number]["id"];
 export const sessionOptions: SessionType[] = TRADING_SESSIONS.map((s) => s.id);
 
 export const SESSION_SELECT_HINT =
-  "เวลาไทย (ICT): ซิดนีย์ 05:00–14:00 · โตเกียว 07:00–16:00 · ลอนดอน 14:00–23:00 · นิวยอร์ก 20:00–05:00";
+  "Thailand time (ICT): Sydney 05:00–14:00 · Tokyo 07:00–16:00 · London 14:00–23:00 · New York 20:00–05:00";
 
 const LEGACY_SESSION_MAP: Record<string, SessionType> = {
   "Asian Session": "Tokyo Session",
