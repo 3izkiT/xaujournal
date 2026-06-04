@@ -149,7 +149,7 @@ function HistoryPageContent() {
                     <button
                       type="button"
                       onClick={() => openTrade(trade.id)}
-                      className="text-xs font-medium text-xau-gold-accent hover:underline"
+                      className="xau-btn-link-gold"
                     >
                       {isSelected ? "Viewing" : "View"}
                     </button>
@@ -159,7 +159,7 @@ function HistoryPageContent() {
                         setSelectedId(trade.id);
                         setEditingId(trade.id);
                       }}
-                      className="text-xs font-medium text-xau-ink hover:underline"
+                      className="xau-btn-link"
                     >
                       Edit
                     </button>
@@ -167,7 +167,7 @@ function HistoryPageContent() {
                       type="button"
                       disabled={deletingId === trade.id}
                       onClick={() => void handleDelete(trade.id, trade.date)}
-                      className="text-xs font-medium text-xau-loss hover:underline disabled:opacity-50"
+                      className="xau-btn-link-danger disabled:opacity-50"
                     >
                       {deletingId === trade.id ? "Deleting…" : "Delete"}
                     </button>
@@ -216,7 +216,7 @@ function HistoryPageContent() {
                         <button
                           type="button"
                           onClick={() => openTrade(trade.id)}
-                          className="text-xs font-medium text-xau-gold-accent hover:underline"
+                          className="xau-btn-link-gold"
                         >
                           {isSelected ? "Viewing" : "View"}
                         </button>
@@ -226,7 +226,7 @@ function HistoryPageContent() {
                             setSelectedId(trade.id);
                             setEditingId(trade.id);
                           }}
-                          className="text-xs font-medium text-xau-ink hover:underline"
+                          className="xau-btn-link"
                         >
                           Edit
                         </button>
@@ -234,7 +234,7 @@ function HistoryPageContent() {
                           type="button"
                           disabled={deletingId === trade.id}
                           onClick={() => void handleDelete(trade.id, trade.date)}
-                          className="text-xs font-medium text-xau-loss hover:underline disabled:opacity-50"
+                          className="xau-btn-link-danger disabled:opacity-50"
                         >
                           {deletingId === trade.id ? "Deleting…" : "Delete"}
                         </button>

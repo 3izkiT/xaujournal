@@ -14,6 +14,8 @@ type NavItem = {
 
 const mainNav: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <IconGrid /> },
+  { href: "/analytics", label: "Analytics", icon: <IconChart /> },
+  { href: "/calendar", label: "Calendar", icon: <IconCalendar /> },
   { href: "/journal-entry", label: "Journal", icon: <IconPen /> },
   { href: "/history", label: "History", icon: <IconList /> },
   { href: "/gallery", label: "Gallery", icon: <IconImage /> },
@@ -28,6 +30,23 @@ function IconGrid() {
       <rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
       <rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
       <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function IconChart() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 19V5M10 19V9M16 19V12M22 19V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconCalendar() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -93,11 +112,7 @@ function NavLink({ item, active, onNavigate }: { item: NavItem; active: boolean;
     <Link
       href={item.href}
       onClick={onNavigate}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-        active
-          ? "bg-xau-gold-soft text-xau-ink shadow-sm"
-          : "text-xau-muted hover:bg-xau-app hover:text-xau-ink"
-      }`}
+      className={active ? "xau-btn-nav xau-btn-nav-active" : "xau-btn-nav"}
     >
       <span className={active ? "text-xau-gold-accent" : "text-xau-muted"}>{item.icon}</span>
       {item.label}
@@ -142,7 +157,7 @@ function SidebarContent({
         <ThemeToggle className="w-full justify-center" />
         <Link
           href="/pricing"
-          className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
+          className="xau-btn-nav block text-xs"
           onClick={onNavigate}
         >
           Upgrade plan
@@ -151,7 +166,7 @@ function SidebarContent({
         <button
           type="button"
           onClick={onSignOut}
-          className="w-full rounded-xl px-3 py-2 text-left text-sm text-xau-loss hover:bg-xau-rose"
+          className="xau-btn-danger"
         >
           Sign out
         </button>
@@ -213,7 +228,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
             type="button"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-xau-border"
+            className="xau-btn-icon"
             onClick={() => setMobileOpen((o) => !o)}
           >
             {mobileOpen ? <CloseIcon /> : <MenuIcon />}

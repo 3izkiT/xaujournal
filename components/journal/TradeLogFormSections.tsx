@@ -265,11 +265,7 @@ export function TradeLogFormSections({
                 type="button"
                 key={tag}
                 onClick={() => onSetupTagToggle(tag)}
-                className={`rounded-full px-4 py-2 text-sm transition ${
-                  setupTags.includes(tag)
-                    ? "bg-xau-calm font-medium text-xau-ink"
-                    : "border border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
-                }`}
+                className={`xau-btn-pill ${setupTags.includes(tag) ? "xau-btn-pill-active" : ""}`}
               >
                 {tag}
               </button>
@@ -287,11 +283,7 @@ export function TradeLogFormSections({
                 type="button"
                 key={option}
                 onClick={() => setEmotion(option)}
-                className={`rounded-full px-3 py-1.5 text-sm transition ${
-                  emotion === option
-                    ? "bg-xau-calm font-medium text-xau-ink"
-                    : "border border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
-                }`}
+                className={`xau-btn-pill px-3 py-1.5 ${emotion === option ? "xau-btn-pill-active" : ""}`}
               >
                 {option}
               </button>

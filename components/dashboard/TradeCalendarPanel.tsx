@@ -65,7 +65,7 @@ export function TradeCalendarPanel({ trades, variant = "default" }: Props) {
           <button
             type="button"
             onClick={() => shiftMonth(-1)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-xau-border text-xau-muted transition hover:bg-xau-app hover:text-xau-ink"
+            className="xau-btn-icon h-9 w-9"
             aria-label="Previous month"
           >
             ‹
@@ -75,7 +75,7 @@ export function TradeCalendarPanel({ trades, variant = "default" }: Props) {
             type="button"
             onClick={() => shiftMonth(1)}
             disabled={isCurrentMonth}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-xau-border text-xau-muted transition hover:bg-xau-app hover:text-xau-ink disabled:cursor-not-allowed disabled:opacity-40"
+            className="xau-btn-icon h-9 w-9 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Next month"
           >
             ›
@@ -87,7 +87,7 @@ export function TradeCalendarPanel({ trades, variant = "default" }: Props) {
                 setViewYear(today.getFullYear());
                 setViewMonth(today.getMonth());
               }}
-              className="ml-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-xau-gold-accent hover:underline"
+              className="xau-btn-link-gold ml-1"
             >
               Today
             </button>

@@ -37,11 +37,7 @@ export function DashboardSectionNav({ active, onChange }: Props) {
             aria-controls={panelId}
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(section.id)}
-            className={`relative shrink-0 px-4 py-2.5 text-sm font-medium transition ${
-              isActive
-                ? "text-xau-ink after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-xau-gold-accent"
-                : "text-xau-muted hover:text-xau-ink"
-            }`}
+            className={isActive ? "xau-btn-tab xau-btn-tab-active" : "xau-btn-tab"}
           >
             {section.label}
           </button>

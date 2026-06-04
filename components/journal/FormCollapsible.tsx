@@ -15,7 +15,7 @@ export function FormCollapsible({ title, description, children, defaultOpen = fa
       className="xau-form-section group rounded-2xl border border-xau-border bg-xau-card/60"
       open={defaultOpen || undefined}
     >
-      <summary className="cursor-pointer list-none px-4 py-4 marker:content-none [&::-webkit-details-marker]:hidden">
+      <summary className="xau-btn-nav cursor-pointer list-none rounded-2xl px-4 py-4 marker:content-none transition [&::-webkit-details-marker]:hidden">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-base font-medium text-xau-ink">{title}</h2>
