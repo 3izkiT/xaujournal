@@ -142,14 +142,17 @@ function SidebarContent({
 
   return (
     <>
-      <div className="flex items-center gap-2.5 px-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-xs font-bold text-xau-ink">
-          Au
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
-          <p className="text-[10px] uppercase tracking-wider text-xau-muted">{BRAND_SHORT}</p>
+      <div className="flex items-center justify-between gap-2 px-2">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-xs font-bold text-xau-ink">
+            Au
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
+            <p className="text-[10px] uppercase tracking-wider text-xau-muted">{BRAND_SHORT}</p>
+          </div>
         </div>
+        <LanguageSwitcher className="hidden shrink-0 lg:inline-flex" />
       </div>
 
       <nav className="mt-8 flex flex-1 flex-col gap-1" aria-label="Main navigation">
@@ -164,7 +167,7 @@ function SidebarContent({
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
         <ThemeToggle className="w-full justify-center" />
-        <LanguageSwitcher className="w-full justify-center" />
+        <LanguageSwitcher className="mx-auto lg:hidden" />
         {PAYMENTS_ENABLED && (
           <Link
             href="/pricing"
@@ -234,6 +237,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           <span className="text-sm font-semibold">{BRAND_NAME}</span>
         </Link>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           <button
             type="button"

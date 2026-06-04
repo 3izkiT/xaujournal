@@ -7,6 +7,7 @@ import { DeviceFrame } from "@/components/landing/DeviceFrame";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LandingAdBottom, LandingAdMid, LandingAdTop } from "@/components/ads/LandingAds";
 import { BRAND_NAME, BRAND_SLUG } from "@/lib/brand";
