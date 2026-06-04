@@ -13,11 +13,8 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "lighthouse:prod": "lighthouse https://xaurite.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json",
-    "test:e2e": "node scripts/e2e-frontend.mjs",
-    "test:e2e:visual": "node scripts/e2e-visual.mjs",
-    "test:e2e:visual:headed": "E2E_HEADED=1 E2E_SLOW_MO=500 node scripts/e2e-visual.mjs",
-    "test:e2e:prod": "E2E_BASE_URL=https://xaurite.vercel.app node scripts/e2e-frontend.mjs",
-    "test:e2e:prod:visual": "E2E_BASE_URL=https://xaurite.vercel.app node scripts/e2e-visual.mjs"
+    "test:e2e:your-session": "E2E_BASE_URL=https://xaurite.vercel.app node scripts/e2e-with-session.mjs",
+    "test:e2e:your-session:headed": "E2E_BASE_URL=https://xaurite.vercel.app E2E_HEADED=1 node scripts/e2e-with-session.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
