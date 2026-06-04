@@ -1,5 +1,6 @@
 "use client";
 
+import { ProfitLossSignToggle } from "@/components/journal/ProfitLossSignToggle";
 import {
   pnlFromSignAndAmount,
   splitPnlForInput,
@@ -33,37 +34,25 @@ export function NetPnlField({ value, onChange, id }: Props) {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="grid gap-2 sm:grid-cols-[minmax(9rem,11rem)_1fr]">
-        <label className="sr-only" htmlFor={id ? `${id}-sign` : undefined}>
-          Profit or loss
-        </label>
-        <select
-          id={id ? `${id}-sign` : undefined}
-          className="xau-select w-full"
-          value={sign}
-          onChange={(e) => setSign(e.target.value as PnlSign)}
-          aria-label="Profit or loss"
-        >
-          {SIGN_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <input
-          id={id}
-          type="text"
-          inputMode="decimal"
-          autoComplete="off"
-          className="xau-field"
-          placeholder="Amount in USD, e.g. 420"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </div>
+    <div className="space-y-3">
+      <ProfitLossSignToggle
+        sign={sign}
+        onSignChange={setSign}
+        options={SIGN_OPTIONS}
+        ariaLabel="Profit or loss"
+      />
+      <input
+        id={id}
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        className="xau-field"
+        placeholder="Amount in USD, e.g. 420"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
       <p className="text-xs text-xau-muted">
-        Choose Profit or Loss, then enter the amount — no need to type +/−.
+        Tap Profit or Loss first, then enter the amount — no +/− typing needed.
       </p>
     </div>
   );

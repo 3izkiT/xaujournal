@@ -80,8 +80,13 @@
     background: var(--xau-gold-soft);
   }
 
+
+  .xau-btn-focus {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-xau-gold-soft focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--xau-card)];
+  }
+
   .xau-btn-gold {
-    @apply rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:brightness-95;
+    @apply xau-btn-focus rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:brightness-95 active:brightness-90;
     background: var(--xau-gold-accent);
     color: var(--xau-ink);
   }
@@ -91,7 +96,7 @@
   }
 
   .xau-btn-ghost {
-    @apply rounded-xl border border-xau-border px-4 py-2.5 text-sm font-medium transition;
+    @apply xau-btn-focus rounded-xl border border-xau-border px-4 py-2.5 text-sm font-medium transition;
     background: var(--xau-card);
     color: var(--xau-ink);
   }
@@ -109,7 +114,7 @@
   }
 
   .xau-btn-soft {
-    @apply rounded-xl border border-xau-border px-3 py-2 text-sm font-medium transition;
+    @apply xau-btn-focus rounded-xl border border-xau-border px-3 py-2 text-sm font-medium transition;
     background: var(--xau-app);
     color: var(--xau-ink);
   }
@@ -123,7 +128,7 @@
   }
 
   .xau-btn-icon {
-    @apply inline-flex h-9 w-9 items-center justify-center rounded-xl border border-xau-border transition;
+    @apply xau-btn-focus inline-flex h-9 w-9 items-center justify-center rounded-xl border border-xau-border transition;
     background: var(--xau-card);
     color: var(--xau-ink);
   }
@@ -137,17 +142,24 @@
   }
 
   .xau-btn-pill {
-    @apply rounded-full border border-xau-border bg-xau-app px-4 py-2 text-sm text-xau-muted transition;
+    @apply xau-btn-focus rounded-full border border-xau-border bg-xau-app px-4 py-2 text-sm text-xau-muted transition;
   }
 
   .xau-btn-pill:hover {
     @apply text-xau-ink;
     background: var(--xau-card);
+    border-color: color-mix(in srgb, var(--xau-gold-accent) 45%, var(--xau-border));
   }
 
   .xau-btn-pill-active {
-    @apply border-transparent font-medium text-xau-ink;
-    background: var(--xau-calm-bg);
+    @apply font-medium text-xau-ink;
+    border-color: var(--xau-gold-accent);
+    background: var(--xau-gold-soft);
+  }
+
+  .xau-btn-pill-active:hover {
+    background: var(--xau-gold-soft);
+    filter: brightness(1.03);
   }
 
   .xau-btn-pill:active {
@@ -155,7 +167,7 @@
   }
 
   .xau-btn-nav {
-    @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition;
+    @apply xau-btn-focus flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition;
     color: var(--xau-ink);
   }
 
@@ -165,6 +177,7 @@
 
   .xau-btn-nav-active {
     background: var(--xau-gold-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--xau-gold-accent) 35%, transparent);
   }
 
   .xau-btn-nav:active {
@@ -172,12 +185,13 @@
   }
 
   .xau-btn-tab {
-    @apply relative shrink-0 rounded-none border-0 bg-transparent px-4 py-2.5 text-sm font-medium transition;
+    @apply xau-btn-focus relative shrink-0 rounded-none border-0 bg-transparent px-4 py-2.5 text-sm font-medium transition;
     color: var(--xau-muted);
   }
 
   .xau-btn-tab:hover {
     color: var(--xau-ink);
+    background: var(--xau-app);
   }
 
   .xau-btn-tab[aria-selected="true"] {
@@ -220,7 +234,7 @@
   }
 
   .xau-btn-danger {
-    @apply rounded-xl px-4 py-2 text-sm font-medium text-xau-loss transition;
+    @apply xau-btn-focus rounded-xl px-4 py-2 text-sm font-medium text-xau-loss transition;
     border: 1px solid rgba(242, 54, 69, 0.3);
     background: var(--xau-loss-bg);
   }
@@ -256,7 +270,12 @@
   }
 
   .xau-select {
-    @apply xau-field;
+    @apply xau-field cursor-pointer;
+  }
+
+  .xau-select:hover {
+    border-color: color-mix(in srgb, var(--xau-gold-accent) 40%, var(--xau-border));
+    background: var(--xau-app);
   }
 
   .xau-form-section {

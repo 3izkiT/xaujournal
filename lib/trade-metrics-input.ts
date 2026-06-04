@@ -6,8 +6,13 @@ export function splitPnlForInput(value: string | number): { sign: PnlSign; amoun
   const n = typeof value === "number" ? value : parseSignedAmountInput(value);
   if (n == null || !Number.isFinite(n)) {
     const trimmed = String(value).trim();
-    if (trimmed.startsWith("-")) return { sign: "loss", amount: trimmed.replace(/^-/, "") || "0" };
-    return { sign: "profit", amount: trimmed.replace(/^\+/, "") || "0" };
+    if (trimmed.startsWith("-")) return { sign: "loss", amount: trimmed.replace(/^-/, "") };
+    return { sign: "profit", amount: trimmed.replace(/^\+/, "") };
+  }
+  if (n === 0) {
+    const trimmed = String(value).trim();
+    const sign: PnlSign = trimmed.startsWith("-") ? "loss" : "profit";
+    return { sign, amount: "" };
   }
   if (n < 0) return { sign: "loss", amount: formatAmountDigits(Math.abs(n)) };
   return { sign: "profit", amount: formatAmountDigits(n) };
@@ -15,7 +20,7 @@ export function splitPnlForInput(value: string | number): { sign: PnlSign; amoun
 
 export function pnlFromSignAndAmount(sign: PnlSign, amount: string): string {
   const cleaned = amount.replace(/,/g, "").trim();
-  if (!cleaned || cleaned === ".") return "0";
+  if (!cleaned || cleaned === ".") return sign === "loss" ? "-0" : "0";
   const n = parseFloat(cleaned);
   const abs = Number.isFinite(n) ? Math.abs(n) : 0;
   const signed = sign === "loss" ? -abs : abs;
