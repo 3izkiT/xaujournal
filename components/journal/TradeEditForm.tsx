@@ -197,7 +197,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
           <div>
             <h3 className="text-lg font-semibold text-xau-ink">Edit trade log</h3>
             <p className="mt-1 text-sm text-xau-muted">
-              Update exit time, P&amp;L, charts, and notes when the trade finishes — same fields as when you logged
+              ฟอร์มเดียวกับตอนบันทึกใหม่ — เติมเวลาออก ผลเทรด และบทเรียนเมื่อปิดออเดอร์แล้ว
               the entry.
             </p>
           </div>

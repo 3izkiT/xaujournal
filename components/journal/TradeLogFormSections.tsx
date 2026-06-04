@@ -1,14 +1,16 @@
 "use client";
 
 import { ChartImage } from "@/components/journal/ChartImage";
+import { FormCollapsible } from "@/components/journal/FormCollapsible";
 import { NetPnlField } from "@/components/journal/NetPnlField";
 import { RMultipleField } from "@/components/journal/RMultipleField";
 import { FormCheckRow, FormField, FormSectionHeading } from "@/components/journal/FormField";
 import { HelpTooltip } from "@/components/ui/HelpTooltip";
 import { emotionOptions, sessionOptions, tradeTypeOptions, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from "@/lib/data";
+import { JOURNAL_SECTIONS } from "@/lib/journal-form-copy";
 import { SESSION_SELECT_HINT, sessionSelectLabel } from "@/lib/sessions";
 import type { TooltipTerm } from "@/lib/term-tooltips";
-import type { EmotionType, SessionType, SetupTag, TradeType } from "@/lib/types";
+import type { SessionType, TradeType } from "@/lib/types";
 
 export type DisciplineRowConfig = {
   id: string;
@@ -60,7 +62,6 @@ export type TradeLogFormSectionsProps = {
   setAfterChartUrl: (value: string) => void;
   chartUploadError: string | null;
   onChartFile: (file: File | null, target: "before" | "after") => void;
-  /** When true, exit price is optional until exit time is set (edit open trades). */
   exitPriceOptional?: boolean;
 };
 
@@ -109,9 +110,108 @@ export function TradeLogFormSections({
   exitPriceOptional = false,
 }: TradeLogFormSectionsProps) {
   return (
-    <>
-      <section className="xau-form-section">
-        <FormSectionHeading title="Pre-trade discipline" term="disciplineChecklist" />
+    <div className="space-y-6">
+      {/* 1 — When & what */}
+      <section className="xau-form-section space-y-4">
+        <FormSectionHeading
+          title={JOURNAL_SECTIONS.trade.title}
+          description={JOURNAL_SECTIONS.trade.description}
+        />
+        <p className="inline-flex rounded-full border border-xau-border bg-xau-calm px-3 py-1 text-xs font-medium text-xau-ink">
+          XAUUSD (Gold)
+        </p>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <FormField label="วันที่เทรด" tooltipTerm="tradeDate">
+            <input type="date" className="xau-field" value={date} onChange={(e) => setDate(e.target.value)} />
+          </FormField>
+          <FormField label="Session" hint={SESSION_SELECT_HINT} tooltipTerm="session">
+            <select className="xau-select" value={session} onChange={(e) => setSession(e.target.value as SessionType)}>
+              {sessionOptions.map((option) => (
+                <option key={option} value={option}>
+                  {sessionSelectLabel(option)}
+                </option>
+              ))}
+            </select>
+          </FormField>
+          <FormField label="เวลาเข้า" tooltipTerm="entryTime">
+            <input type="time" className="xau-field" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} />
+          </FormField>
+          <FormField label="เวลาออก" hint="ว่างได้ถ้ายังไม่ปิด" tooltipTerm="exitTime">
+            <input type="time" className="xau-field" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
+          </FormField>
+          <FormField label="ทิศทาง" tooltipTerm="tradeType">
+            <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as TradeType)}>
+              {tradeTypeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        </div>
+      </section>
+
+      {/* 2 — Outcome */}
+      <section className="xau-form-section space-y-4">
+        <FormSectionHeading
+          title={JOURNAL_SECTIONS.outcome.title}
+          description={JOURNAL_SECTIONS.outcome.description}
+        />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <FormField label="กำไร / ขาดทุน ($)" tooltipTerm="netPnlTrade">
+            <NetPnlField value={netProfitLoss} onChange={setNetProfitLoss} />
+          </FormField>
+          <FormField label="R-multiple" tooltipTerm="rMultiple">
+            <RMultipleField value={rMultiple} onChange={setRMultiple} />
+          </FormField>
+          <FormField
+            label="ราคาเข้า"
+            tooltipTerm="entryPrice"
+            hint={`XAUUSD โดยทั่วไป ${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX.toLocaleString()}`}
+          >
+            <input
+              type="number"
+              step="0.01"
+              min={XAU_SPOT_PRICE_MIN}
+              max={XAU_SPOT_PRICE_MAX}
+              required
+              className="xau-field"
+              placeholder="เช่น 2650"
+              value={entryPrice}
+              onChange={(e) => setEntryPrice(e.target.value)}
+            />
+          </FormField>
+          <FormField
+            label="ราคาออก"
+            tooltipTerm="exitPrice"
+            hint={
+              exitPriceOptional
+                ? "ไม่บังคับจนกว่าจะปิดออเดอร์"
+                : "กรอกเมื่อปิดออเดอร์แล้ว"
+            }
+          >
+            <input
+              type="number"
+              step="0.01"
+              min={XAU_SPOT_PRICE_MIN}
+              max={XAU_SPOT_PRICE_MAX}
+              required={!exitPriceOptional || Boolean(exitTime)}
+              className="xau-field"
+              placeholder="เช่น 2662"
+              value={exitPrice}
+              onChange={(e) => setExitPrice(e.target.value)}
+            />
+          </FormField>
+        </div>
+      </section>
+
+      {/* 3 — Discipline */}
+      <section className="xau-form-section space-y-4">
+        <FormSectionHeading
+          title={JOURNAL_SECTIONS.discipline.title}
+          term="disciplineChecklist"
+          description={JOURNAL_SECTIONS.discipline.description}
+        />
         <div className="space-y-3">
           {disciplineRows.map((row) => (
             <FormCheckRow
@@ -125,54 +225,105 @@ export function TradeLogFormSections({
         </div>
         <p className="inline-flex flex-wrap items-center gap-1.5 rounded-2xl border border-xau-border bg-xau-calm px-4 py-3 text-sm text-xau-ink">
           <span>
-            Discipline score: <span className="font-semibold">{disciplineScore}%</span>
+            คะแนนวินัย: <span className="font-semibold">{disciplineScore}%</span>
           </span>
           <HelpTooltip term="disciplineShort" label="About discipline score" size="sm" placement="above" />
         </p>
       </section>
 
+      {/* 4 — Setup & emotion */}
+      <section className="xau-form-section space-y-4">
+        <FormSectionHeading
+          title={JOURNAL_SECTIONS.context.title}
+          term="setupTags"
+          description={JOURNAL_SECTIONS.context.description}
+        />
+        <div>
+          <p className="mb-2 text-xs font-medium text-xau-muted">เซ็ตอัป (เลือกได้หลายอัน)</p>
+          <div className="flex flex-wrap gap-2">
+            {setupTagOptions.map((tag) => (
+              <button
+                type="button"
+                key={tag}
+                onClick={() => onSetupTagToggle(tag)}
+                className={`rounded-full px-4 py-2 text-sm transition ${
+                  setupTags.includes(tag)
+                    ? "bg-xau-calm font-medium text-xau-ink"
+                    : "border border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-xau-muted">
+            อารมณ์ตอนเทรด
+            <HelpTooltip term="emotion" label="About emotion" size="sm" placement="above" />
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {emotionOptions.map((option) => (
+              <button
+                type="button"
+                key={option}
+                onClick={() => setEmotion(option)}
+                className={`rounded-full px-3 py-1.5 text-sm transition ${
+                  emotion === option
+                    ? "bg-xau-calm font-medium text-xau-ink"
+                    : "border border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5 — Reflection */}
       <section className="xau-panel-accent space-y-4">
         <FormSectionHeading
-          title="Reflection notes"
+          title={JOURNAL_SECTIONS.notes.title}
           term="reflectionNotes"
-          description='Optional but recommended — builds discipline. If you fill a field, use at least 3 characters (e.g. "none" for mistakes).'
+          description={JOURNAL_SECTIONS.notes.description}
         />
-        <div className="space-y-4">
+        <label className="block space-y-2">
+          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
+            ทำไมถึงเข้า / เกิดอะไรขึ้น
+            <HelpTooltip term="noteContext" label="About context" size="sm" placement="above" />
+          </span>
+          <textarea
+            rows={2}
+            className="xau-textarea"
+            placeholder="เช่น London sweep + BOS, ตามแผน liquidity"
+            value={noteContext}
+            onChange={(e) => setNoteContext(e.target.value)}
+          />
+        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
           <label className="block space-y-2">
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-              Context
-              <HelpTooltip term="noteContext" label="About context" size="sm" placement="above" />
-            </span>
-            <textarea
-              rows={3}
-              className="xau-textarea"
-              placeholder="What was the market telling you?"
-              value={noteContext}
-              onChange={(e) => setNoteContext(e.target.value)}
-            />
-          </label>
-          <label className="block space-y-2">
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-              Mistake
+              ผิดพลาด
               <HelpTooltip term="noteMistake" label="About mistake" size="sm" placement="above" />
             </span>
             <textarea
-              rows={3}
+              rows={2}
               className="xau-textarea"
-              placeholder="What went wrong (or 'none')?"
+              placeholder='none หรือ "เข้าเร็วเกิน"'
               value={noteMistake}
               onChange={(e) => setNoteMistake(e.target.value)}
             />
           </label>
           <label className="block space-y-2">
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-              Next action
+              ครั้งหน้าทำอย่างไร
               <HelpTooltip term="noteNextAction" label="About next action" size="sm" placement="above" />
             </span>
             <textarea
-              rows={3}
+              rows={2}
               className="xau-textarea"
-              placeholder="What will you do differently?"
+              placeholder="กฎเดียวที่จะทำต่อไม้ถัดไป"
               value={noteNextAction}
               onChange={(e) => setNoteNextAction(e.target.value)}
             />
@@ -180,147 +331,37 @@ export function TradeLogFormSections({
         </div>
       </section>
 
-      <section className="xau-form-section">
-        <FormSectionHeading title="Trade details" />
+      {/* Optional — MAE/MFE */}
+      <FormCollapsible
+        title={JOURNAL_SECTIONS.advanced.title}
+        description={JOURNAL_SECTIONS.advanced.description}
+      >
         <div className="grid gap-5 sm:grid-cols-2">
-          <FormField label="Instrument" tooltipTerm="instrument">
-            <input className="xau-field" value="XAUUSD (Gold)" disabled readOnly />
-          </FormField>
-          <FormField label="Date" tooltipTerm="tradeDate">
-            <input type="date" className="xau-field" value={date} onChange={(e) => setDate(e.target.value)} />
-          </FormField>
-          <FormField label="Entry time" tooltipTerm="entryTime">
-            <input type="time" className="xau-field" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} />
-          </FormField>
-          <FormField label="Exit time" hint="Optional — add when the trade closes" tooltipTerm="exitTime">
-            <input type="time" className="xau-field" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
-          </FormField>
-          <FormField label="Direction" tooltipTerm="tradeType">
-            <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as TradeType)}>
-              {tradeTypeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </FormField>
-          <FormField label="Session" hint={SESSION_SELECT_HINT} tooltipTerm="session">
-            <select className="xau-select" value={session} onChange={(e) => setSession(e.target.value as SessionType)}>
-              {sessionOptions.map((option) => (
-                <option key={option} value={option}>
-                  {sessionSelectLabel(option)}
-                </option>
-              ))}
-            </select>
-          </FormField>
-          <FormField label="Net P&amp;L ($)" tooltipTerm="netPnlTrade">
-            <NetPnlField value={netProfitLoss} onChange={setNetProfitLoss} />
-          </FormField>
-          <FormField label="R-multiple" tooltipTerm="rMultiple">
-            <RMultipleField value={rMultiple} onChange={setRMultiple} />
-          </FormField>
-        </div>
-      </section>
-
-      <section className="xau-form-section">
-        <FormSectionHeading title="Prices &amp; excursions" />
-        <div className="grid gap-5 sm:grid-cols-2">
-          <FormField
-            label="Entry price"
-            tooltipTerm="entryPrice"
-            hint={`Spot XAUUSD, typically ${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX.toLocaleString()}`}
-          >
+          <FormField label="MAE ($)" tooltipTerm="mae" hint="ขาดทุนลอยสูงสุดระหว่างถือ">
             <input
-              type="number"
-              step="0.01"
-              min={XAU_SPOT_PRICE_MIN}
-              max={XAU_SPOT_PRICE_MAX}
-              required
-              className="xau-field"
-              placeholder="e.g. 4448"
-              value={entryPrice}
-              onChange={(e) => setEntryPrice(e.target.value)}
-            />
-          </FormField>
-          <FormField
-            label="Exit price"
-            tooltipTerm="exitPrice"
-            hint={
-              exitPriceOptional
-                ? "Optional until trade closes — can match entry if still open"
-                : "Required when trade is closed"
-            }
-          >
-            <input
-              type="number"
-              step="0.01"
-              min={XAU_SPOT_PRICE_MIN}
-              max={XAU_SPOT_PRICE_MAX}
-              required={!exitPriceOptional || Boolean(exitTime)}
-              className="xau-field"
-              placeholder="e.g. 4430"
-              value={exitPrice}
-              onChange={(e) => setExitPrice(e.target.value)}
-            />
-          </FormField>
-          <FormField label="MAE ($)" tooltipTerm="mae" hint="ไม่บังคับ — ขาดทุนสูงสุดระหว่างถือออเดอร์ ($)">
-            <input
-              type="number"
-              step="0.1"
+              type="text"
+              inputMode="decimal"
               className="xau-field bg-xau-loss-bg"
-              placeholder="Optional"
+              placeholder="ไม่บังคับ"
               value={mae}
-              onChange={(e) => setMae(e.target.value)}
+              onChange={(e) => setMae(e.target.value.replace(/[^\d.-]/g, ""))}
             />
           </FormField>
-          <FormField label="MFE ($)" tooltipTerm="mfe" hint="ไม่บังคับ — กำไรลอยสูงสุดก่อนปิด ($)">
+          <FormField label="MFE ($)" tooltipTerm="mfe" hint="กำไรลอยสูงสุดก่อนปิด">
             <input
-              type="number"
-              step="0.1"
+              type="text"
+              inputMode="decimal"
               className="xau-field bg-xau-profit-bg"
-              placeholder="Optional"
+              placeholder="ไม่บังคับ"
               value={mfe}
-              onChange={(e) => setMfe(e.target.value)}
+              onChange={(e) => setMfe(e.target.value.replace(/[^\d.-]/g, ""))}
             />
           </FormField>
         </div>
-      </section>
+      </FormCollapsible>
 
-      <section className="xau-form-section">
-        <FormSectionHeading title="Setup tags &amp; emotion" term="setupTags" />
-        <div className="flex flex-wrap gap-2">
-          {setupTagOptions.map((tag) => (
-            <button
-              type="button"
-              key={tag}
-              onClick={() => onSetupTagToggle(tag)}
-              className={`rounded-full px-4 py-2 text-sm transition ${
-                setupTags.includes(tag)
-                  ? "bg-xau-calm font-medium text-xau-ink"
-                  : "border border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
-              }`}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-        <FormField label="Emotion during trade" tooltipTerm="emotion">
-          <select className="xau-select" value={emotion} onChange={(e) => setEmotion(e.target.value)}>
-            {emotionOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </FormField>
-      </section>
-
-      <section className="xau-form-section">
-        <FormSectionHeading
-          title="Chart screenshots"
-          term="chartBefore"
-          description="Upload saves into your log (max 2.5 MB). Or paste a public https:// image link."
-        />
+      {/* Optional — Charts */}
+      <FormCollapsible title={JOURNAL_SECTIONS.charts.title} description={JOURNAL_SECTIONS.charts.description}>
         {chartUploadError && (
           <p className="text-sm text-xau-loss" role="alert">
             {chartUploadError}
@@ -336,7 +377,7 @@ export function TradeLogFormSections({
             }}
           >
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-              Before trade
+              ก่อนเข้า
               <HelpTooltip term="chartBefore" label="About before chart" size="sm" placement="above" />
             </span>
             <input
@@ -347,7 +388,7 @@ export function TradeLogFormSections({
             />
             <input
               className="xau-field text-xs"
-              placeholder="Or paste https:// image URL"
+              placeholder="หรือวางลิงก์ https://"
               value={beforeChartUrl.startsWith("data:") ? "" : beforeChartUrl}
               onChange={(e) => setBeforeChartUrl(e.target.value)}
             />
@@ -366,7 +407,7 @@ export function TradeLogFormSections({
             }}
           >
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-              After trade
+              หลังปิด
               <HelpTooltip term="chartAfter" label="About after chart" size="sm" placement="above" />
             </span>
             <input
@@ -377,7 +418,7 @@ export function TradeLogFormSections({
             />
             <input
               className="xau-field text-xs"
-              placeholder="Or paste https:// image URL"
+              placeholder="หรือวางลิงก์ https://"
               value={afterChartUrl.startsWith("data:") ? "" : afterChartUrl}
               onChange={(e) => setAfterChartUrl(e.target.value)}
             />
@@ -388,7 +429,7 @@ export function TradeLogFormSections({
             )}
           </label>
         </div>
-      </section>
-    </>
+      </FormCollapsible>
+    </div>
   );
 }
