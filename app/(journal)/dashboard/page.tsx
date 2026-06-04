@@ -2,11 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DashboardMetricsHero } from "@/components/dashboard/DashboardMetricsHero";
-import {
-  DashboardOverviewChartsSkeleton,
-} from "@/components/dashboard/DashboardOverviewCharts";
 import {
   DashboardSectionNav,
   type DashboardTab,
@@ -30,16 +27,29 @@ import {
 } from "@/lib/analytics";
 import { getRuleBreakStats } from "@/lib/discipline";
 
-const DashboardOverviewCharts = dynamic(
-  () =>
-    import("@/components/dashboard/DashboardOverviewCharts").then((m) => m.DashboardOverviewCharts),
-  { ssr: false, loading: () => <DashboardOverviewChartsSkeleton /> }
+const EquityChart = dynamic(
+  () => import("@/components/dashboard/EquityChart").then((m) => m.EquityChart),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-2xl bg-xau-card" /> }
 );
 
-const DashboardAnalyticsPanels = dynamic(
-  () =>
-    import("@/components/dashboard/DashboardAnalyticsPanels").then((m) => m.DashboardAnalyticsPanels),
-  { ssr: false, loading: () => <div className="h-96 animate-pulse rounded-2xl bg-xau-card" aria-hidden /> }
+const SessionMini = dynamic(
+  () => import("@/components/dashboard/SessionMini").then((m) => m.SessionMini),
+  { ssr: false, loading: () => <div className="h-40 animate-pulse rounded-2xl bg-xau-card" /> }
+);
+
+const SetupAnalytics = dynamic(
+  () => import("@/components/dashboard/SetupAnalytics").then((m) => m.SetupAnalytics),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-2xl bg-xau-card" /> }
+);
+
+const ExecutionAnalytics = dynamic(
+  () => import("@/components/dashboard/ExecutionAnalytics").then((m) => m.ExecutionAnalytics),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-xau-card" /> }
+);
+
+const DisciplineAnalytics = dynamic(
+  () => import("@/components/dashboard/DisciplineAnalytics").then((m) => m.DisciplineAnalytics),
+  { ssr: false, loading: () => <div className="h-48 animate-pulse rounded-2xl bg-xau-card" /> }
 );
 
 function tabFromHash(): DashboardTab {
@@ -52,50 +62,23 @@ function hashForTab(tab: DashboardTab): string {
   return tab === "overview" ? "" : `#${tab}`;
 }
 
-function DashboardSkeleton() {
-  return (
-    <div className="xau-page-dashboard" aria-busy="true" aria-label="Loading dashboard">
-      <div className="h-24 animate-pulse rounded-2xl bg-xau-card" />
-      <div className="h-28 animate-pulse rounded-2xl bg-xau-card" />
-      <div className="grid gap-5 lg:grid-cols-12">
-        <div className="h-64 animate-pulse rounded-2xl bg-xau-card md:h-80 lg:col-span-8" />
-        <div className="h-64 animate-pulse rounded-2xl bg-xau-card md:h-80 lg:col-span-4" />
-      </div>
-    </div>
-  );
-}
-
 export default function DashboardPage() {
   const { trades, loading } = useXauJournal();
   const [activeTab, setActiveTab] = useState<DashboardTab>(() => tabFromHash());
 
-  const headline = useMemo(
-    () => ({
-      winRate: getWinRate(trades),
-      avgDiscipline: getAverageDisciplineScore(trades),
-      monthlyDiscipline: getMonthlyDisciplineScore(trades),
-      totalPnl: getTotalPnl(trades),
-      profitFactor: getProfitFactor(trades),
-    }),
-    [trades]
-  );
-
-  const equityCurve = useMemo(() => getEquityCurve(trades), [trades]);
-  const sessionData = useMemo(() => getSessionPerformance(trades), [trades]);
+  const winRate = getWinRate(trades);
+  const avgDiscipline = getAverageDisciplineScore(trades);
+  const monthlyDiscipline = getMonthlyDisciplineScore(trades);
+  const totalPnl = getTotalPnl(trades);
+  const profitFactor = getProfitFactor(trades);
+  const equityCurve = getEquityCurve(trades);
+  const sessionData = getSessionPerformance(trades);
+  const setupVsMistakes = getSetupWinRateVsMistakes(trades);
+  const ruleBreaks = getRuleBreakStats(trades).map((r) => ({ label: r.label, count: r.count }));
+  const heatmap = getDayHourHeatmap(trades);
+  const avgHoldMinutes = getAverageHoldTimeMinutes(trades);
+  const { avgMae, avgMfe } = getAverageMaeMfe(trades);
   const tradeCount = trades.length;
-
-  const analyticsData = useMemo(() => {
-    if (activeTab !== "analytics") return null;
-    const { avgMae, avgMfe } = getAverageMaeMfe(trades);
-    return {
-      setupVsMistakes: getSetupWinRateVsMistakes(trades),
-      ruleBreaks: getRuleBreakStats(trades).map((r) => ({ label: r.label, count: r.count })),
-      heatmap: getDayHourHeatmap(trades),
-      avgHoldMinutes: getAverageHoldTimeMinutes(trades),
-      avgMae,
-      avgMfe,
-    };
-  }, [trades, activeTab]);
 
   const setTab = useCallback((tab: DashboardTab) => {
     setActiveTab(tab);
@@ -111,7 +94,7 @@ export default function DashboardPage() {
   }, []);
 
   if (loading) {
-    return <DashboardSkeleton />;
+    return <p className="text-sm text-xau-muted">Loading your journal…</p>;
   }
 
   return (
@@ -139,11 +122,11 @@ export default function DashboardPage() {
       </header>
 
       <DashboardMetricsHero
-        winRate={headline.winRate}
-        avgDiscipline={headline.avgDiscipline}
-        monthlyDiscipline={headline.monthlyDiscipline}
-        totalPnl={headline.totalPnl}
-        profitFactor={headline.profitFactor}
+        winRate={winRate}
+        avgDiscipline={avgDiscipline}
+        monthlyDiscipline={monthlyDiscipline}
+        totalPnl={totalPnl}
+        profitFactor={profitFactor}
       />
 
       {activeTab === "overview" && (
@@ -151,9 +134,16 @@ export default function DashboardPage() {
           id="dashboard-panel-overview"
           role="tabpanel"
           aria-labelledby="dashboard-tab-overview"
-          className="animate-rise-up grid gap-5 lg:grid-cols-12 lg:items-stretch lg:gap-6"
+          className="animate-rise-up grid gap-5 lg:grid-cols-12 lg:items-start lg:gap-6"
         >
-          <DashboardOverviewCharts equityCurve={equityCurve} sessionData={sessionData} />
+          <div className="lg:col-span-8">
+            <EquityChart equityCurve={equityCurve} />
+          </div>
+
+          <aside className="flex flex-col gap-5 lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
+            <SessionMini sessionData={sessionData} />
+          </aside>
+
           <div className="lg:col-span-12">
             <RecentTradesPanel trades={trades} />
           </div>
@@ -194,17 +184,18 @@ export default function DashboardPage() {
                   Log first trade
                 </Link>
               </div>
-            ) : analyticsData ? (
-              <DashboardAnalyticsPanels
-                setupVsMistakes={analyticsData.setupVsMistakes}
-                sessionData={sessionData}
-                avgHoldMinutes={analyticsData.avgHoldMinutes}
-                avgMae={analyticsData.avgMae}
-                avgMfe={analyticsData.avgMfe}
-                ruleBreaks={analyticsData.ruleBreaks}
-                heatmap={analyticsData.heatmap}
-              />
-            ) : null}
+            ) : (
+              <div className="space-y-6">
+                <SetupAnalytics setupVsMistakes={setupVsMistakes} />
+                <ExecutionAnalytics
+                  sessionData={sessionData}
+                  avgHoldMinutes={avgHoldMinutes}
+                  avgMae={avgMae}
+                  avgMfe={avgMfe}
+                />
+                <DisciplineAnalytics ruleBreaks={ruleBreaks} heatmap={heatmap} />
+              </div>
+            )}
           </div>
         </section>
       )}

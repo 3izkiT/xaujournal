@@ -1,12 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { RedirectToDashboardTab } from "@/components/dashboard/RedirectToDashboardTab";
 
 export default function AnalyticsPage() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace("/dashboard#analytics");
-  }, [router]);
-  return <p className="text-sm text-xau-muted">Opening analytics…</p>;
+  return <RedirectToDashboardTab hash="#analytics" />;
 }

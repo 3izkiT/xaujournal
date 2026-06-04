@@ -172,19 +172,27 @@
   }
 
   .xau-btn-tab {
-    @apply rounded-lg px-3 py-2 text-sm font-medium transition;
+    @apply relative shrink-0 rounded-none border-0 bg-transparent px-4 py-2.5 text-sm font-medium transition;
     color: var(--xau-muted);
   }
 
   .xau-btn-tab:hover {
     color: var(--xau-ink);
-    background: var(--xau-app);
   }
 
   .xau-btn-tab[aria-selected="true"] {
     color: var(--xau-ink);
-    background: var(--xau-card);
-    box-shadow: var(--xau-shadow-card);
+  }
+
+  .xau-btn-tab[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 9999px;
+    background: var(--xau-gold-accent);
   }
 
   .xau-btn-link {
