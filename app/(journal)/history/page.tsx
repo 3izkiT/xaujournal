@@ -2,37 +2,33 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TradeDetailCard } from "@/components/journal/TradeDetailCard";
-import { TradeEditForm } from "@/components/journal/TradeEditForm";
 import { useXauJournal } from "@/components/XauJournalContext";
+import { sortTradesByLoggedAt } from "@/lib/sort-trades";
 
-function HistoryPageContent() {
+export default function HistoryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justSaved = searchParams.get("saved") === "1";
   const tradeFromUrl = searchParams.get("trade");
   const { trades, loading, removeTrade } = useXauJournal();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const selectedTrade = useMemo(
-    () => trades.find((t) => t.id === selectedId) ?? null,
-    [trades, selectedId]
-  );
+  const sortedTrades = useMemo(() => sortTradesByLoggedAt(trades), [trades]);
 
-  const editingTrade = useMemo(
-    () => (editingId ? trades.find((t) => t.id === editingId) ?? null : null),
-    [trades, editingId]
+  const selectedTrade = useMemo(
+    () => sortedTrades.find((t) => t.id === selectedId) ?? null,
+    [sortedTrades, selectedId]
   );
 
   useEffect(() => {
-    if (tradeFromUrl && trades.some((t) => t.id === tradeFromUrl)) {
+    if (tradeFromUrl && sortedTrades.some((t) => t.id === tradeFromUrl)) {
       setSelectedId(tradeFromUrl);
     }
-  }, [tradeFromUrl, trades]);
+  }, [tradeFromUrl, sortedTrades]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -41,7 +37,6 @@ function HistoryPageContent() {
   }, [selectedId]);
 
   const openTrade = (id: string) => {
-    setEditingId(null);
     setSelectedId(id);
     const params = new URLSearchParams(searchParams.toString());
     params.set("trade", id);
@@ -67,7 +62,6 @@ function HistoryPageContent() {
       return;
     }
     if (selectedId === tradeId) closeDetail();
-    if (editingId === tradeId) setEditingId(null);
   };
 
   if (loading) {
@@ -81,7 +75,7 @@ function HistoryPageContent() {
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Trade log</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">History</h1>
           <p className="mt-1 text-sm text-xau-muted">
-            {trades.length} total entries · click <span className="font-medium text-xau-ink">View</span> for full notes
+            {sortedTrades.length} total entries · click <span className="font-medium text-xau-ink">View</span> for full notes
             and charts
           </p>
         </div>
@@ -105,11 +99,7 @@ function HistoryPageContent() {
         </div>
       )}
 
-      {editingTrade && (
-        <TradeEditForm trade={editingTrade} onClose={() => setEditingId(null)} onSaved={() => setSelectedId(editingTrade.id)} />
-      )}
-
-      {trades.length === 0 ? (
+      {sortedTrades.length === 0 ? (
         <div className="xau-card-bordered px-6 py-12 text-center text-sm text-xau-muted">
           No trades yet.{" "}
           <Link href="/journal-entry" className="font-medium text-xau-ink underline-offset-2 hover:underline">
@@ -117,66 +107,7 @@ function HistoryPageContent() {
           </Link>
         </div>
       ) : (
-        <>
-          <ul className="space-y-3 md:hidden" aria-label="Trade history">
-            {trades.map((trade) => {
-              const preview =
-                trade.noteContext.trim() || trade.noteMistake.trim() || trade.noteNextAction.trim();
-              const isSelected = selectedId === trade.id;
-              return (
-                <li
-                  key={trade.id}
-                  className={`xau-card-bordered p-4 ${isSelected ? "ring-1 ring-xau-gold-accent/50" : ""}`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-medium text-xau-ink">{trade.date}</p>
-                      <p className="mt-0.5 text-xs text-xau-muted">
-                        {trade.type} · {trade.session.replace(" Session", "")}
-                      </p>
-                      {preview ? (
-                        <p className="mt-2 line-clamp-2 text-xs text-xau-muted">{preview}</p>
-                      ) : null}
-                    </div>
-                    <p
-                      className={`shrink-0 text-sm font-semibold ${trade.netProfitLoss >= 0 ? "text-tv-profit" : "text-tv-loss"}`}
-                    >
-                      {trade.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(trade.netProfitLoss).toFixed(2)}
-                    </p>
-                  </div>
-                  <p className="mt-2 text-xs text-xau-muted">Discipline {trade.disciplineScore}%</p>
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      onClick={() => openTrade(trade.id)}
-                      className="xau-btn-link-gold"
-                    >
-                      {isSelected ? "Viewing" : "View"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedId(trade.id);
-                        setEditingId(trade.id);
-                      }}
-                      className="xau-btn-link"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      disabled={deletingId === trade.id}
-                      onClick={() => void handleDelete(trade.id, trade.date)}
-                      className="xau-btn-link-danger disabled:opacity-50"
-                    >
-                      {deletingId === trade.id ? "Deleting…" : "Delete"}
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="xau-card-bordered hidden overflow-x-auto md:block">
+        <div className="xau-card-bordered overflow-x-auto">
           <table className="w-full min-w-[800px] text-left text-sm">
             <thead className="border-b border-xau-border bg-xau-app text-xs uppercase tracking-wide text-xau-muted">
               <tr>
@@ -191,11 +122,14 @@ function HistoryPageContent() {
               </tr>
             </thead>
             <tbody className="divide-y divide-xau-border">
-              {trades.map((trade) => {
+              {sortedTrades.map((trade) => {
                 const preview = trade.noteContext.trim() || trade.noteMistake.trim() || trade.noteNextAction.trim();
                 const isSelected = selectedId === trade.id;
                 return (
-                  <tr key={trade.id} className={`text-xau-ink ${isSelected ? "bg-xau-gold-soft/40" : ""}`}>
+                  <tr
+                    key={trade.id}
+                    className={`text-xau-ink ${isSelected ? "bg-xau-gold-soft/40" : ""}`}
+                  >
                     <td className="px-4 py-3 whitespace-nowrap">{trade.date}</td>
                     <td className="px-4 py-3">{trade.type}</td>
                     <td className="px-4 py-3 text-xau-muted">{trade.session.replace(" Session", "")}</td>
@@ -216,25 +150,15 @@ function HistoryPageContent() {
                         <button
                           type="button"
                           onClick={() => openTrade(trade.id)}
-                          className="xau-btn-link-gold"
+                          className="text-xs font-medium text-xau-gold-accent hover:underline"
                         >
                           {isSelected ? "Viewing" : "View"}
                         </button>
                         <button
                           type="button"
-                          onClick={() => {
-                            setSelectedId(trade.id);
-                            setEditingId(trade.id);
-                          }}
-                          className="xau-btn-link"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
                           disabled={deletingId === trade.id}
                           onClick={() => void handleDelete(trade.id, trade.date)}
-                          className="xau-btn-link-danger disabled:opacity-50"
+                          className="text-xs font-medium text-xau-loss hover:underline disabled:opacity-50"
                         >
                           {deletingId === trade.id ? "Deleting…" : "Delete"}
                         </button>
@@ -246,22 +170,13 @@ function HistoryPageContent() {
             </tbody>
           </table>
         </div>
-        </>
       )}
 
-      {selectedTrade && !editingId && (
+      {selectedTrade && (
         <div id="trade-detail">
           <TradeDetailCard trade={selectedTrade} onClose={closeDetail} />
         </div>
       )}
     </div>
-  );
-}
-
-export default function HistoryPage() {
-  return (
-    <Suspense fallback={<p className="text-sm text-xau-muted">Loading history…</p>}>
-      <HistoryPageContent />
-    </Suspense>
   );
 }

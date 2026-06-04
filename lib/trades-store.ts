@@ -1,23 +1,27 @@
 import { EmotionType, Plan, SessionType, TradeType } from "@prisma/client";
 
-import { normalizeSessionLabel } from "@/lib/sessions";
 import { JournalTrade } from "@/lib/types";
+import { sortTradesByLoggedAt } from "@/lib/sort-trades";
 
 import { prisma } from "@/lib/db";
 
+
+
 function toSession(label: JournalTrade["session"]): SessionType {
-  const normalized = normalizeSessionLabel(label);
-  if (normalized === "Sydney Session") return SessionType.SYDNEY;
-  if (normalized === "Tokyo Session") return SessionType.TOKYO;
-  if (normalized === "New York Session") return SessionType.NEW_YORK;
-  return SessionType.LONDON;
+  if (label === "Sydney Session") return SessionType.SYDNEY;
+  if (label === "London Session") return SessionType.LONDON;
+  if (label === "New York Session") return SessionType.NEW_YORK;
+  if (label === "Tokyo Session" || label === "Asian Session") return SessionType.TOKYO;
+  return SessionType.TOKYO;
 }
+
+
 
 function fromSession(session: SessionType): JournalTrade["session"] {
   if (session === SessionType.SYDNEY) return "Sydney Session";
-  if (session === SessionType.TOKYO) return "Tokyo Session";
+  if (session === SessionType.LONDON) return "London Session";
   if (session === SessionType.NEW_YORK) return "New York Session";
-  return "London Session";
+  return "Tokyo Session";
 }
 
 
@@ -156,6 +160,8 @@ function mapTrade(trade: {
 
   noteNextAction: string;
 
+  createdAt: Date;
+
 }): JournalTrade {
 
   const num = (v: { toNumber?: () => number } | number | string | null) =>
@@ -220,6 +226,8 @@ function mapTrade(trade: {
 
     noteNextAction: trade.noteNextAction,
 
+    createdAt: trade.createdAt.toISOString(),
+
   };
 
 }
@@ -256,13 +264,13 @@ export async function getTradesForUser(userId: string): Promise<JournalTrade[]> 
 
     where: { userId },
 
-    orderBy: { date: "desc" },
+    orderBy: [{ createdAt: "desc" }, { date: "desc" }],
 
   });
 
 
 
-  return trades.map(mapTrade);
+  return sortTradesByLoggedAt(trades.map(mapTrade));
 
 }
 
@@ -283,47 +291,6 @@ function computeHoldMinutes(entryAt: Date, exitAt: Date | null | undefined, expl
 export async function deleteTradeForUser(userId: string, tradeId: string): Promise<boolean> {
   const result = await prisma.trade.deleteMany({
     where: { id: tradeId, userId },
-  });
-  return result.count > 0;
-}
-
-export async function updateTradeForUser(
-  userId: string,
-  tradeId: string,
-  trade: JournalTrade
-): Promise<boolean> {
-  const entryAt = new Date(trade.entryAt || trade.date);
-  const exitAt = trade.exitAt ? new Date(trade.exitAt) : null;
-  const holdTimeMinutes = computeHoldMinutes(entryAt, exitAt, trade.holdTimeMinutes);
-
-  const result = await prisma.trade.updateMany({
-    where: { id: tradeId, userId },
-    data: {
-      asset: trade.asset,
-      date: new Date(trade.date),
-      entryAt,
-      exitAt,
-      holdTimeMinutes,
-      type: toTradeType(trade.type),
-      netProfitLoss: trade.netProfitLoss,
-      rMultiple: trade.rMultiple,
-      entryPrice: trade.entryPrice,
-      exitPrice: trade.exitPrice,
-      mae: trade.mae,
-      mfe: trade.mfe,
-      session: toSession(trade.session),
-      setupTags: trade.setupTags,
-      emotion: toEmotion(trade.emotion),
-      beforeChartUrl: trade.beforeChartUrl,
-      afterChartUrl: trade.afterChartUrl,
-      followedPlan: trade.disciplineChecklist.followedPlan,
-      rrAtLeastOneToTwo: trade.disciplineChecklist.rrAtLeastOneToTwo,
-      calmMindset: trade.disciplineChecklist.calmMindset,
-      disciplineScore: trade.disciplineScore,
-      noteContext: trade.noteContext.trim(),
-      noteMistake: trade.noteMistake.trim(),
-      noteNextAction: trade.noteNextAction.trim(),
-    },
   });
   return result.count > 0;
 }
@@ -398,4 +365,44 @@ export async function addTradeForUser(userId: string, trade: JournalTrade) {
 
 }
 
+export async function updateTradeForUser(
+  userId: string,
+  tradeId: string,
+  trade: JournalTrade
+): Promise<boolean> {
+  const entryAt = new Date(trade.entryAt || trade.date);
+  const exitAt = trade.exitAt ? new Date(trade.exitAt) : null;
+  const holdTimeMinutes = computeHoldMinutes(entryAt, exitAt, trade.holdTimeMinutes);
+
+  const result = await prisma.trade.updateMany({
+    where: { id: tradeId, userId },
+    data: {
+      asset: trade.asset,
+      date: new Date(trade.date),
+      entryAt,
+      exitAt,
+      holdTimeMinutes,
+      type: toTradeType(trade.type),
+      netProfitLoss: trade.netProfitLoss,
+      rMultiple: trade.rMultiple,
+      entryPrice: trade.entryPrice,
+      exitPrice: trade.exitPrice,
+      mae: trade.mae,
+      mfe: trade.mfe,
+      session: toSession(trade.session),
+      setupTags: trade.setupTags,
+      emotion: toEmotion(trade.emotion),
+      beforeChartUrl: trade.beforeChartUrl,
+      afterChartUrl: trade.afterChartUrl,
+      followedPlan: trade.disciplineChecklist.followedPlan,
+      rrAtLeastOneToTwo: trade.disciplineChecklist.rrAtLeastOneToTwo,
+      calmMindset: trade.disciplineChecklist.calmMindset,
+      disciplineScore: trade.disciplineScore,
+      noteContext: trade.noteContext.trim(),
+      noteMistake: trade.noteMistake.trim(),
+      noteNextAction: trade.noteNextAction.trim(),
+    },
+  });
+  return result.count > 0;
+}
 
