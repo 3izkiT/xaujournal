@@ -117,7 +117,66 @@ function HistoryPageContent() {
           </Link>
         </div>
       ) : (
-        <div className="xau-card-bordered overflow-x-auto">
+        <>
+          <ul className="space-y-3 md:hidden" aria-label="Trade history">
+            {trades.map((trade) => {
+              const preview =
+                trade.noteContext.trim() || trade.noteMistake.trim() || trade.noteNextAction.trim();
+              const isSelected = selectedId === trade.id;
+              return (
+                <li
+                  key={trade.id}
+                  className={`xau-card-bordered p-4 ${isSelected ? "ring-1 ring-xau-gold-accent/50" : ""}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium text-xau-ink">{trade.date}</p>
+                      <p className="mt-0.5 text-xs text-xau-muted">
+                        {trade.type} · {trade.session.replace(" Session", "")}
+                      </p>
+                      {preview ? (
+                        <p className="mt-2 line-clamp-2 text-xs text-xau-muted">{preview}</p>
+                      ) : null}
+                    </div>
+                    <p
+                      className={`shrink-0 text-sm font-semibold ${trade.netProfitLoss >= 0 ? "text-tv-profit" : "text-tv-loss"}`}
+                    >
+                      {trade.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(trade.netProfitLoss).toFixed(2)}
+                    </p>
+                  </div>
+                  <p className="mt-2 text-xs text-xau-muted">Discipline {trade.disciplineScore}%</p>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => openTrade(trade.id)}
+                      className="text-xs font-medium text-xau-gold-accent hover:underline"
+                    >
+                      {isSelected ? "Viewing" : "View"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedId(trade.id);
+                        setEditingId(trade.id);
+                      }}
+                      className="text-xs font-medium text-xau-ink hover:underline"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      disabled={deletingId === trade.id}
+                      onClick={() => void handleDelete(trade.id, trade.date)}
+                      className="text-xs font-medium text-xau-loss hover:underline disabled:opacity-50"
+                    >
+                      {deletingId === trade.id ? "Deleting…" : "Delete"}
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="xau-card-bordered hidden overflow-x-auto md:block">
           <table className="w-full min-w-[800px] text-left text-sm">
             <thead className="border-b border-xau-border bg-xau-app text-xs uppercase tracking-wide text-xau-muted">
               <tr>
@@ -187,6 +246,7 @@ function HistoryPageContent() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {selectedTrade && !editingId && (

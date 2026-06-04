@@ -56,8 +56,8 @@ export function DisciplineAnalytics({ ruleBreaks, heatmap }: Props) {
         <p className="mb-4 mt-0.5 text-xs text-xau-muted">
           Green / red like TradingView — entry time in your timezone.
         </p>
-        <div className="overflow-x-auto">
-          <div className="min-w-[520px]">
+        <div className="overflow-x-hidden md:overflow-x-auto">
+          <div className="w-full min-w-0 md:min-w-[520px]">
             <div className="mb-2 grid grid-cols-[40px_repeat(8,1fr)] gap-1 text-[10px] text-xau-muted">
               <span />
               {activeHours.map((h) => (

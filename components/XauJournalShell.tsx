@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { ReactNode, useEffect, useState } from "react";
-import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BRAND_NAME, BRAND_SHORT } from "@/lib/brand";
 import { PAYMENTS_ENABLED } from "@/lib/monetization";
@@ -14,6 +12,17 @@ type NavItem = {
   label: string;
   icon: ReactNode;
 };
+
+const mainNav: NavItem[] = [
+  { href: "/dashboard", label: "Dashboard", icon: <IconGrid /> },
+  { href: "/analytics", label: "Analytics", icon: <IconChart /> },
+  { href: "/calendar", label: "Calendar", icon: <IconCalendar /> },
+  { href: "/journal-entry", label: "Journal", icon: <IconPen /> },
+  { href: "/history", label: "History", icon: <IconList /> },
+  { href: "/gallery", label: "Gallery", icon: <IconImage /> },
+];
+
+const secondaryNav: NavItem[] = [{ href: "/settings", label: "Settings", icon: <IconGear /> }];
 
 function IconGrid() {
   return (
@@ -127,19 +136,6 @@ function SidebarContent({
   onNavigate?: () => void;
   onSignOut: () => void;
 }) {
-  const t = useTranslations("nav");
-
-  const mainNav: NavItem[] = [
-    { href: "/dashboard", label: t("dashboard"), icon: <IconGrid /> },
-    { href: "/analytics", label: t("analytics"), icon: <IconChart /> },
-    { href: "/calendar", label: t("calendar"), icon: <IconCalendar /> },
-    { href: "/journal-entry", label: t("journal"), icon: <IconPen /> },
-    { href: "/history", label: t("history"), icon: <IconList /> },
-    { href: "/gallery", label: t("gallery"), icon: <IconImage /> },
-  ];
-
-  const secondaryNav: NavItem[] = [{ href: "/settings", label: t("settings"), icon: <IconGear /> }];
-
   return (
     <>
       <div className="flex items-center justify-between gap-2 px-2">
@@ -152,7 +148,6 @@ function SidebarContent({
             <p className="text-[10px] uppercase tracking-wider text-xau-muted">{BRAND_SHORT}</p>
           </div>
         </div>
-        <LanguageSwitcher className="hidden shrink-0 lg:inline-flex" />
       </div>
 
       <nav className="mt-8 flex flex-1 flex-col gap-1" aria-label="Main navigation">
@@ -167,14 +162,13 @@ function SidebarContent({
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
         <ThemeToggle className="w-full justify-center" />
-        <LanguageSwitcher className="mx-auto lg:hidden" menuPlacement="above" />
         {PAYMENTS_ENABLED && (
           <Link
             href="/pricing"
             className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
             onClick={onNavigate}
           >
-            {t("upgrade")}
+            Upgrade plan
           </Link>
         )}
         <p className="truncate px-3 text-[11px] text-xau-muted">{userEmail}</p>
@@ -183,7 +177,7 @@ function SidebarContent({
           onClick={onSignOut}
           className="w-full rounded-xl px-3 py-2 text-left text-sm text-xau-loss hover:bg-xau-rose"
         >
-          {t("signOut")}
+          Sign out
         </button>
       </div>
     </>
@@ -228,7 +222,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen bg-xau-app text-xau-ink lg:flex">
+    <div className="min-h-screen overflow-x-clip bg-xau-app text-xau-ink lg:flex">
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-xau-border bg-xau-card px-4 py-3 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
@@ -237,7 +231,6 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           <span className="text-sm font-semibold">{BRAND_NAME}</span>
         </Link>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
           <ThemeToggle />
           <button
             type="button"

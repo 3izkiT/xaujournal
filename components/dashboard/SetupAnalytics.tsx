@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { useMdUp } from "@/lib/use-md-up";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SetupRow = { setup: string; winRate: number; mistakes: number };
@@ -38,8 +39,10 @@ function SetupTooltip({
 
 export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[] }) {
   const palette = useChartPalette();
+  const mdUp = useMdUp();
   const setupCount = setupVsMistakes.length;
   const setupMinWidth = Math.max(320, setupCount * 120);
+  const chartScroll = mdUp && setupCount > 3;
   const hasSetupData = setupVsMistakes.some((row) => row.winRate > 0 || row.mistakes > 0);
 
   return (
@@ -54,8 +57,8 @@ export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[
         </div>
       ) : (
         <ChartContainer className="h-56 sm:h-64 md:h-72">
-          <div className="h-full w-full overflow-x-auto overflow-y-hidden pb-1">
-            <div className="h-full" style={{ minWidth: setupMinWidth }}>
+          <div className={`h-full w-full overflow-y-hidden pb-1 ${chartScroll ? "overflow-x-auto" : "overflow-x-hidden"}`}>
+            <div className="h-full min-w-0 w-full" style={chartScroll ? { minWidth: setupMinWidth } : undefined}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={setupVsMistakes} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
                     <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
