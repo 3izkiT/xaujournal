@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartImage } from "@/components/journal/ChartImage";
+import { ChartUploadBlock } from "@/components/journal/ChartUploadBlock";
 import { JournalFormPanel } from "@/components/journal/JournalFormPanel";
 import { NetPnlField } from "@/components/journal/NetPnlField";
 import { RMultipleField } from "@/components/journal/RMultipleField";
@@ -68,57 +68,6 @@ export type TradeLogFormSectionsProps = {
   chartUploadError: string | null;
   onChartFile: (file: File | null, target: "before" | "after") => void;
 };
-
-function ChartUploadBlock({
-  label,
-  term,
-  chartUrl,
-  setChartUrl,
-  onChartFile,
-  variant,
-}: {
-  label: string;
-  term: TooltipTerm;
-  chartUrl: string;
-  setChartUrl: (v: string) => void;
-  onChartFile: (file: File | null, target: "before" | "after") => void;
-  variant: "before" | "after";
-}) {
-  return (
-    <label
-      className={`space-y-3 rounded-2xl border border-dashed border-xau-border p-4 ${
-        variant === "before" ? "bg-xau-calm" : "bg-xau-profit-bg"
-      }`}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(e) => {
-        e.preventDefault();
-        onChartFile(e.dataTransfer.files?.[0] || null, variant);
-      }}
-    >
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-        {label}
-        <HelpTooltip term={term} label={`About ${label.toLowerCase()}`} size="sm" placement="above" />
-      </span>
-      <input
-        type="file"
-        accept="image/*"
-        className="block w-full text-xs text-xau-muted file:mr-3 file:rounded-lg file:border-0 file:bg-xau-card file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-xau-ink"
-        onChange={(e) => onChartFile(e.target.files?.[0] || null, variant)}
-      />
-      <input
-        className="xau-field text-xs"
-        placeholder="Or paste https:// image URL"
-        value={chartUrl.startsWith("data:") ? "" : chartUrl}
-        onChange={(e) => setChartUrl(e.target.value)}
-      />
-      {chartUrl ? (
-        <div className="relative flex min-h-[10rem] max-h-[26rem] items-center justify-center overflow-hidden rounded-xl bg-xau-app">
-          <ChartImage src={chartUrl} alt={`${label} preview`} fit="contain" />
-        </div>
-      ) : null}
-    </label>
-  );
-}
 
 export function TradeLogFormSections({
   disciplineRows,

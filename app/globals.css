@@ -295,6 +295,47 @@
     @apply mx-auto w-full max-w-6xl space-y-6;
   }
 
+
+  .xau-chart-upload {
+    @apply space-y-3 rounded-2xl border-2 border-dashed p-4 transition;
+    border-color: color-mix(in srgb, var(--xau-gold-accent) 28%, var(--xau-border));
+    background: var(--xau-card);
+  }
+
+  .xau-chart-upload--before {
+    background: color-mix(in srgb, var(--xau-calm-bg) 55%, var(--xau-card));
+  }
+
+  .xau-chart-upload--after {
+    background: color-mix(in srgb, var(--xau-profit-bg) 45%, var(--xau-card));
+  }
+
+  .xau-chart-upload:hover {
+    border-color: var(--xau-gold-accent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--xau-gold-accent) 25%, transparent);
+  }
+
+  .xau-chart-upload--drag {
+    border-color: var(--xau-gold-accent);
+    background: var(--xau-gold-soft);
+    box-shadow: 0 0 0 2px var(--xau-gold-soft);
+  }
+
+  .xau-chart-upload-btn {
+    @apply xau-btn-focus flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-xau-border px-4 py-5 text-center transition;
+    background: var(--xau-card);
+  }
+
+  .xau-chart-upload-btn:hover {
+    border-color: var(--xau-gold-accent);
+    background: var(--xau-gold-soft);
+  }
+
+  .xau-chart-upload-btn:active {
+    filter: brightness(0.97);
+    transform: scale(0.995);
+  }
+
   .xau-page-dashboard {
     @apply mx-auto w-full max-w-[90rem] space-y-8 pb-10;
   }
