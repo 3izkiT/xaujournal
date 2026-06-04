@@ -68,14 +68,14 @@ export function ExecutionAnalytics({ sessionData, avgHoldMinutes, avgMae, avgMfe
   const hasSessionPnl = sessionData.some((s) => s.value !== 0);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-12">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 2xl:grid-cols-1 lg:col-span-4">
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <MiniStat label="Avg hold time" tooltipTerm="avgHoldTime" value={avgHoldMinutes != null ? `${avgHoldMinutes} min` : "—"} />
         <MiniStat label="Avg MAE" tooltipTerm="mae" value={avgMae != null ? `$${avgMae}` : "—"} tone="loss" />
         <MiniStat label="Avg MFE" tooltipTerm="mfe" value={avgMfe != null ? `$${avgMfe}` : "—"} tone="profit" />
       </div>
 
-      <article className="xau-card-bordered p-4 md:p-5 lg:col-span-8">
+      <article className="xau-card-bordered p-4 md:p-5">
         <PanelHeading
           as="h4"
           title="Session P&L"

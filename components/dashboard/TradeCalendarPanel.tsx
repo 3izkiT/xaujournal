@@ -19,9 +19,11 @@ function monthLabel(year: number, month: number) {
 
 type Props = {
   trades: JournalTrade[];
+  variant?: "default" | "sidebar";
 };
 
-export function TradeCalendarPanel({ trades }: Props) {
+export function TradeCalendarPanel({ trades, variant = "default" }: Props) {
+  const compact = variant === "sidebar";
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -52,12 +54,12 @@ export function TradeCalendarPanel({ trades }: Props) {
 
   return (
     <article id="calendar" className="xau-card-bordered scroll-mt-24 p-4 md:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={`flex gap-3 ${compact ? "flex-col" : "flex-wrap items-center justify-between"}`}>
         <PanelHeading
           as="h2"
           title="Trade calendar"
           term="tradeCalendar"
-          description="Daily P&L from trades you log on purpose"
+          description={compact ? "Tap a day to open trades" : "Daily P&L from trades you log on purpose"}
         />
         <div className="flex items-center gap-1">
           <button
@@ -93,7 +95,7 @@ export function TradeCalendarPanel({ trades }: Props) {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[10px] sm:gap-2 sm:text-xs">
+      <div className={`mt-4 grid grid-cols-7 gap-0.5 text-center text-[10px] ${compact ? "" : "sm:gap-2 sm:text-xs"}`}>
         {WEEKDAYS.map((name) => (
           <div key={name} className="py-1 font-medium text-xau-muted sm:py-2">
             <span className="hidden sm:inline">{name}</span>
@@ -105,7 +107,7 @@ export function TradeCalendarPanel({ trades }: Props) {
             return (
               <div
                 key={`empty-${viewYear}-${viewMonth}-${index}`}
-                className="min-h-[3.25rem] rounded-xl border border-dashed border-xau-border/80 sm:min-h-[5.5rem] sm:rounded-2xl"
+                className={`rounded-lg border border-dashed border-xau-border/80 ${compact ? "min-h-[2.75rem]" : "min-h-[3.25rem] sm:min-h-[5.5rem] sm:rounded-2xl"}`}
               />
             );
           }
@@ -118,7 +120,7 @@ export function TradeCalendarPanel({ trades }: Props) {
 
           const inner = (
             <div
-              className={`flex min-h-[3.25rem] flex-col rounded-xl border p-1.5 text-left transition sm:min-h-[5.5rem] sm:rounded-2xl sm:p-3 ${
+              className={`flex flex-col rounded-lg border p-1 text-left transition ${compact ? "min-h-[2.75rem]" : "min-h-[3.25rem] p-1.5 sm:min-h-[5.5rem] sm:rounded-2xl sm:p-3"} ${
                 count ? pnlTone(pnl) : "border-xau-border bg-xau-card"
               } ${isToday ? "ring-1 ring-xau-gold-accent/50" : ""}`}
             >

@@ -3,9 +3,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect } from "react";
+import { DashboardMetricsHero } from "@/components/dashboard/DashboardMetricsHero";
 import { DashboardSectionNav } from "@/components/dashboard/DashboardSectionNav";
-import { HelpTooltip, PanelHeading } from "@/components/ui/HelpTooltip";
-import { KpiCard } from "@/components/dashboard/KpiCard";
 import { RecentTradesPanel } from "@/components/dashboard/RecentTradesPanel";
 import { TradeCalendarPanel } from "@/components/dashboard/TradeCalendarPanel";
 import { useXauJournal } from "@/components/XauJournalContext";
@@ -82,76 +81,71 @@ export default function DashboardPage() {
 
   return (
     <div className="xau-page-dashboard">
-      <header id="overview" className="scroll-mt-24 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <header className="space-y-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="inline-flex flex-wrap items-center gap-2 text-2xl font-semibold tracking-tight text-xau-ink md:text-[1.75rem]">
-              {tradeCount === 0 ? "Welcome back" : "Performance overview"}
-              {tradeCount > 0 ? (
-                <HelpTooltip term="performanceOverview" label="About performance overview" placement="above" />
-              ) : null}
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-xau-gold-accent">
+              XAUUSD · Discipline journal
+            </p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-xau-ink md:text-[1.85rem]">
+              {tradeCount === 0 ? "Welcome back" : "Trading dashboard"}
             </h1>
-            <p className="mt-1 text-sm text-xau-muted">
+            <p className="mt-1 max-w-xl text-sm text-xau-muted">
               {tradeCount === 0
-                ? "Log your first XAUUSD trade to unlock your terminal."
-                : `${tradeCount} trade${tradeCount === 1 ? "" : "s"} · KPIs, calendar, and analytics in one place`}
+                ? "Log your first trade to see P&L, calendar, and analytics in one workspace."
+                : `${tradeCount} intentional trade${tradeCount === 1 ? "" : "s"} — review performance, then drill into analytics.`}
             </p>
           </div>
-          <Link href="/journal-entry" className="xau-btn-gold shrink-0">
-            Log trade
+          <Link href="/journal-entry" className="xau-btn-gold shrink-0 px-5 py-2.5">
+            + Log trade
           </Link>
         </div>
         <DashboardSectionNav />
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Win rate" value={`${winRate}%`} accent="profit" tooltipTerm="winRate" />
-        <KpiCard label="Discipline" value={`${avgDiscipline}%`} hint={`Month: ${monthlyDiscipline}%`} accent="calm" tooltipTerm="discipline" />
-        <KpiCard
-          label="Net P&L"
-          value={`${totalPnl >= 0 ? "+" : "-"}$${Math.abs(totalPnl).toFixed(2)}`}
-          accent={totalPnl >= 0 ? "profit" : "loss"}
-          valueClassName={totalPnl >= 0 ? "text-tv-profit" : "text-tv-loss"}
-          tooltipTerm="netPnl"
-        />
-        <KpiCard label="Profit factor" value={String(profitFactor)} accent="gold" tooltipTerm="profitFactor" />
-      </div>
+      <DashboardMetricsHero
+        winRate={winRate}
+        avgDiscipline={avgDiscipline}
+        monthlyDiscipline={monthlyDiscipline}
+        totalPnl={totalPnl}
+        profitFactor={profitFactor}
+      />
 
-      {/* Desktop: left = charts & log, right = session & calendar */}
-      <div className="grid gap-6 xl:grid-cols-12 xl:items-start">
-        <div className="space-y-6 xl:col-span-7 2xl:col-span-8">
+      <section id="overview" className="scroll-mt-28 grid gap-5 lg:grid-cols-12 lg:items-start lg:gap-6">
+        <div className="order-1 lg:col-span-8">
           <EquityChart equityCurve={equityCurve} />
+        </div>
+
+        <aside className="order-2 flex flex-col gap-5 lg:sticky lg:top-24 lg:col-span-4 lg:row-span-2 lg:self-start">
+          <TradeCalendarPanel trades={trades} variant="sidebar" />
+          <SessionMini sessionData={sessionData} />
+        </aside>
+
+        <div className="order-3 lg:col-span-8">
           <RecentTradesPanel trades={trades} />
         </div>
-        <aside className="space-y-6 xl:col-span-5 2xl:col-span-4">
-          <SessionMini sessionData={sessionData} />
-          <TradeCalendarPanel trades={trades} />
-        </aside>
-      </div>
+      </section>
 
-      <section id="analytics" className="scroll-mt-24 space-y-6 border-t border-xau-border pt-8 xl:pt-10">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Deep dive</p>
-          <PanelHeading
-            as="h2"
-            className="mt-1"
-            title="Analytics"
-            term="analytics"
-            description="Setup quality, execution, and discipline patterns from intentional logs."
-          />
-        </div>
-
-        {tradeCount === 0 ? (
-          <div className="xau-card-bordered px-6 py-12 text-center">
-            <p className="text-sm text-xau-muted">Log trades to unlock the full analytics suite.</p>
-            <Link href="/journal-entry" className="xau-btn-gold mt-4 inline-block">
-              Log first trade
-            </Link>
+      <section id="analytics" className="scroll-mt-28">
+        <div className="xau-card-bordered space-y-6 p-5 md:p-6 lg:p-8">
+          <div className="border-b border-xau-border pb-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-xau-gold-accent">Deep dive</p>
+            <h2 className="mt-1 text-xl font-semibold text-xau-ink md:text-2xl">Advanced analytics</h2>
+            <p className="mt-1 text-sm text-xau-muted">
+              Setup quality, execution stats, and discipline patterns — same data pro journals surface after the headline KPIs.
+            </p>
           </div>
-        ) : (
-          <div className="space-y-6">
-            <SetupAnalytics setupVsMistakes={setupVsMistakes} />
-            <div className="grid gap-6 2xl:grid-cols-2 2xl:items-start">
+
+          {tradeCount === 0 ? (
+            <div className="rounded-2xl bg-xau-app px-6 py-12 text-center">
+              <p className="text-sm text-xau-muted">Log trades to unlock setup, MAE/MFE, and heatmap analytics.</p>
+              <Link href="/journal-entry" className="xau-btn-gold mt-4 inline-block">
+                Log first trade
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <SetupAnalytics setupVsMistakes={setupVsMistakes} />
               <ExecutionAnalytics
                 sessionData={sessionData}
                 avgHoldMinutes={avgHoldMinutes}
@@ -160,8 +154,8 @@ export default function DashboardPage() {
               />
               <DisciplineAnalytics ruleBreaks={ruleBreaks} heatmap={heatmap} />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </section>
     </div>
   );

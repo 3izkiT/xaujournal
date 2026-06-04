@@ -28,7 +28,7 @@ export function DisciplineAnalytics({ ruleBreaks, heatmap }: Props) {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-1 min-[1800px]:grid-cols-2">
+    <div className="grid gap-4 lg:grid-cols-2">
       <article className="xau-card-bordered p-5">
         <PanelHeading
           as="h4"
