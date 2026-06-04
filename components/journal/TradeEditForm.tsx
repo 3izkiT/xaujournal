@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ChartImage } from "@/components/journal/ChartImage";
 import { FormField } from "@/components/journal/FormField";
+import { SavingOverlay, type SavingOverlayPhase } from "@/components/ui/SavingOverlay";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
   afterPlaceholder,
@@ -31,7 +32,7 @@ function timeFromIso(iso: string) {
 
 export function TradeEditForm({ trade, onClose, onSaved }: Props) {
   const { updateTrade, settings, setupTagOptions } = useXauJournal();
-  const [saving, setSaving] = useState(false);
+  const [saveOverlay, setSaveOverlay] = useState<SavingOverlayPhase | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [date, setDate] = useState(trade.date);
   const [entryTime, setEntryTime] = useState(timeFromIso(trade.entryAt));
@@ -92,7 +93,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
-    setSaving(true);
+    setSaveOverlay("saving");
 
     const entryAt = new Date(`${date}T${entryTime}:00`).toISOString();
     const exitAt = exitTime ? new Date(`${date}T${exitTime}:00`).toISOString() : null;
@@ -124,17 +125,31 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
       noteNextAction,
     });
 
-    setSaving(false);
     if (!result.ok) {
+      setSaveOverlay(null);
       setError(result.error ?? "Could not update trade.");
       return;
     }
+
+    setSaveOverlay("success");
+    await new Promise((resolve) => setTimeout(resolve, 700));
     onSaved();
     onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="xau-card-bordered space-y-6 p-6">
+    <>
+      <SavingOverlay
+        open={saveOverlay !== null}
+        phase={saveOverlay ?? "saving"}
+        title={saveOverlay === "success" ? "Changes saved" : "Updating your trade log"}
+        subtitle={
+          saveOverlay === "success"
+            ? "Refreshing your trade details…"
+            : "Saving discipline score, charts, and notes…"
+        }
+      />
+      <form onSubmit={handleSubmit} className="xau-card-bordered space-y-6 p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold text-xau-ink">Edit trade</h3>
@@ -261,9 +276,10 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
         </div>
       </div>
 
-      <button type="submit" disabled={saving} className="xau-btn-gold px-6 py-2.5 disabled:opacity-60">
-        {saving ? "Saving…" : "Save changes"}
+      <button type="submit" disabled={saveOverlay !== null} className="xau-btn-gold px-6 py-2.5 disabled:opacity-60">
+        {saveOverlay ? "Saving…" : "Save changes"}
       </button>
     </form>
+    </>
   );
 }
