@@ -13,7 +13,7 @@ import {
   JOURNAL_PANEL_B,
   JOURNAL_PANEL_C,
 } from "@/lib/journal-form-copy";
-import { SESSION_SELECT_HINT, sessionSelectLabel } from "@/lib/sessions";
+import { sessionSelectLabel } from "@/lib/sessions";
 import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { SessionType, TradeType } from "@/lib/types";
 
@@ -202,7 +202,7 @@ export function TradeLogFormSections({
           <FormField label="Trade date" tooltipTerm="tradeDate">
             <input type="date" className="xau-field" value={date} onChange={(e) => setDate(e.target.value)} />
           </FormField>
-          <FormField label="Session" hint={SESSION_SELECT_HINT} tooltipTerm="session">
+          <FormField label="Session" tooltipTerm="session">
             <select className="xau-select" value={session} onChange={(e) => setSession(e.target.value as SessionType)}>
               {sessionOptions.map((option) => (
                 <option key={option} value={option}>

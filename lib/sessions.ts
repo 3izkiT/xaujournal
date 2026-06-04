@@ -1,43 +1,36 @@
 /**
- * XAUUSD trading sessions (Thailand time / ICT for journal tagging).
+ * XAUUSD trading sessions for journal tagging.
  */
 export const TRADING_SESSIONS = [
   {
     id: "Sydney Session",
     shortName: "Sydney",
-    market: "ตลาดซิดนีย์",
-    description: "เริ่มต้นวันใหม่ของตลาด",
-    thaiTime: "05:00 – 14:00",
+    market: "Sydney",
+    description: "Opens the trading day — liquidity builds into Asia.",
   },
   {
     id: "Tokyo Session",
     shortName: "Tokyo",
-    market: "ตลาดโตเกียว",
-    description: "ช่วงตลาดเอเชีย สภาพคล่องระดับปานกลาง",
-    thaiTime: "07:00 – 16:00",
+    market: "Tokyo",
+    description: "Asia session — moderate liquidity, often sets tone for London.",
   },
   {
     id: "London Session",
     shortName: "London",
-    market: "ตลาดลอนดอน",
-    description: "ตลาดที่ใหญ่และมีความผันผวนสูงมาก",
-    thaiTime: "14:00 – 23:00",
+    market: "London",
+    description: "Major session — high volatility and volume.",
   },
   {
     id: "New York Session",
     shortName: "New York",
-    market: "ตลาดนิวยอร์ก",
-    description: "ตลาดฝั่งอเมริกาที่ปริมาณการซื้อขายหนาแน่น",
-    thaiTime: "20:00 – 05:00",
+    market: "New York",
+    description: "US session — dense volume, often drives late-day direction.",
   },
 ] as const;
 
 export type SessionType = (typeof TRADING_SESSIONS)[number]["id"];
 
 export const sessionOptions: SessionType[] = TRADING_SESSIONS.map((s) => s.id);
-
-export const SESSION_SELECT_HINT =
-  "Thailand time (ICT): Sydney 05:00–14:00 · Tokyo 07:00–16:00 · London 14:00–23:00 · New York 20:00–05:00";
 
 const LEGACY_SESSION_MAP: Record<string, SessionType> = {
   "Asian Session": "Tokyo Session",
@@ -68,7 +61,7 @@ export function sessionChartSubtitle(): string {
   return TRADING_SESSIONS.map((s) => s.shortName).join(" · ");
 }
 
+/** Dropdown label — city name only (no timezone ranges). */
 export function sessionSelectLabel(session: SessionType): string {
-  const meta = sessionMeta(session);
-  return `${meta.shortName} (${meta.thaiTime} น.)`;
+  return sessionShortName(session);
 }
