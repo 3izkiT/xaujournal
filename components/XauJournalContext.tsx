@@ -4,6 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 import { LEGACY_TRADES_KEY_PREFIX, tradesStorageKey } from "@/lib/brand";
 import { calculateDisciplineScore, setupTagOptions as defaultSetupTags } from "@/lib/data";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
+import { normalizeSessionLabel } from "@/lib/sessions";
 import {
   DisciplineChecklist,
   EmotionType,
@@ -73,6 +74,13 @@ const defaultSettings: UserSettingsPayload = {
 
 const XauJournalContext = createContext<XauJournalContextValue | null>(null);
 
+function withNormalizedSessions(trades: JournalTrade[]): JournalTrade[] {
+  return trades.map((trade) => ({
+    ...trade,
+    session: normalizeSessionLabel(trade.session),
+  }));
+}
+
 export function XauJournalProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [authReady, setAuthReady] = useState(false);
@@ -100,8 +108,9 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     if (!raw) return null;
     try {
       const parsed = JSON.parse(raw) as JournalTrade[];
-      if (!localStorage.getItem(key)) localStorage.setItem(key, raw);
-      return parsed;
+      const normalized = withNormalizedSessions(parsed);
+      if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(normalized));
+      return normalized;
     } catch {
       return null;
     }
@@ -174,9 +183,9 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
           tradeCount?: number;
           canAddMore?: boolean;
         };
-        setTrades(data.trades);
+        setTrades(withNormalizedSessions(data.trades));
         applyMeta(data);
-        if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+        if (storageKey) localStorage.setItem(storageKey, JSON.stringify(withNormalizedSessions(data.trades)));
       } else if (user?.id) {
         const cached = readCachedTrades(user.id);
         if (cached) setTrades(cached);
@@ -267,13 +276,13 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
           canAddMore?: boolean;
         };
         if (res.ok && data.trades) {
-          setTrades(data.trades);
+          setTrades(withNormalizedSessions(data.trades));
           applyMeta(data);
-          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(withNormalizedSessions(data.trades)));
           return { ok: true };
         }
         rollbackOptimistic();
-        if (data.trades) setTrades(data.trades);
+        if (data.trades) setTrades(withNormalizedSessions(data.trades));
         applyMeta(data);
         return { ok: false, error: data.error ?? "Failed to save trade." };
       } catch {
@@ -304,9 +313,9 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
           canAddMore?: boolean;
         };
         if (res.ok && data.trades) {
-          setTrades(data.trades);
+          setTrades(withNormalizedSessions(data.trades));
           applyMeta(data);
-          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(withNormalizedSessions(data.trades)));
           return { ok: true };
         }
         return { ok: false, error: data.error ?? "Failed to update trade." };
@@ -335,9 +344,9 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
           canAddMore?: boolean;
         };
         if (res.ok && data.trades) {
-          setTrades(data.trades);
+          setTrades(withNormalizedSessions(data.trades));
           applyMeta(data);
-          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(withNormalizedSessions(data.trades)));
           return { ok: true };
         }
         return { ok: false, error: data.error ?? "Failed to delete trade." };

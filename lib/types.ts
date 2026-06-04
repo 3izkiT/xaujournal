@@ -1,5 +1,7 @@
+import type { SessionType } from "@/lib/sessions";
+
+export type { SessionType };
 export type TradeType = "Buy" | "Sell";
-export type SessionType = "London Session" | "New York Session" | "Asian Session";
 export type EmotionType =
   | "Calm"
   | "Greed"
@@ -8,7 +10,11 @@ export type EmotionType =
   | "Revenge Trading"
   | "Overlot";
 
-export type SetupTag = string;
+export type SetupTag =
+  | "Liquidity Sweep"
+  | "FVG Mitigation"
+  | "Break of Structure"
+  | "Order Block";
 
 export type DisciplineChecklist = {
   followedPlan: boolean;

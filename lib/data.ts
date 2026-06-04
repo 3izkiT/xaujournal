@@ -1,4 +1,7 @@
-import { DisciplineChecklist, EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
+import { sessionOptions } from "@/lib/sessions";
+import { DisciplineChecklist, EmotionType, JournalTrade, SetupTag, TradeType } from "@/lib/types";
+
+export { sessionOptions };
 
 export const beforePlaceholder =
   "https://images.unsplash.com/photo-1642543348745-f0466dbf8348?auto=format&fit=crop&w=1200&q=80";
@@ -19,12 +22,6 @@ export const emotionOptions: EmotionType[] = [
   "FOMO",
   "Revenge Trading",
   "Overlot",
-];
-
-export const sessionOptions: SessionType[] = [
-  "London Session",
-  "New York Session",
-  "Asian Session",
 ];
 
 export const tradeTypeOptions: TradeType[] = ["Buy", "Sell"];
@@ -117,7 +114,7 @@ export const mockTrades: JournalTrade[] = [
     rMultiple: "+1.9R",
     entryPrice: 2320.1,
     exitPrice: 2328.3,
-    session: "Asian Session",
+    session: "Tokyo Session",
     setupTags: ["FVG Mitigation", "Order Block"],
     emotion: "Calm",
     beforeChartUrl: beforePlaceholder,

@@ -12,7 +12,7 @@ export type ChartPalette = {
   mistakes: string;
   ruleBreak: string;
   ruleBreakEmpty: string;
-  sessionPositive: readonly [string, string, string];
+  sessionPositive: readonly [string, string, string, string];
   sessionLoss: string;
   heatmap: {
     empty: string;
@@ -38,7 +38,7 @@ export const CHART_PALETTE: Record<ThemeMode, ChartPalette> = {
     mistakes: TV_LOSS,
     ruleBreak: TV_LOSS,
     ruleBreakEmpty: "#e0e3eb",
-    sessionPositive: ["#2962ff", TV_PROFIT, "#e8d7a5"],
+    sessionPositive: ["#7b68ee", "#2962ff", TV_PROFIT, "#e8d7a5"],
     sessionLoss: TV_LOSS,
     heatmap: {
       empty: "#f0f3fa",
@@ -59,7 +59,7 @@ export const CHART_PALETTE: Record<ThemeMode, ChartPalette> = {
     mistakes: TV_LOSS,
     ruleBreak: TV_LOSS,
     ruleBreakEmpty: "#2a2e39",
-    sessionPositive: ["#2962ff", TV_PROFIT, "#d4af37"],
+    sessionPositive: ["#7b68ee", "#2962ff", TV_PROFIT, "#d4af37"],
     sessionLoss: TV_LOSS,
     heatmap: {
       empty: "#1e222d",

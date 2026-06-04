@@ -1,31 +1,23 @@
 import { EmotionType, Plan, SessionType, TradeType } from "@prisma/client";
 
+import { normalizeSessionLabel } from "@/lib/sessions";
 import { JournalTrade } from "@/lib/types";
 
 import { prisma } from "@/lib/db";
 
-
-
 function toSession(label: JournalTrade["session"]): SessionType {
-
-  if (label === "London Session") return SessionType.LONDON;
-
-  if (label === "New York Session") return SessionType.NEW_YORK;
-
-  return SessionType.ASIAN;
-
+  const normalized = normalizeSessionLabel(label);
+  if (normalized === "Sydney Session") return SessionType.SYDNEY;
+  if (normalized === "Tokyo Session") return SessionType.TOKYO;
+  if (normalized === "New York Session") return SessionType.NEW_YORK;
+  return SessionType.LONDON;
 }
 
-
-
 function fromSession(session: SessionType): JournalTrade["session"] {
-
-  if (session === SessionType.LONDON) return "London Session";
-
+  if (session === SessionType.SYDNEY) return "Sydney Session";
+  if (session === SessionType.TOKYO) return "Tokyo Session";
   if (session === SessionType.NEW_YORK) return "New York Session";
-
-  return "Asian Session";
-
+  return "London Session";
 }
 
 
@@ -307,6 +299,7 @@ export async function updateTradeForUser(
   const result = await prisma.trade.updateMany({
     where: { id: tradeId, userId },
     data: {
+      asset: trade.asset,
       date: new Date(trade.date),
       entryAt,
       exitAt,
@@ -332,7 +325,6 @@ export async function updateTradeForUser(
       noteNextAction: trade.noteNextAction.trim(),
     },
   });
-
   return result.count > 0;
 }
 

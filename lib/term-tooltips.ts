@@ -11,7 +11,7 @@ export const TOOLTIP_TERMS = {
   recentTrades:
     "Your latest journal entries with session, R-multiple, discipline, emotion, and setup — tap a row to open full notes in History.",
   sessionPnl:
-    "Net P&L summed by session tag: London, New York, or Asian. Helps you see where your edge shows up.",
+    "Net P&L summed by session tag: Sydney, Tokyo, London, and New York (Thailand time / ICT).",
   tradeCalendar:
     "Each day shows combined net P&L for all trades on that date. Green = profitable day, red = losing day. Tap a day to open History.",
   analytics:
@@ -29,7 +29,7 @@ export const TOOLTIP_TERMS = {
     "Result in R units (your planned risk). Example: +2R means profit equal to twice the dollars you risked on the trade.",
   disciplineShort: "Discipline checklist score for that trade: 0%, 33%, 66%, or 100% (three yes/no items).",
   tradeType: "Trade direction: Buy (long) or Sell (short).",
-  session: "Session when you entered: London, New York, or Asian — tag this on each journal entry.",
+  session: "Session when you entered: Sydney, Tokyo, London, or New York (Thailand time) — tag this on each journal entry.",
   netShort: "Net profit or loss for that single trade in USD (after costs you entered).",
   emotion: "Mindset tag (Calm, FOMO, etc.) — useful for spotting when emotions hurt performance.",
   setup: "Setup tag from your journal (e.g. Liquidity Sweep, FVG) — first tag shown when you use several.",

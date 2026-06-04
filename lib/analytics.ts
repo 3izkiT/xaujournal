@@ -1,4 +1,5 @@
-import { JournalTrade, SessionType, SetupTag } from "@/lib/types";
+import { normalizeSessionLabel, sessionOptions, sessionShortName } from "@/lib/sessions";
+import { JournalTrade, SetupTag } from "@/lib/types";
 
 export function getWinRate(trades: JournalTrade[]): number {
   if (!trades.length) return 0;
@@ -55,10 +56,11 @@ export function getEquityCurve(trades: JournalTrade[]) {
 }
 
 export function getSessionPerformance(trades: JournalTrade[]) {
-  const sessions: SessionType[] = ["London Session", "New York Session", "Asian Session"];
-  return sessions.map((session) => ({
-    name: session.replace(" Session", ""),
-    value: trades.filter((trade) => trade.session === session).reduce((sum, trade) => sum + trade.netProfitLoss, 0),
+  return sessionOptions.map((session) => ({
+    name: sessionShortName(session),
+    value: trades
+      .filter((trade) => normalizeSessionLabel(trade.session) === session)
+      .reduce((sum, trade) => sum + trade.netProfitLoss, 0),
   }));
 }
 

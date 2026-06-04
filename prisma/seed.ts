@@ -6,9 +6,10 @@ import { mockTrades } from "../lib/data";
 const prisma = new PrismaClient();
 
 function toSession(session: string): SessionType {
-  if (session === "London Session") return SessionType.LONDON;
+  if (session === "Sydney Session") return SessionType.SYDNEY;
+  if (session === "Tokyo Session" || session === "Asian Session") return SessionType.TOKYO;
   if (session === "New York Session") return SessionType.NEW_YORK;
-  return SessionType.ASIAN;
+  return SessionType.LONDON;
 }
 
 function toEmotion(emotion: string): EmotionType {

@@ -4,6 +4,7 @@ import { ChartImage } from "@/components/journal/ChartImage";
 import { FormCheckRow, FormField, FormSectionHeading } from "@/components/journal/FormField";
 import { HelpTooltip } from "@/components/ui/HelpTooltip";
 import { emotionOptions, sessionOptions, tradeTypeOptions, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from "@/lib/data";
+import { SESSION_SELECT_HINT, sessionSelectLabel } from "@/lib/sessions";
 import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { EmotionType, SessionType, SetupTag, TradeType } from "@/lib/types";
 
@@ -201,11 +202,11 @@ export function TradeLogFormSections({
               ))}
             </select>
           </FormField>
-          <FormField label="Session" tooltipTerm="session">
+          <FormField label="Session" hint={SESSION_SELECT_HINT} tooltipTerm="session">
             <select className="xau-select" value={session} onChange={(e) => setSession(e.target.value as SessionType)}>
               {sessionOptions.map((option) => (
                 <option key={option} value={option}>
-                  {option}
+                  {sessionSelectLabel(option)}
                 </option>
               ))}
             </select>

@@ -2,7 +2,7 @@ export function MockDashboard() {
   const rows = [
     { date: "2026-05-24", type: "Buy", session: "London", r: "+2.8R", net: "+$420", disc: "100%", emotion: "Calm" },
     { date: "2026-05-25", type: "Sell", session: "New York", r: "-1.0R", net: "-$180", disc: "0%", emotion: "FOMO" },
-    { date: "2026-05-27", type: "Buy", session: "Asian", r: "+1.9R", net: "+$260", disc: "66%", emotion: "Calm" },
+    { date: "2026-05-27", type: "Buy", session: "Tokyo", r: "+1.9R", net: "+$260", disc: "66%", emotion: "Calm" },
   ];
 
   return (

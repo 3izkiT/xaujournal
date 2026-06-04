@@ -32,7 +32,6 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-!.env.example
 
 # vercel
 .vercel
@@ -42,6 +41,10 @@ yarn-error.log*
 
 # local competitor audits (screenshots)
 /docs/competitor-audit/
+/test-artifacts/
+/docs/e2e-demo-screenshots/
+/public/e2e-demo/
+/lighthouse-*.json
 
 # typescript
 *.tsbuildinfo
