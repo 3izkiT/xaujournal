@@ -3,6 +3,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { LEGACY_TRADES_KEY_PREFIX, tradesStorageKey } from "@/lib/brand";
 import { calculateDisciplineScore, setupTagOptions as defaultSetupTags } from "@/lib/data";
+import { sortTradesByLoggedAt } from "@/lib/sort-trades";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 import { normalizeSessionLabel } from "@/lib/sessions";
 import {
@@ -188,13 +189,13 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
         if (storageKey) localStorage.setItem(storageKey, JSON.stringify(withNormalizedSessions(data.trades)));
       } else if (user?.id) {
         const cached = readCachedTrades(user.id);
-        if (cached) setTrades(cached);
+        if (cached) setTrades(sortTradesByLoggedAt(cached));
         setPlan(user.plan ?? "FREE");
       }
     } catch {
       if (user?.id) {
         const cached = readCachedTrades(user.id);
-        if (cached) setTrades(cached);
+        if (cached) setTrades(sortTradesByLoggedAt(cached));
       }
       setPlan(user.plan ?? "FREE");
     } finally {
@@ -212,7 +213,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     }
     const cached = readCachedTrades(user.id);
     if (cached?.length) {
-      setTrades(cached);
+      setTrades(sortTradesByLoggedAt(cached));
       setLoading(false);
       void refreshTrades({ silent: true });
     } else {
@@ -244,6 +245,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
         holdTimeMinutes: payload.holdTimeMinutes ?? null,
         mae: payload.mae ?? null,
         mfe: payload.mfe ?? null,
+        createdAt: new Date().toISOString(),
       };
 
       const rollbackOptimistic = () => {
@@ -255,7 +257,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
       };
 
       setTrades((prev) => {
-        const next = [optimistic, ...prev];
+        const next = sortTradesByLoggedAt([optimistic, ...prev]);
         if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next));
         return next;
       });

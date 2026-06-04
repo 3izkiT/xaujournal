@@ -26,6 +26,8 @@ export type TradeNotes = {
   noteContext: string;
   noteMistake: string;
   noteNextAction: string;
+  /** When the log was saved (ISO). Used for History ordering. */
+  createdAt?: string;
 };
 
 export type JournalTrade = {
@@ -52,6 +54,8 @@ export type JournalTrade = {
   noteContext: string;
   noteMistake: string;
   noteNextAction: string;
+  /** When the log was saved (ISO). Used for History ordering. */
+  createdAt?: string;
 };
 
 export type UserPlan = "FREE" | "PREMIUM_GOLD";
