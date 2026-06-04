@@ -14,10 +14,10 @@ export function DashboardOverviewCharts({ equityCurve, sessionData }: Props) {
   return (
     <>
       <div className="h-full lg:col-span-8">
-        <EquityChart equityCurve={equityCurve} className="h-full" />
+        <EquityChart equityCurve={equityCurve} />
       </div>
       <aside className="h-full lg:col-span-4">
-        <SessionMini sessionData={sessionData} className="h-full" />
+        <SessionMini sessionData={sessionData} />
       </aside>
     </>
   );

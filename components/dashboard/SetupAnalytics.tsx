@@ -60,10 +60,10 @@ export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[
           Tag setups to compare edge and mistakes.
         </div>
       ) : (
-        <ChartContainer className="h-56 sm:h-64 md:h-72">
+        <ChartContainer className="w-full">
           <div className={`h-full w-full overflow-y-hidden pb-1 ${chartScroll ? "overflow-x-auto" : "overflow-x-hidden"}`}>
             <div className="h-full min-w-0 w-full" style={chartScroll ? { minWidth: setupMinWidth } : undefined}>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={288}>
                 <BarChart data={setupVsMistakes} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
                     <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="setup" tick={{ fontSize: 11, fill: palette.tick }} interval={0} />

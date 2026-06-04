@@ -69,8 +69,8 @@ export function ExecutionAnalytics({ sessionData, avgHoldMinutes, avgMae, avgMfe
             Tag sessions on journal entries to compare performance.
           </div>
         ) : (
-          <ChartContainer className="mt-3 h-44">
-            <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer className="mt-3 w-full">
+            <ResponsiveContainer width="100%" height={176}>
               <BarChart data={sessionData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: palette.tick }} />

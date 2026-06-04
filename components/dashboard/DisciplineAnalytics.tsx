@@ -37,8 +37,8 @@ export function DisciplineAnalytics({ ruleBreaks, heatmap }: Props) {
           term="ruleBreakTracker"
           description="Most broken checklist items."
         />
-        <ChartContainer className="h-52">
-          <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer className="w-full">
+          <ResponsiveContainer width="100%" height={208}>
             <BarChart data={ruleBreaks} layout="vertical" margin={{ left: 8, right: 16 }}>
               <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" />
               <XAxis type="number" allowDecimals={false} tick={{ fill: palette.tick, fontSize: 11 }} />

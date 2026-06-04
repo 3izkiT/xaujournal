@@ -194,7 +194,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-xau-app text-xau-ink lg:flex [--xau-mobile-header:3.5rem]">
       <header className="sticky top-0 z-50 flex h-[var(--xau-mobile-header)] items-center justify-between border-b border-xau-border bg-xau-card px-4 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
             Au
           </span>
           <span className="text-sm font-semibold">{BRAND_NAME}</span>
