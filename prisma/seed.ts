@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 function toSession(session: string): SessionType {
   if (session === "Sydney Session") return SessionType.SYDNEY;
-  if (session === "Tokyo Session" || session === "Asian Session") return SessionType.TOKYO;
+  if (session === "Tokyo Session" || session === "Tokyo Session") return SessionType.TOKYO;
   if (session === "New York Session") return SessionType.NEW_YORK;
   return SessionType.LONDON;
 }

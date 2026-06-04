@@ -1,7 +1,4 @@
-import { sessionOptions } from "@/lib/sessions";
 import { DisciplineChecklist, EmotionType, JournalTrade, SetupTag, TradeType } from "@/lib/types";
-
-export { sessionOptions };
 
 export const beforePlaceholder =
   "https://images.unsplash.com/photo-1642543348745-f0466dbf8348?auto=format&fit=crop&w=1200&q=80";
@@ -23,6 +20,8 @@ export const emotionOptions: EmotionType[] = [
   "Revenge Trading",
   "Overlot",
 ];
+
+export { sessionOptions } from "@/lib/sessions";
 
 export const tradeTypeOptions: TradeType[] = ["Buy", "Sell"];
 

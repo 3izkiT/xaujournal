@@ -1,7 +1,9 @@
-import type { SessionType } from "@/lib/sessions";
-
-export type { SessionType };
 export type TradeType = "Buy" | "Sell";
+export type SessionType =
+  | "Sydney Session"
+  | "Tokyo Session"
+  | "London Session"
+  | "New York Session";
 export type EmotionType =
   | "Calm"
   | "Greed"
@@ -26,8 +28,6 @@ export type TradeNotes = {
   noteContext: string;
   noteMistake: string;
   noteNextAction: string;
-  /** When the log was saved (ISO). Used for History ordering. */
-  createdAt?: string;
 };
 
 export type JournalTrade = {
@@ -54,7 +54,6 @@ export type JournalTrade = {
   noteContext: string;
   noteMistake: string;
   noteNextAction: string;
-  /** When the log was saved (ISO). Used for History ordering. */
   createdAt?: string;
 };
 
