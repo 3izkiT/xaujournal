@@ -5,9 +5,11 @@ type Props = {
   src: string;
   alt: string;
   className?: string;
+  /** cover = crop to fill; contain = full image visible (portrait/landscape phone screenshots) */
+  fit?: "cover" | "contain";
 };
 
-export function ChartImage({ src, alt, className = "h-full w-full object-cover" }: Props) {
+export function ChartImage({ src, alt, className, fit = "cover" }: Props) {
   const broken = !src || src.startsWith("blob:");
 
   if (broken) {
@@ -18,12 +20,24 @@ export function ChartImage({ src, alt, className = "h-full w-full object-cover" 
     );
   }
 
-  if (isInlineChartUrl(src)) {
+  const coverClass = className ?? "h-full w-full object-cover";
+  const containClass = className ?? "max-h-full max-w-full object-contain";
+
+  if (fit === "contain") {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={alt} className={className} />
+      <div className="flex h-full w-full items-center justify-center p-1">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt} className={containClass} />
+      </div>
     );
   }
 
-  return <Image src={src} alt={alt} fill className={className} sizes="(max-width: 768px) 100vw, 400px" />;
+  if (isInlineChartUrl(src)) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={src} alt={alt} className={coverClass} />
+    );
+  }
+
+  return <Image src={src} alt={alt} fill className={coverClass} sizes="(max-width: 768px) 100vw, 400px" />;
 }

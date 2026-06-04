@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChartImage } from "@/components/journal/ChartImage";
 import { FormField } from "@/components/journal/FormField";
+import { NetPnlField } from "@/components/journal/NetPnlField";
+import { RMultipleField } from "@/components/journal/RMultipleField";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
   afterPlaceholder,
@@ -23,6 +25,7 @@ import {
 import { SESSION_SELECT_HINT, sessionSelectLabel } from "@/lib/sessions";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
+import { formatRMultipleStored } from "@/lib/trade-metrics-input";
 
 export default function JournalEntryPage() {
   const router = useRouter();
@@ -33,7 +36,7 @@ export default function JournalEntryPage() {
   const [exitTime, setExitTime] = useState("");
   const [type, setType] = useState<"Buy" | "Sell">("Buy");
   const [netProfitLoss, setNetProfitLoss] = useState("0");
-  const [rMultiple, setRMultiple] = useState("+2R");
+  const [rMultiple, setRMultiple] = useState("+2");
   const [entryPrice, setEntryPrice] = useState("");
   const [exitPrice, setExitPrice] = useState("");
   const [mae, setMae] = useState("");
@@ -99,7 +102,7 @@ export default function JournalEntryPage() {
       holdTimeMinutes,
       type,
       netProfitLoss: Number(netProfitLoss),
-      rMultiple,
+      rMultiple: formatRMultipleStored(rMultiple),
       entryPrice: entry,
       exitPrice: exit,
       mae: mae !== "" ? Number(mae) : null,
@@ -258,16 +261,10 @@ export default function JournalEntryPage() {
               </select>
             </FormField>
             <FormField label="Net P&amp;L ($)">
-              <input
-                type="number"
-                step="0.01"
-                className="xau-field"
-                value={netProfitLoss}
-                onChange={(e) => setNetProfitLoss(e.target.value)}
-              />
+              <NetPnlField value={netProfitLoss} onChange={setNetProfitLoss} />
             </FormField>
-            <FormField label="R-multiple" hint="e.g. +3R">
-              <input className="xau-field" value={rMultiple} onChange={(e) => setRMultiple(e.target.value)} />
+            <FormField label="R-multiple">
+              <RMultipleField value={rMultiple} onChange={setRMultiple} />
             </FormField>
           </div>
         </section>
@@ -392,8 +389,8 @@ export default function JournalEntryPage() {
                 onChange={(e) => setBeforeChartUrl(e.target.value)}
               />
               {beforeChartUrl && (
-                <div className="relative h-32 overflow-hidden rounded-xl bg-xau-app">
-                  <ChartImage src={beforeChartUrl} alt="Before preview" />
+                <div className="relative flex min-h-[8rem] max-h-[22rem] items-center justify-center overflow-hidden rounded-xl bg-xau-app">
+                  <ChartImage src={beforeChartUrl} alt="Before preview" fit="contain" />
                 </div>
               )}
             </label>
@@ -419,8 +416,8 @@ export default function JournalEntryPage() {
                 onChange={(e) => setAfterChartUrl(e.target.value)}
               />
               {afterChartUrl && (
-                <div className="relative h-32 overflow-hidden rounded-xl bg-xau-app">
-                  <ChartImage src={afterChartUrl} alt="After preview" />
+                <div className="relative flex min-h-[8rem] max-h-[22rem] items-center justify-center overflow-hidden rounded-xl bg-xau-app">
+                  <ChartImage src={afterChartUrl} alt="After preview" fit="contain" />
                 </div>
               )}
             </label>

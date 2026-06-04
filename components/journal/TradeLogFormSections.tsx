@@ -1,6 +1,8 @@
 "use client";
 
 import { ChartImage } from "@/components/journal/ChartImage";
+import { NetPnlField } from "@/components/journal/NetPnlField";
+import { RMultipleField } from "@/components/journal/RMultipleField";
 import { FormCheckRow, FormField, FormSectionHeading } from "@/components/journal/FormField";
 import { HelpTooltip } from "@/components/ui/HelpTooltip";
 import { emotionOptions, sessionOptions, tradeTypeOptions, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from "@/lib/data";
@@ -211,17 +213,11 @@ export function TradeLogFormSections({
               ))}
             </select>
           </FormField>
-          <FormField label="Net P&amp;L ($)" tooltipTerm="netPnl">
-            <input
-              type="number"
-              step="0.01"
-              className="xau-field"
-              value={netProfitLoss}
-              onChange={(e) => setNetProfitLoss(e.target.value)}
-            />
+          <FormField label="Net P&amp;L ($)" tooltipTerm="netPnlTrade">
+            <NetPnlField value={netProfitLoss} onChange={setNetProfitLoss} />
           </FormField>
-          <FormField label="R-multiple" hint="e.g. +3R" tooltipTerm="rMultiple">
-            <input className="xau-field" value={rMultiple} onChange={(e) => setRMultiple(e.target.value)} />
+          <FormField label="R-multiple" tooltipTerm="rMultiple">
+            <RMultipleField value={rMultiple} onChange={setRMultiple} />
           </FormField>
         </div>
       </section>
@@ -267,7 +263,7 @@ export function TradeLogFormSections({
               onChange={(e) => setExitPrice(e.target.value)}
             />
           </FormField>
-          <FormField label="MAE ($)" tooltipTerm="mae" hint="Optional — from your platform after close.">
+          <FormField label="MAE ($)" tooltipTerm="mae" hint="ไม่บังคับ — ขาดทุนสูงสุดระหว่างถือออเดอร์ ($)">
             <input
               type="number"
               step="0.1"
@@ -277,7 +273,7 @@ export function TradeLogFormSections({
               onChange={(e) => setMae(e.target.value)}
             />
           </FormField>
-          <FormField label="MFE ($)" tooltipTerm="mfe" hint="Optional — best unrealized profit before exit.">
+          <FormField label="MFE ($)" tooltipTerm="mfe" hint="ไม่บังคับ — กำไรลอยสูงสุดก่อนปิด ($)">
             <input
               type="number"
               step="0.1"
@@ -356,8 +352,8 @@ export function TradeLogFormSections({
               onChange={(e) => setBeforeChartUrl(e.target.value)}
             />
             {beforeChartUrl && (
-              <div className="relative h-32 overflow-hidden rounded-xl bg-xau-app">
-                <ChartImage src={beforeChartUrl} alt="Before preview" />
+              <div className="relative flex min-h-[8rem] max-h-[22rem] items-center justify-center overflow-hidden rounded-xl bg-xau-app">
+                <ChartImage src={beforeChartUrl} alt="Before preview" fit="contain" />
               </div>
             )}
           </label>
@@ -386,8 +382,8 @@ export function TradeLogFormSections({
               onChange={(e) => setAfterChartUrl(e.target.value)}
             />
             {afterChartUrl && (
-              <div className="relative h-32 overflow-hidden rounded-xl bg-xau-app">
-                <ChartImage src={afterChartUrl} alt="After preview" />
+              <div className="relative flex min-h-[8rem] max-h-[22rem] items-center justify-center overflow-hidden rounded-xl bg-xau-app">
+                <ChartImage src={afterChartUrl} alt="After preview" fit="contain" />
               </div>
             )}
           </label>

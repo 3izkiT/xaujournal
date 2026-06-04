@@ -16,6 +16,7 @@ import { calculateDisciplineScore, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from
 import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
 import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
+import { formatRMultipleStored, rMultipleForEdit } from "@/lib/trade-metrics-input";
 
 type Props = {
   trade: JournalTrade;
@@ -40,7 +41,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
   const [exitTime, setExitTime] = useState(trade.exitAt ? timeFromIso(trade.exitAt) : "");
   const [type, setType] = useState<TradeType>(trade.type);
   const [netProfitLoss, setNetProfitLoss] = useState(String(trade.netProfitLoss));
-  const [rMultiple, setRMultiple] = useState(trade.rMultiple);
+  const [rMultiple, setRMultiple] = useState(rMultipleForEdit(trade.rMultiple));
   const [entryPrice, setEntryPrice] = useState(String(trade.entryPrice));
   const [exitPrice, setExitPrice] = useState(String(trade.exitPrice));
   const [mae, setMae] = useState(trade.mae != null ? String(trade.mae) : "");
@@ -63,7 +64,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
     setExitTime(trade.exitAt ? timeFromIso(trade.exitAt) : "");
     setType(trade.type);
     setNetProfitLoss(String(trade.netProfitLoss));
-    setRMultiple(trade.rMultiple);
+    setRMultiple(rMultipleForEdit(trade.rMultiple));
     setEntryPrice(String(trade.entryPrice));
     setExitPrice(String(trade.exitPrice));
     setMae(trade.mae != null ? String(trade.mae) : "");
@@ -151,7 +152,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
       holdTimeMinutes,
       type,
       netProfitLoss: Number(netProfitLoss),
-      rMultiple,
+      rMultiple: formatRMultipleStored(rMultiple),
       entryPrice: entry,
       exitPrice: exit,
       mae: mae !== "" ? Number(mae) : null,

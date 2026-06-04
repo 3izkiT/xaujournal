@@ -100,13 +100,13 @@ export function TradeDetailCard({ trade, onClose }: Props) {
           <div>
             <p className="mb-2 text-xs text-xau-muted">Before</p>
             <div className="relative h-44 overflow-hidden rounded-xl bg-xau-app">
-              <ChartImage src={trade.beforeChartUrl} alt="Before trade" />
+              <ChartImage fit="contain" src={trade.beforeChartUrl} alt="Before trade" />
             </div>
           </div>
           <div>
             <p className="mb-2 text-xs text-xau-muted">After</p>
             <div className="relative h-44 overflow-hidden rounded-xl bg-xau-app">
-              <ChartImage src={trade.afterChartUrl} alt="After trade" />
+              <ChartImage fit="contain" src={trade.afterChartUrl} alt="After trade" />
             </div>
           </div>
         </div>
