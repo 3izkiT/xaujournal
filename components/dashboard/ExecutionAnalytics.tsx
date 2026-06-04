@@ -11,6 +11,8 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { HelpTooltip, PanelHeading } from "@/components/ui/HelpTooltip";
+import type { TooltipTerm } from "@/lib/term-tooltips";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SessionRow = { name: string; value: number };
@@ -30,7 +32,17 @@ function formatUsd(value: number) {
   }).format(value);
 }
 
-function MiniStat({ label, value, tone }: { label: string; value: string; tone?: "profit" | "loss" | "neutral" }) {
+function MiniStat({
+  label,
+  value,
+  tone,
+  tooltipTerm,
+}: {
+  label: string;
+  value: string;
+  tone?: "profit" | "loss" | "neutral";
+  tooltipTerm?: TooltipTerm;
+}) {
   const bg =
     tone === "profit"
       ? "bg-[var(--xau-profit-bg)]"
@@ -42,7 +54,10 @@ function MiniStat({ label, value, tone }: { label: string; value: string; tone?:
 
   return (
     <div className={`rounded-xl border border-xau-border ${bg} p-4`}>
-      <p className="text-xs text-xau-muted">{label}</p>
+      <p className="inline-flex items-center gap-1 text-xs text-xau-muted">
+        {label}
+        {tooltipTerm ? <HelpTooltip term={tooltipTerm} label={`About ${label}`} size="sm" placement="above" /> : null}
+      </p>
       <p className={`mt-1 text-xl font-semibold ${text}`}>{value}</p>
     </div>
   );
@@ -55,14 +70,18 @@ export function ExecutionAnalytics({ sessionData, avgHoldMinutes, avgMae, avgMfe
   return (
     <div className="grid gap-4 lg:grid-cols-12">
       <div className="grid gap-3 sm:grid-cols-3 lg:col-span-4 lg:grid-cols-1">
-        <MiniStat label="Avg hold time" value={avgHoldMinutes != null ? `${avgHoldMinutes} min` : "—"} />
-        <MiniStat label="Avg MAE" value={avgMae != null ? `$${avgMae}` : "—"} tone="loss" />
-        <MiniStat label="Avg MFE" value={avgMfe != null ? `$${avgMfe}` : "—"} tone="profit" />
+        <MiniStat label="Avg hold time" tooltipTerm="avgHoldTime" value={avgHoldMinutes != null ? `${avgHoldMinutes} min` : "—"} />
+        <MiniStat label="Avg MAE" tooltipTerm="mae" value={avgMae != null ? `$${avgMae}` : "—"} tone="loss" />
+        <MiniStat label="Avg MFE" tooltipTerm="mfe" value={avgMfe != null ? `$${avgMfe}` : "—"} tone="profit" />
       </div>
 
       <article className="xau-card-bordered p-4 md:p-5 lg:col-span-8">
-        <h4 className="text-sm font-medium text-xau-ink">Session P&L</h4>
-        <p className="mt-0.5 text-xs text-xau-muted">London · New York · Asian</p>
+        <PanelHeading
+          as="h4"
+          title="Session P&L"
+          term="sessionPnl"
+          description="London · New York · Asian"
+        />
         {!hasSessionPnl ? (
           <div className="mt-4 flex h-44 items-center justify-center rounded-xl bg-xau-app text-sm text-xau-muted">
             Tag sessions on journal entries to compare performance.

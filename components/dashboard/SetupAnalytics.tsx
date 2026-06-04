@@ -11,6 +11,8 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { PanelHeading } from "@/components/ui/HelpTooltip";
+import { useMdUp } from "@/lib/use-md-up";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SetupRow = { setup: string; winRate: number; mistakes: number };
@@ -38,24 +40,29 @@ function SetupTooltip({
 
 export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[] }) {
   const palette = useChartPalette();
+  const mdUp = useMdUp();
   const setupCount = setupVsMistakes.length;
   const setupMinWidth = Math.max(320, setupCount * 120);
+  const chartScroll = mdUp && setupCount > 3;
   const hasSetupData = setupVsMistakes.some((row) => row.winRate > 0 || row.mistakes > 0);
 
   return (
     <article className="xau-card-bordered p-4 md:p-5">
-      <div className="mb-4">
-        <h2 className="text-base font-semibold text-xau-ink">Setup win rate vs mistakes</h2>
-        <p className="mt-0.5 text-xs text-xau-muted">Per setup tag on journal entries</p>
-      </div>
+      <PanelHeading
+        as="h2"
+        className="mb-4"
+        title="Setup win rate vs mistakes"
+        term="setupWinRate"
+        description="Per setup tag on journal entries"
+      />
       {!hasSetupData ? (
         <div className="flex h-48 items-center justify-center rounded-xl bg-xau-app text-sm text-xau-muted">
           Tag setups to compare edge and mistakes.
         </div>
       ) : (
         <ChartContainer className="h-56 sm:h-64 md:h-72">
-          <div className="h-full w-full overflow-x-auto overflow-y-hidden pb-1">
-            <div className="h-full" style={{ minWidth: setupMinWidth }}>
+          <div className={`h-full w-full overflow-y-hidden pb-1 ${chartScroll ? "overflow-x-auto" : "overflow-x-hidden"}`}>
+            <div className="h-full min-w-0 w-full" style={chartScroll ? { minWidth: setupMinWidth } : undefined}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={setupVsMistakes} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
                     <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />

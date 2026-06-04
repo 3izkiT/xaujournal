@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { PanelHeading } from "@/components/ui/HelpTooltip";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SessionRow = { name: string; value: number };
@@ -20,8 +21,12 @@ export function SessionMini({ sessionData }: { sessionData: SessionRow[] }) {
 
   return (
     <article className="xau-card-bordered flex h-full flex-col p-4">
-      <h2 className="text-sm font-semibold text-xau-ink">Session P&L</h2>
-      <p className="mt-0.5 text-xs text-xau-muted">London · NY · Asian</p>
+      <PanelHeading
+        as="h2"
+        title="Session P&L"
+        term="sessionPnl"
+        description="London · NY · Asian"
+      />
       {!hasData ? (
         <p className="mt-6 flex flex-1 items-center justify-center text-center text-xs text-xau-muted">
           Tag sessions on entries.
