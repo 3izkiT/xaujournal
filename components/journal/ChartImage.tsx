@@ -5,7 +5,7 @@ type Props = {
   src: string;
   alt: string;
   className?: string;
-  /** cover = crop to fill; contain = full image visible (portrait/landscape phone screenshots) */
+  /** cover = fill box; contain = full image (portrait or landscape) */
   fit?: "cover" | "contain";
 };
 
