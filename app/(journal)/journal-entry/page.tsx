@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChartImage } from "@/components/journal/ChartImage";
 import { FormField } from "@/components/journal/FormField";
+import { SavingOverlay, type SavingOverlayPhase } from "@/components/ui/SavingOverlay";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
   afterPlaceholder,
@@ -15,19 +16,18 @@ import {
   calculateDisciplineScore,
   emotionOptions,
   sessionOptions,
+  setupTagOptions,
   tradeTypeOptions,
   XAU_SPOT_PRICE_MAX,
   XAU_SPOT_PRICE_MIN,
 } from "@/lib/data";
-import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
-import type { EmotionType, SessionType, SetupTag } from "@/lib/types";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 
 export default function JournalEntryPage() {
   const router = useRouter();
-  const { addTrade, canAddMore, tradeCount, tradeLimit, plan, settings, setupTagOptions, settingsLoading } = useXauJournal();
-  const [saving, setSaving] = useState(false);
+  const { addTrade, canAddMore, tradeCount, tradeLimit, plan } = useXauJournal();
+  const [saveOverlay, setSaveOverlay] = useState<SavingOverlayPhase | null>(null);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [entryTime, setEntryTime] = useState("13:00");
   const [exitTime, setExitTime] = useState("");
@@ -51,8 +51,6 @@ export default function JournalEntryPage() {
   const [noteNextAction, setNoteNextAction] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [chartUploadError, setChartUploadError] = useState<string | null>(null);
-
-  const checklistItems = settings.customChecklist.length > 0 ? settings.customChecklist : DEFAULT_CHECKLIST;
 
   const score = useMemo(
     () => calculateDisciplineScore({ followedPlan, rrAtLeastOneToTwo, calmMindset }),
@@ -93,7 +91,7 @@ export default function JournalEntryPage() {
       holdTimeMinutes = Math.max(0, Math.round((new Date(exitAt).getTime() - new Date(entryAt).getTime()) / 60000));
     }
 
-    setSaving(true);
+    setSaveOverlay("saving");
     const result = await addTrade({
       date,
       entryAt,
@@ -106,9 +104,9 @@ export default function JournalEntryPage() {
       exitPrice: exit,
       mae: mae !== "" ? Number(mae) : null,
       mfe: mfe !== "" ? Number(mfe) : null,
-      session: session as SessionType,
-      setupTags: setupTags as SetupTag[],
-      emotion: emotion as EmotionType,
+      session,
+      setupTags: setupTags as ("Liquidity Sweep" | "FVG Mitigation" | "Break of Structure" | "Order Block")[],
+      emotion: emotion as "Calm" | "Greed" | "Fear" | "FOMO" | "Revenge Trading" | "Overlot",
       beforeChartUrl: beforeChartUrl.trim() || beforePlaceholder,
       afterChartUrl: afterChartUrl.trim() || afterPlaceholder,
       disciplineChecklist: {
@@ -121,13 +119,14 @@ export default function JournalEntryPage() {
       noteNextAction,
     });
 
-    setSaving(false);
-
     if (!result.ok) {
+      setSaveOverlay(null);
       setSubmitError(result.error ?? "Could not save trade.");
       return;
     }
 
+    setSaveOverlay("success");
+    await new Promise((resolve) => setTimeout(resolve, 700));
     router.push("/history?saved=1");
   };
 
@@ -144,7 +143,9 @@ export default function JournalEntryPage() {
   };
 
   return (
-    <div className="xau-page-form">
+    <>
+      <SavingOverlay open={saveOverlay !== null} phase={saveOverlay ?? "saving"} />
+      <div className="xau-page-form">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-xau-ink md:text-3xl">Journal entry</h1>
@@ -165,23 +166,25 @@ export default function JournalEntryPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         <section className="xau-form-section">
           <h2 className="text-lg font-medium text-xau-ink">Pre-trade discipline</h2>
-          {settingsLoading ? (
-            <p className="text-sm text-xau-muted">Loading your checklist…</p>
-          ) : (
-            <div className="space-y-3">
-              {checklistItems.slice(0, 3).map((item, index) => {
-                const checked = index === 0 ? followedPlan : index === 1 ? rrAtLeastOneToTwo : calmMindset;
-                const onChange =
-                  index === 0 ? setFollowedPlan : index === 1 ? setRrAtLeastOneToTwo : setCalmMindset;
-                return (
-                  <label key={item.id} className="flex items-start gap-3 text-sm text-xau-ink">
-                    <input type="checkbox" className="mt-0.5" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-                    {item.label}
-                  </label>
-                );
-              })}
-            </div>
-          )}
+          <div className="space-y-3">
+            <label className="flex items-start gap-3 text-sm text-xau-ink">
+              <input type="checkbox" className="mt-0.5" checked={followedPlan} onChange={(e) => setFollowedPlan(e.target.checked)} />
+              Did I follow my strict trading plan/strategy?
+            </label>
+            <label className="flex items-start gap-3 text-sm text-xau-ink">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={rrAtLeastOneToTwo}
+                onChange={(e) => setRrAtLeastOneToTwo(e.target.checked)}
+              />
+              Is my Risk-to-Reward ratio at least 1:2?
+            </label>
+            <label className="flex items-start gap-3 text-sm text-xau-ink">
+              <input type="checkbox" className="mt-0.5" checked={calmMindset} onChange={(e) => setCalmMindset(e.target.checked)} />
+              Is my mindset completely calm and free of FOMO?
+            </label>
+          </div>
           <p className="rounded-2xl border border-xau-border bg-xau-calm px-4 py-3 text-sm text-xau-ink">
             Discipline score: <span className="font-semibold">{score}%</span>
           </p>
@@ -235,7 +238,7 @@ export default function JournalEntryPage() {
             <FormField label="Exit time" hint="Optional">
               <input type="time" className="xau-field" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
             </FormField>
-            <FormField label="Direction" tooltipTerm="tradeType">
+            <FormField label="Direction">
               <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as "Buy" | "Sell")}>
                 {tradeTypeOptions.map((option) => (
                   <option key={option} value={option}>
@@ -244,7 +247,7 @@ export default function JournalEntryPage() {
                 ))}
               </select>
             </FormField>
-            <FormField label="Session" tooltipTerm="session">
+            <FormField label="Session">
               <select
                 className="xau-select"
                 value={session}
@@ -257,7 +260,7 @@ export default function JournalEntryPage() {
                 ))}
               </select>
             </FormField>
-            <FormField label="Net P&amp;L ($)" tooltipTerm="netShort">
+            <FormField label="Net P&amp;L ($)">
               <input
                 type="number"
                 step="0.01"
@@ -266,7 +269,7 @@ export default function JournalEntryPage() {
                 onChange={(e) => setNetProfitLoss(e.target.value)}
               />
             </FormField>
-            <FormField label="R-multiple" hint="e.g. +3R" tooltipTerm="rMultiple">
+            <FormField label="R-multiple" hint="e.g. +3R">
               <input className="xau-field" value={rMultiple} onChange={(e) => setRMultiple(e.target.value)} />
             </FormField>
           </div>
@@ -302,7 +305,7 @@ export default function JournalEntryPage() {
               />
             </FormField>
             <FormField
-              label="MAE ($)" tooltipTerm="mae"
+              label="MAE ($)"
               hint="Maximum Adverse Excursion — worst unrealized loss ($) while the trade was open. Optional; fill after close from your platform."
             >
               <input
@@ -315,7 +318,7 @@ export default function JournalEntryPage() {
               />
             </FormField>
             <FormField
-              label="MFE ($)" tooltipTerm="mfe"
+              label="MFE ($)"
               hint="Maximum Favorable Excursion — best unrealized profit ($) before exit. Optional."
             >
               <input
@@ -430,10 +433,10 @@ export default function JournalEntryPage() {
         <div className="flex flex-col gap-3 border-t border-xau-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="submit"
-            disabled={!canAddMore || saving}
+            disabled={!canAddMore || saveOverlay !== null}
             className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving
+            {saveOverlay
               ? "Saving…"
               : canAddMore
                 ? "Save trade log"
@@ -452,5 +455,6 @@ export default function JournalEntryPage() {
         </div>
       </form>
     </div>
+    </>
   );
 }
