@@ -35,6 +35,25 @@ export const TOOLTIP_TERMS = {
   setup: "Setup tag from your journal (e.g. Liquidity Sweep, FVG) — first tag shown when you use several.",
   holdTime: "Minutes between entry and exit for that trade.",
   performanceOverview: "High-level snapshot: KPIs, equity curve, recent trades, calendar, and analytics in one scroll.",
+  disciplineChecklist:
+    "Three yes/no checks before you save: followed plan, at least 1:2 R:R, and calm mindset. They set your 0–100% discipline score.",
+  followedPlan: "Yes if the entry matched your written strategy rules — not a discretionary override.",
+  riskRewardRule: "Yes if the trade targeted at least 1:2 reward versus the dollars you risked before entry.",
+  calmMindsetRule: "Yes if you were calm with no FOMO, revenge trading, or overlot urge at entry.",
+  reflectionNotes:
+    "Optional post-trade notes. Honest, short entries make History reviews far more useful over time.",
+  noteContext: "What price action or narrative justified the trade — liquidity, structure, session, etc.",
+  noteMistake: 'Process or execution error on this trade, or write "none" if you followed plan.',
+  noteNextAction: "One concrete habit or rule for your next session — keeps the journal actionable.",
+  tradeDate: "Calendar date of the trade (entry day). Used for calendar P&L and sorting in History.",
+  entryTime: "Local time you opened the position. With exit time, powers hold duration and heatmaps.",
+  exitTime: "Local time you closed. Leave empty only if still open; pairs with entry time for hold minutes.",
+  entryPrice: "XAUUSD spot price at entry (e.g. 4448). Reference alongside net P&L you enter.",
+  exitPrice: "XAUUSD spot at exit. Required when the trade is closed.",
+  setupTags: "Tap every pattern that applied. Analytics use the first tag when you select several.",
+  chartBefore: "Screenshot before entry — plan, levels, or context. Upload a file or paste an https image URL.",
+  chartAfter: "Screenshot after exit — outcome and what you learned. Optional but great for Gallery.",
+  instrument: "XAURite focuses on spot XAUUSD (gold) so every log stays comparable.",
 } as const;
 
 export type TooltipTerm = keyof typeof TOOLTIP_TERMS;

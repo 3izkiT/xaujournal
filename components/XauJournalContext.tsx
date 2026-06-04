@@ -195,9 +195,22 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!authReady) return;
-    void refreshTrades();
+    if (!user?.id) {
+      setTrades([]);
+      setLoading(false);
+      void refreshSettings();
+      return;
+    }
+    const cached = readCachedTrades(user.id);
+    if (cached?.length) {
+      setTrades(cached);
+      setLoading(false);
+      void refreshTrades({ silent: true });
+    } else {
+      void refreshTrades();
+    }
     void refreshSettings();
-  }, [authReady, refreshTrades, refreshSettings]);
+  }, [authReady, user?.id, refreshTrades, refreshSettings, readCachedTrades]);
 
   const addTrade = useCallback(
     async (payload: AddTradePayload): Promise<{ ok: boolean; error?: string }> => {

@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ChartImage } from "@/components/journal/ChartImage";
-import { FormField } from "@/components/journal/FormField";
+import { FormCheckRow, FormField } from "@/components/journal/FormField";
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
 import { SavingOverlay, type SavingOverlayPhase } from "@/components/ui/SavingOverlay";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
@@ -16,6 +17,7 @@ import {
   sessionOptions,
   tradeTypeOptions,
 } from "@/lib/data";
+import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
 import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
 
@@ -163,10 +165,10 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
       {error && <p className="text-sm text-xau-loss">{error}</p>}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Date">
+        <FormField label="Date" tooltipTerm="tradeDate">
           <input type="date" className="xau-field" value={date} onChange={(e) => setDate(e.target.value)} />
         </FormField>
-        <FormField label="Direction">
+        <FormField label="Direction" tooltipTerm="tradeType">
           <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as TradeType)}>
             {tradeTypeOptions.map((option) => (
               <option key={option} value={option}>
@@ -175,10 +177,10 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
             ))}
           </select>
         </FormField>
-        <FormField label="Net P&amp;L ($)">
+        <FormField label="Net P&amp;L ($)" tooltipTerm="netPnl">
           <input type="number" step="0.01" className="xau-field" value={netProfitLoss} onChange={(e) => setNetProfitLoss(e.target.value)} />
         </FormField>
-        <FormField label="Session">
+        <FormField label="Session" tooltipTerm="session">
           <select className="xau-select" value={session} onChange={(e) => setSession(e.target.value as SessionType)}>
             {sessionOptions.map((option) => (
               <option key={option} value={option}>
@@ -187,10 +189,10 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
             ))}
           </select>
         </FormField>
-        <FormField label="Entry price">
+        <FormField label="Entry price" tooltipTerm="entryPrice">
           <input type="number" step="0.01" className="xau-field" value={entryPrice} onChange={(e) => setEntryPrice(e.target.value)} />
         </FormField>
-        <FormField label="Exit price">
+        <FormField label="Exit price" tooltipTerm="exitPrice">
           <input type="number" step="0.01" className="xau-field" value={exitPrice} onChange={(e) => setExitPrice(e.target.value)} />
         </FormField>
       </div>
@@ -199,15 +201,18 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
         {checklistItems.slice(0, 3).map((item, index) => {
           const checked = index === 0 ? followedPlan : index === 1 ? rrAtLeastOneToTwo : calmMindset;
           const onChange = index === 0 ? setFollowedPlan : index === 1 ? setRrAtLeastOneToTwo : setCalmMindset;
+          const disciplineTerms: TooltipTerm[] = ["followedPlan", "riskRewardRule", "calmMindsetRule"];
+          const term = disciplineTerms[index] ?? "followedPlan";
           return (
-            <label key={item.id} className="flex items-start gap-3 text-sm text-xau-ink">
-              <input type="checkbox" className="mt-0.5" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-              {item.label}
-            </label>
+            <FormCheckRow key={item.id} label={item.label} term={term} checked={checked} onChange={onChange} />
           );
         })}
       </div>
 
+      <p className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
+        Setup tags
+        <HelpTooltip term="setupTags" label="About setup tags" size="sm" placement="above" />
+      </p>
       <div className="flex flex-wrap gap-2">
         {setupTagOptions.map((tag) => (
           <button
@@ -223,7 +228,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
         ))}
       </div>
 
-      <FormField label="Emotion">
+      <FormField label="Emotion" tooltipTerm="emotion">
         <select className="xau-select" value={emotion} onChange={(e) => setEmotion(e.target.value as EmotionType)}>
           {emotionOptions.map((option) => (
             <option key={option} value={option}>
@@ -233,13 +238,22 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
         </select>
       </FormField>
 
-      <textarea rows={2} className="xau-textarea" value={noteContext} onChange={(e) => setNoteContext(e.target.value)} placeholder="Context" />
-      <textarea rows={2} className="xau-textarea" value={noteMistake} onChange={(e) => setNoteMistake(e.target.value)} placeholder="Mistake" />
-      <textarea rows={2} className="xau-textarea" value={noteNextAction} onChange={(e) => setNoteNextAction(e.target.value)} placeholder="Next action" />
+      <label className="block space-y-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Context<HelpTooltip term="noteContext" label="About context" size="sm" placement="above" /></span>
+        <textarea rows={2} className="xau-textarea" value={noteContext} onChange={(e) => setNoteContext(e.target.value)} placeholder="Context" />
+      </label>
+      <label className="block space-y-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Mistake<HelpTooltip term="noteMistake" label="About mistake" size="sm" placement="above" /></span>
+        <textarea rows={2} className="xau-textarea" value={noteMistake} onChange={(e) => setNoteMistake(e.target.value)} placeholder="Mistake" />
+      </label>
+      <label className="block space-y-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Next action<HelpTooltip term="noteNextAction" label="About next action" size="sm" placement="above" /></span>
+        <textarea rows={2} className="xau-textarea" value={noteNextAction} onChange={(e) => setNoteNextAction(e.target.value)} placeholder="Next action" />
+      </label>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <p className="mb-2 text-xs font-medium text-xau-ink">Before chart</p>
+          <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Before chart<HelpTooltip term="chartBefore" label="About before chart" size="sm" placement="above" /></p>
           <input
             type="file"
             accept="image/*"
@@ -257,7 +271,7 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
           )}
         </div>
         <div>
-          <p className="mb-2 text-xs font-medium text-xau-ink">After chart</p>
+          <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">After chart<HelpTooltip term="chartAfter" label="About after chart" size="sm" placement="above" /></p>
           <input
             type="file"
             accept="image/*"

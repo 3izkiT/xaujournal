@@ -4,7 +4,8 @@ import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChartImage } from "@/components/journal/ChartImage";
-import { FormField } from "@/components/journal/FormField";
+import { FormCheckRow, FormField, FormSectionHeading } from "@/components/journal/FormField";
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
 import { SavingOverlay, type SavingOverlayPhase } from "@/components/ui/SavingOverlay";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
@@ -165,80 +166,100 @@ export default function JournalEntryPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <section className="xau-form-section">
-          <h2 className="text-lg font-medium text-xau-ink">Pre-trade discipline</h2>
+          <FormSectionHeading title="Pre-trade discipline" term="disciplineChecklist" />
           <div className="space-y-3">
-            <label className="flex items-start gap-3 text-sm text-xau-ink">
-              <input type="checkbox" className="mt-0.5" checked={followedPlan} onChange={(e) => setFollowedPlan(e.target.checked)} />
-              Did I follow my strict trading plan/strategy?
-            </label>
-            <label className="flex items-start gap-3 text-sm text-xau-ink">
-              <input
-                type="checkbox"
-                className="mt-0.5"
-                checked={rrAtLeastOneToTwo}
-                onChange={(e) => setRrAtLeastOneToTwo(e.target.checked)}
-              />
-              Is my Risk-to-Reward ratio at least 1:2?
-            </label>
-            <label className="flex items-start gap-3 text-sm text-xau-ink">
-              <input type="checkbox" className="mt-0.5" checked={calmMindset} onChange={(e) => setCalmMindset(e.target.checked)} />
-              Is my mindset completely calm and free of FOMO?
-            </label>
+            <FormCheckRow
+              label="Did I follow my strict trading plan/strategy?"
+              term="followedPlan"
+              checked={followedPlan}
+              onChange={setFollowedPlan}
+            />
+            <FormCheckRow
+              label="Is my Risk-to-Reward ratio at least 1:2?"
+              term="riskRewardRule"
+              checked={rrAtLeastOneToTwo}
+              onChange={setRrAtLeastOneToTwo}
+            />
+            <FormCheckRow
+              label="Is my mindset completely calm and free of FOMO?"
+              term="calmMindsetRule"
+              checked={calmMindset}
+              onChange={setCalmMindset}
+            />
           </div>
-          <p className="rounded-2xl border border-xau-border bg-xau-calm px-4 py-3 text-sm text-xau-ink">
-            Discipline score: <span className="font-semibold">{score}%</span>
+          <p className="inline-flex flex-wrap items-center gap-1.5 rounded-2xl border border-xau-border bg-xau-calm px-4 py-3 text-sm text-xau-ink">
+            <span>
+              Discipline score: <span className="font-semibold">{score}%</span>
+            </span>
+            <HelpTooltip term="disciplineShort" label="About discipline score" size="sm" placement="above" />
           </p>
         </section>
 
-        <section className="xau-panel-accent">
-          <div>
-            <h2 className="text-lg font-medium text-xau-ink">Reflection notes</h2>
-            <p className="mt-1 text-xs leading-relaxed text-xau-muted">
-              Optional but recommended — builds discipline. If you fill a field, use at least 3 characters (e.g.
-              &quot;none&quot; for mistakes).
-            </p>
-          </div>
+        <section className="xau-panel-accent space-y-4">
+          <FormSectionHeading
+            title="Reflection notes"
+            term="reflectionNotes"
+            description={'Optional but recommended — builds discipline. If you fill a field, use at least 3 characters (e.g. "none" for mistakes).'}
+          />
           <div className="space-y-4">
-            <textarea
-              rows={3}
-              className="xau-textarea"
-              placeholder="Context: What was the market telling you?"
-              value={noteContext}
-              onChange={(e) => setNoteContext(e.target.value)}
-            />
-            <textarea
-              rows={3}
-              className="xau-textarea"
-              placeholder="Mistake: What went wrong (or 'none')?"
-              value={noteMistake}
-              onChange={(e) => setNoteMistake(e.target.value)}
-            />
-            <textarea
-              rows={3}
-              className="xau-textarea"
-              placeholder="Next action: What will you do differently?"
-              value={noteNextAction}
-              onChange={(e) => setNoteNextAction(e.target.value)}
-            />
+            <label className="block space-y-2">
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
+                Context
+                <HelpTooltip term="noteContext" label="About context" size="sm" placement="above" />
+              </span>
+              <textarea
+                rows={3}
+                className="xau-textarea"
+                placeholder="What was the market telling you?"
+                value={noteContext}
+                onChange={(e) => setNoteContext(e.target.value)}
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
+                Mistake
+                <HelpTooltip term="noteMistake" label="About mistake" size="sm" placement="above" />
+              </span>
+              <textarea
+                rows={3}
+                className="xau-textarea"
+                placeholder="What went wrong (or 'none')?"
+                value={noteMistake}
+                onChange={(e) => setNoteMistake(e.target.value)}
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
+                Next action
+                <HelpTooltip term="noteNextAction" label="About next action" size="sm" placement="above" />
+              </span>
+              <textarea
+                rows={3}
+                className="xau-textarea"
+                placeholder="What will you do differently?"
+                value={noteNextAction}
+                onChange={(e) => setNoteNextAction(e.target.value)}
+              />
+            </label>
           </div>
         </section>
 
         <section className="xau-form-section">
-          <h2 className="text-lg font-medium text-xau-ink">Trade details</h2>
+          <FormSectionHeading title="Trade details" />
           <div className="grid gap-5 sm:grid-cols-2">
-            <FormField label="Instrument">
+            <FormField label="Instrument" tooltipTerm="instrument">
               <input className="xau-field" value="XAUUSD (Gold)" disabled />
             </FormField>
-            <FormField label="Date">
+            <FormField label="Date" tooltipTerm="tradeDate">
               <input type="date" className="xau-field" value={date} onChange={(e) => setDate(e.target.value)} />
             </FormField>
-            <FormField label="Entry time">
+            <FormField label="Entry time" tooltipTerm="entryTime">
               <input type="time" className="xau-field" value={entryTime} onChange={(e) => setEntryTime(e.target.value)} />
             </FormField>
-            <FormField label="Exit time" hint="Optional">
+            <FormField label="Exit time" hint="Optional" tooltipTerm="exitTime">
               <input type="time" className="xau-field" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
             </FormField>
-            <FormField label="Direction">
+            <FormField label="Direction" tooltipTerm="tradeType">
               <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as "Buy" | "Sell")}>
                 {tradeTypeOptions.map((option) => (
                   <option key={option} value={option}>
@@ -247,7 +268,7 @@ export default function JournalEntryPage() {
                 ))}
               </select>
             </FormField>
-            <FormField label="Session">
+            <FormField label="Session" tooltipTerm="session">
               <select
                 className="xau-select"
                 value={session}
@@ -260,7 +281,7 @@ export default function JournalEntryPage() {
                 ))}
               </select>
             </FormField>
-            <FormField label="Net P&amp;L ($)">
+            <FormField label="Net P&amp;L ($)" tooltipTerm="netPnl">
               <input
                 type="number"
                 step="0.01"
@@ -269,16 +290,16 @@ export default function JournalEntryPage() {
                 onChange={(e) => setNetProfitLoss(e.target.value)}
               />
             </FormField>
-            <FormField label="R-multiple" hint="e.g. +3R">
+            <FormField label="R-multiple" hint="e.g. +3R" tooltipTerm="rMultiple">
               <input className="xau-field" value={rMultiple} onChange={(e) => setRMultiple(e.target.value)} />
             </FormField>
           </div>
         </section>
 
         <section className="xau-form-section">
-          <h2 className="text-lg font-medium text-xau-ink">Prices &amp; excursions</h2>
+          <FormSectionHeading title="Prices &amp; excursions" />
           <div className="grid gap-5 sm:grid-cols-2">
-            <FormField label="Entry price" hint={`Spot XAUUSD, typically ${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX.toLocaleString()}`}>
+            <FormField label="Entry price" tooltipTerm="entryPrice" hint={`Spot XAUUSD, typically ${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX.toLocaleString()}`}>
               <input
                 type="number"
                 step="0.01"
@@ -291,7 +312,7 @@ export default function JournalEntryPage() {
                 onChange={(e) => setEntryPrice(e.target.value)}
               />
             </FormField>
-            <FormField label="Exit price" hint="Leave blank only if still open (use exit time)">
+            <FormField label="Exit price" tooltipTerm="exitPrice" hint="Leave blank only if still open (use exit time)">
               <input
                 type="number"
                 step="0.01"
@@ -304,10 +325,7 @@ export default function JournalEntryPage() {
                 onChange={(e) => setExitPrice(e.target.value)}
               />
             </FormField>
-            <FormField
-              label="MAE ($)"
-              hint="Maximum Adverse Excursion — worst unrealized loss ($) while the trade was open. Optional; fill after close from your platform."
-            >
+            <FormField label="MAE ($)" tooltipTerm="mae" hint="Optional — from your platform after close.">
               <input
                 type="number"
                 step="0.1"
@@ -317,10 +335,7 @@ export default function JournalEntryPage() {
                 onChange={(e) => setMae(e.target.value)}
               />
             </FormField>
-            <FormField
-              label="MFE ($)"
-              hint="Maximum Favorable Excursion — best unrealized profit ($) before exit. Optional."
-            >
+            <FormField label="MFE ($)" tooltipTerm="mfe" hint="Optional — best unrealized profit before exit.">
               <input
                 type="number"
                 step="0.1"
@@ -334,7 +349,7 @@ export default function JournalEntryPage() {
         </section>
 
         <section className="xau-form-section">
-          <h2 className="text-lg font-medium text-xau-ink">Setup tags &amp; emotion</h2>
+          <FormSectionHeading title="Setup tags &amp; emotion" term="setupTags" />
           <div className="flex flex-wrap gap-2">
             {setupTagOptions.map((tag) => (
               <button
@@ -351,7 +366,7 @@ export default function JournalEntryPage() {
               </button>
             ))}
           </div>
-          <FormField label="Emotion during trade">
+          <FormField label="Emotion during trade" tooltipTerm="emotion">
             <select className="xau-select" value={emotion} onChange={(e) => setEmotion(e.target.value)}>
               {emotionOptions.map((option) => (
                 <option key={option} value={option}>
@@ -363,11 +378,8 @@ export default function JournalEntryPage() {
         </section>
 
         <section className="xau-form-section">
-          <h2 className="text-lg font-medium text-xau-ink">Chart screenshots</h2>
-          <p className="text-xs text-xau-muted">
-            Upload saves into your log (max 2.5 MB). Or paste a public https:// image link. Leave empty for a placeholder.
-          </p>
-          {chartUploadError && (
+          <FormSectionHeading title="Chart screenshots" term="chartBefore" description="Upload saves into your log (max 2.5 MB). Or paste a public https:// image link." />
+                    {chartUploadError && (
             <p className="text-sm text-xau-loss" role="alert">
               {chartUploadError}
             </p>
@@ -381,7 +393,7 @@ export default function JournalEntryPage() {
                 handleFileSelect(e.dataTransfer.files?.[0] || null, "before");
               }}
             >
-              <span className="block text-sm font-medium text-xau-ink">Before trade</span>
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">Before trade<HelpTooltip term="chartBefore" label="About before chart" size="sm" placement="above" /></span>
               <input
                 type="file"
                 accept="image/*"
@@ -408,7 +420,7 @@ export default function JournalEntryPage() {
                 handleFileSelect(e.dataTransfer.files?.[0] || null, "after");
               }}
             >
-              <span className="block text-sm font-medium text-xau-ink">After trade</span>
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">After trade<HelpTooltip term="chartAfter" label="About after chart" size="sm" placement="above" /></span>
               <input
                 type="file"
                 accept="image/*"
