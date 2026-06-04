@@ -1,25 +1,18 @@
+import Script from "next/script";
 import { buildGa4InlineConfigSnippet, GA_MEASUREMENT_ID } from "@/lib/ga4-config";
 
 /**
- * Plain <script> in <head> (not next/script) so Search Console / crawlers see gtag in initial HTML.
- * Only include once — root layout only.
+ * GA4 loads after idle — keeps journal/dashboard TTI fast while still tracking public pages.
  */
 export function GoogleAnalytics() {
   if (!GA_MEASUREMENT_ID.startsWith("G-")) return null;
 
   return (
     <>
-      <script
-        suppressHydrationWarning
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-      />
-      <script
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: buildGa4InlineConfigSnippet(GA_MEASUREMENT_ID),
-        }}
-      />
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="lazyOnload" />
+      <Script id="ga4-config" strategy="lazyOnload">
+        {buildGa4InlineConfigSnippet(GA_MEASUREMENT_ID)}
+      </Script>
     </>
   );
 }

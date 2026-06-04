@@ -4,6 +4,35 @@ import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_URL } from "@/lib/site
 
 const OG_IMAGE_PATH = "/opengraph-image";
 
+export function buildPageMetadata({
+  title,
+  description,
+  path,
+  noIndex = false,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  noIndex?: boolean;
+}): Metadata {
+  const url = path.startsWith("http") ? path : `${SITE_URL}${path}`;
+  return buildSiteMetadata({
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+    },
+    twitter: {
+      title,
+      description,
+    },
+    robots: noIndex ? { index: false, follow: false } : undefined,
+  });
+}
+
 export function buildSiteMetadata(overrides?: Partial<Metadata>): Metadata {
   const titleDefault = `${SITE_NAME} — Intentional XAUUSD Trading Journal`;
   const titleTemplate = `%s · ${SITE_NAME}`;

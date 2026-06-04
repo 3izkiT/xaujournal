@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { DASHBOARD_CHART_CARD_CLASS, DASHBOARD_CHART_HEIGHT_CLASS } from "@/lib/dashboard-charts";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SessionRow = { name: string; value: number };
@@ -14,20 +15,32 @@ function formatUsd(value: number) {
   }).format(value);
 }
 
-export function SessionMini({ sessionData }: { sessionData: SessionRow[] }) {
+export function SessionMini({
+  sessionData,
+  className = "",
+}: {
+  sessionData: SessionRow[];
+  className?: string;
+}) {
   const palette = useChartPalette();
   const hasData = sessionData.some((s) => s.value !== 0);
 
   return (
-    <article className="xau-card-bordered p-4 md:p-5">
-      <h2 className="text-sm font-semibold text-xau-ink">Session P&L</h2>
-      <p className="mt-0.5 text-xs text-xau-muted">London · NY · Asian</p>
+    <article className={`${DASHBOARD_CHART_CARD_CLASS} ${className}`.trim()}>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h2 className="text-base font-semibold text-xau-ink">Session P&L</h2>
+          <p className="mt-0.5 text-xs text-xau-muted">London · NY · Asian</p>
+        </div>
+      </div>
       {!hasData ? (
-        <p className="mt-6 flex h-52 items-center justify-center text-center text-xs text-xau-muted md:h-64">
+        <p
+          className={`flex flex-1 items-center justify-center text-center text-xs text-xau-muted ${DASHBOARD_CHART_HEIGHT_CLASS}`}
+        >
           Tag sessions on entries.
         </p>
       ) : (
-        <ChartContainer className="mt-3 h-52 md:h-64">
+        <ChartContainer className={`flex-1 ${DASHBOARD_CHART_HEIGHT_CLASS}`}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sessionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />

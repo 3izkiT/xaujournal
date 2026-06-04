@@ -9,11 +9,12 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "db:generate": "prisma generate",
-    "db:migrate": "node scripts/prisma-deploy.mjs",
+    "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "audit:responsive": "node scripts/e2e-responsive.mjs",
-    "lighthouse:prod": "lighthouse https://xaurite.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json"
+    "lighthouse:prod": "LIGHTHOUSE_URL=https://xaurite.vercel.app node scripts/lighthouse-audit.mjs",
+    "lighthouse:prod:mobile": "LIGHTHOUSE_PRESET=mobile LIGHTHOUSE_URL=https://xaurite.vercel.app node scripts/lighthouse-audit.mjs",
+    "lighthouse:local": "LIGHTHOUSE_URL=http://127.0.0.1:3000 node scripts/lighthouse-audit.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
@@ -23,8 +24,7 @@
     "prisma": "^6.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^3.8.1",
-    "stripe": "^22.2.0"
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

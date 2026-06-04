@@ -2,6 +2,10 @@
 
 import { ReactNode, useEffect, useState } from "react";
 
+function hasExplicitHeight(className: string) {
+  return /\b(h-|min-h-|max-h-)\S/.test(className);
+}
+
 export function ChartContainer({ children, className = "h-72" }: { children: ReactNode; className?: string }) {
   const [mounted, setMounted] = useState(false);
 
@@ -9,11 +13,11 @@ export function ChartContainer({ children, className = "h-72" }: { children: Rea
     setMounted(true);
   }, []);
 
+  const sizeClass = hasExplicitHeight(className) ? className : `${className} min-h-[288px]`;
+
   if (!mounted) {
-    return (
-      <div className={`${className} animate-pulse rounded-2xl bg-xau-app`} aria-hidden="true" />
-    );
+    return <div className={`${sizeClass} min-w-0 w-full animate-pulse rounded-2xl bg-xau-app`} aria-hidden="true" />;
   }
 
-  return <div className={`${className} min-h-[288px] min-w-0 w-full`}>{children}</div>;
+  return <div className={`${sizeClass} min-w-0 w-full`}>{children}</div>;
 }

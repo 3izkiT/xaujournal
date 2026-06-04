@@ -11,8 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
-import { PanelHeading } from "@/components/ui/HelpTooltip";
-import { useMdUp } from "@/lib/use-md-up";
+import { DASHBOARD_CHART_CARD_CLASS, DASHBOARD_CHART_HEIGHT_CLASS } from "@/lib/dashboard-charts";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 export type EquityPoint = {
@@ -60,35 +59,37 @@ function EquityTooltip({
   );
 }
 
-export function EquityChart({ equityCurve }: { equityCurve: EquityPoint[] }) {
+export function EquityChart({
+  equityCurve,
+  className = "",
+}: {
+  equityCurve: EquityPoint[];
+  className?: string;
+}) {
   const palette = useChartPalette();
-  const mdUp = useMdUp();
   const tradeCount = Math.max(0, equityCurve.length - 1);
   const equityMinWidth = Math.max(320, tradeCount * 52);
-  const chartScroll = mdUp && tradeCount > 8;
 
   if (tradeCount === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-xau-border bg-xau-card text-sm text-xau-muted">
+      <div className={`flex items-center justify-center rounded-2xl border border-xau-border bg-xau-card text-sm text-xau-muted ${DASHBOARD_CHART_HEIGHT_CLASS} ${className}`.trim()}>
         Log trades to see your equity curve.
       </div>
     );
   }
 
   return (
-    <article className="xau-card-bordered p-4 md:p-5">
+    <article className={`${DASHBOARD_CHART_CARD_CLASS} ${className}`.trim()}>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-        <PanelHeading
-          as="h2"
-          title="Equity curve"
-          term="equityCurve"
-          description={`Cumulative net P&L${chartScroll ? " · scroll when you have many trades" : ""}`}
-        />
+        <div>
+          <h2 className="text-base font-semibold text-xau-ink">Equity curve</h2>
+          <p className="mt-0.5 text-xs text-xau-muted">Cumulative net P&L · scroll when you have many trades</p>
+        </div>
         <span className="text-xs font-medium text-xau-muted">{tradeCount} trades</span>
       </div>
-      <ChartContainer className="h-64 md:h-80">
-        <div className={`h-full w-full overflow-y-hidden pb-1 ${chartScroll ? "overflow-x-auto" : "overflow-x-hidden"}`}>
-          <div className="h-full min-w-0 w-full" style={chartScroll ? { minWidth: equityMinWidth } : undefined}>
+      <ChartContainer className={`flex-1 ${DASHBOARD_CHART_HEIGHT_CLASS}`}>
+        <div className="h-full w-full overflow-x-auto overflow-y-hidden pb-1">
+          <div className="h-full" style={{ minWidth: equityMinWidth }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={equityCurve} margin={{ top: 8, right: 12, left: 4, bottom: 4 }}>
                     <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />

@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { LoginForm } from "@/app/login/LoginForm";
 import { LoginPageClient } from "@/app/login/LoginPageClient";
 import { EMAIL_AUTH_ENABLED } from "@/lib/auth-mode";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Sign in",
+  description: "Sign in to your XAURite XAUUSD trading journal — discipline logs, analytics, and chart gallery.",
+  path: "/login",
+});
 
 type Props = {
   searchParams: Promise<{ error?: string; verified?: string }>;

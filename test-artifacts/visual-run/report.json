@@ -1,0 +1,71 @@
+{
+  "base": "https://xaurite.vercel.app",
+  "headed": false,
+  "steps": [
+    {
+      "name": "Landing page",
+      "ok": true,
+      "detail": "https://xaurite.vercel.app"
+    },
+    {
+      "name": "Demo login API",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Dashboard",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /journal-entry",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /history",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /calendar",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /analytics",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /gallery",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /settings",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Page /pricing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Thai locale",
+      "ok": false,
+      "detail": "Language switcher not found"
+    },
+    {
+      "name": "Trade edit UI",
+      "ok": false,
+      "detail": "No Edit button"
+    },
+    {
+      "name": "Logout redirect",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

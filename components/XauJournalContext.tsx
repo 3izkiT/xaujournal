@@ -59,7 +59,7 @@ type XauJournalContextValue = {
   addTrade: (payload: AddTradePayload) => Promise<{ ok: boolean; error?: string }>;
   updateTrade: (tradeId: string, payload: AddTradePayload) => Promise<{ ok: boolean; error?: string }>;
   removeTrade: (tradeId: string) => Promise<{ ok: boolean; error?: string }>;
-  refreshTrades: () => Promise<void>;
+  refreshTrades: (options?: { silent?: boolean }) => Promise<void>;
   refreshSettings: () => Promise<void>;
 };
 
@@ -156,7 +156,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     }
   }, [user?.id]);
 
-  const refreshTrades = useCallback(async () => {
+  const refreshTrades = useCallback(async (options?: { silent?: boolean }) => {
     if (!user?.id) {
       setTrades([]);
       setLoading(false);
