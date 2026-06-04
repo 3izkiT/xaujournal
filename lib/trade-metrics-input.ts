@@ -50,6 +50,25 @@ export function rMultipleForEdit(stored: string): string {
   return `${sign === "-" ? "-" : sign === "+" ? "+" : "+"}${num}`;
 }
 
+export function splitRForInput(value: string): { sign: PnlSign; amount: string } {
+  const draft = rMultipleForEdit(value);
+  if (!draft || draft === "+" || draft === "-") {
+    const sign: PnlSign = draft === "-" ? "loss" : "profit";
+    return { sign, amount: "" };
+  }
+  const sign: PnlSign = draft.startsWith("-") ? "loss" : "profit";
+  const amount = draft.replace(/^[+-]/, "");
+  return { sign, amount };
+}
+
+export function rFromSignAndAmount(sign: PnlSign, amount: string): string {
+  const cleaned = amount.replace(/,/g, "").trim();
+  if (!cleaned || cleaned === ".") return sign === "loss" ? "-" : "+";
+  const n = parseFloat(cleaned.replace(/[^\d.]/g, ""));
+  const abs = Number.isFinite(n) ? formatRNumber(Math.abs(n)) : 0;
+  return sign === "loss" ? `-${abs}` : `+${abs}`;
+}
+
 /** Allow only +/-, digits, and one decimal while typing (no R). */
 export function sanitizeRMultipleDraft(raw: string): string {
   let v = raw.trim().replace(/r/gi, "");

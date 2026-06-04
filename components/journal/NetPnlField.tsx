@@ -12,6 +12,11 @@ type Props = {
   id?: string;
 };
 
+const SIGN_OPTIONS: { value: PnlSign; label: string }[] = [
+  { value: "profit", label: "Profit (+)" },
+  { value: "loss", label: "Loss (−)" },
+];
+
 export function NetPnlField({ value, onChange, id }: Props) {
   const { sign, amount } = splitPnlForInput(value);
 
@@ -29,42 +34,36 @@ export function NetPnlField({ value, onChange, id }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="flex gap-2" role="group" aria-label="Profit or loss">
-        <button
-          type="button"
-          onClick={() => setSign("profit")}
-          className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition ${
-            sign === "profit"
-              ? "border-tv-profit bg-xau-profit-bg text-tv-profit"
-              : "border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
-          }`}
+      <div className="grid gap-2 sm:grid-cols-[minmax(9rem,11rem)_1fr]">
+        <label className="sr-only" htmlFor={id ? `${id}-sign` : undefined}>
+          Profit or loss
+        </label>
+        <select
+          id={id ? `${id}-sign` : undefined}
+          className="xau-select w-full"
+          value={sign}
+          onChange={(e) => setSign(e.target.value as PnlSign)}
+          aria-label="Profit or loss"
         >
-          Profit (+)
-        </button>
-        <button
-          type="button"
-          onClick={() => setSign("loss")}
-          className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition ${
-            sign === "loss"
-              ? "border-tv-loss bg-xau-loss-bg text-tv-loss"
-              : "border-xau-border bg-xau-app text-xau-muted hover:text-xau-ink"
-          }`}
-        >
-          Loss (−)
-        </button>
+          {SIGN_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <input
+          id={id}
+          type="text"
+          inputMode="decimal"
+          autoComplete="off"
+          className="xau-field"
+          placeholder="Amount in USD, e.g. 420"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
       </div>
-      <input
-        id={id}
-        type="text"
-        inputMode="decimal"
-        autoComplete="off"
-        className="xau-field"
-        placeholder="e.g. 420"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
       <p className="text-xs text-xau-muted">
-        Tap Profit or Loss, then enter the amount — no need to type +/− on mobile.
+        Choose Profit or Loss, then enter the amount — no need to type +/−.
       </p>
     </div>
   );
