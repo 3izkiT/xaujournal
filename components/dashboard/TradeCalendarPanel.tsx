@@ -53,7 +53,7 @@ export function TradeCalendarPanel({ trades, variant = "default" }: Props) {
   const isCurrentMonth = viewYear === today.getFullYear() && viewMonth === today.getMonth();
 
   return (
-    <article id="calendar" className="xau-card-bordered scroll-mt-24 p-4 md:p-5">
+    <article className="xau-card-bordered p-4 md:p-5">
       <div className={`flex gap-3 ${compact ? "flex-col" : "flex-wrap items-center justify-between"}`}>
         <PanelHeading
           as="h2"
