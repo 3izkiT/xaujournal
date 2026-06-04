@@ -134,14 +134,14 @@ export default function DashboardPage() {
           id="dashboard-panel-overview"
           role="tabpanel"
           aria-labelledby="dashboard-tab-overview"
-          className="grid gap-5 lg:grid-cols-12 lg:items-start lg:gap-6"
+          className="grid gap-5 lg:grid-cols-12 lg:items-stretch lg:gap-6"
         >
-          <div className="lg:col-span-8">
-            <EquityChart equityCurve={equityCurve} />
+          <div className="h-full min-h-0 lg:col-span-8">
+            <EquityChart equityCurve={equityCurve} className="h-full" />
           </div>
 
-          <aside className="flex flex-col gap-5 lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
-            <SessionMini sessionData={sessionData} />
+          <aside className="h-full min-h-0 lg:col-span-4">
+            <SessionMini sessionData={sessionData} className="h-full" />
           </aside>
 
           <div className="lg:col-span-12">

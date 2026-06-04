@@ -3,6 +3,7 @@
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
 import { sessionChartSubtitle } from "@/lib/sessions";
+import { OVERVIEW_CHART_PLOT_HEIGHT, overviewChartCardClass } from "@/lib/dashboard-charts";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SessionRow = { name: string; value: number };
@@ -20,16 +21,19 @@ export function SessionMini({ sessionData, className = "" }: { sessionData: Sess
   const hasData = sessionData.some((s) => s.value !== 0);
 
   return (
-    <article className={`xau-card-bordered flex h-full flex-col p-4 ${className}`.trim()}>
-      <h2 className="text-sm font-semibold text-xau-ink">Session P&L</h2>
-      <p className="mt-0.5 text-xs text-xau-muted">{sessionChartSubtitle()}</p>
+    <article className={`${overviewChartCardClass} ${className}`.trim()}>
+      <div className="mb-4 min-h-[3.75rem]">
+        <h2 className="text-base font-semibold text-xau-ink">Session P&L</h2>
+        <p className="mt-0.5 text-xs text-xau-muted">{sessionChartSubtitle()}</p>
+      </div>
       {!hasData ? (
         <p className="mt-6 flex flex-1 items-center justify-center text-center text-xs text-xau-muted">
           Tag sessions on entries.
         </p>
       ) : (
-        <ChartContainer className="mt-3 w-full">
-          <ResponsiveContainer width="100%" height={200}>
+        <div className="flex min-h-0 flex-1 flex-col">
+        <ChartContainer className="min-h-0 w-full flex-1">
+          <ResponsiveContainer width="100%" height={OVERVIEW_CHART_PLOT_HEIGHT}>
             <BarChart data={sessionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 10, fill: palette.tick }} />
@@ -50,6 +54,7 @@ export function SessionMini({ sessionData, className = "" }: { sessionData: Sess
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
+        </div>
       )}
     </article>
   );

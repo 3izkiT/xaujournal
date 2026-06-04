@@ -1,5 +1,5 @@
-/** Shared chart area height — keep Equity curve and Session P&L cards aligned on desktop. */
-export const DASHBOARD_CHART_HEIGHT_CLASS = "h-64 md:h-80";
+/** Shared overview row — Equity curve + Session P&L must match height. */
+export const OVERVIEW_CHART_PLOT_HEIGHT = 280;
 
-export const DASHBOARD_CHART_CARD_CLASS =
-  "xau-card-bordered flex h-full flex-col p-4 md:p-5";
+export const overviewChartCardClass =
+  "xau-card-bordered flex h-full min-h-0 flex-col p-4 md:p-5";
