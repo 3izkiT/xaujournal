@@ -69,7 +69,7 @@ export function ExecutionAnalytics({ sessionData, avgHoldMinutes, avgMae, avgMfe
 
   return (
     <div className="grid gap-4 lg:grid-cols-12">
-      <div className="grid gap-3 sm:grid-cols-3 lg:col-span-4 lg:grid-cols-1">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 2xl:grid-cols-1 lg:col-span-4">
         <MiniStat label="Avg hold time" tooltipTerm="avgHoldTime" value={avgHoldMinutes != null ? `${avgHoldMinutes} min` : "—"} />
         <MiniStat label="Avg MAE" tooltipTerm="mae" value={avgMae != null ? `$${avgMae}` : "—"} tone="loss" />
         <MiniStat label="Avg MFE" tooltipTerm="mfe" value={avgMfe != null ? `$${avgMfe}` : "—"} tone="profit" />

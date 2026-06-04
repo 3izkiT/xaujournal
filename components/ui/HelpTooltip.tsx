@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { getTooltipText, type TooltipTerm } from "@/lib/term-tooltips";
 
 type HelpTooltipProps = {
@@ -75,7 +75,7 @@ export function HelpTooltip({
         <span
           id={id}
           role="tooltip"
-          className={`pointer-events-none absolute left-1/2 z-50 w-56 -translate-x-1/2 rounded-lg border border-xau-border bg-xau-card px-3 py-2 text-left text-xs font-normal normal-case leading-snug tracking-normal text-xau-ink shadow-lg sm:w-64 ${positionClass}`}
+          className={`pointer-events-none absolute left-1/2 z-50 w-[min(16rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-xau-border bg-xau-card px-3 py-2 text-left text-xs font-normal normal-case leading-snug tracking-normal text-xau-ink shadow-lg sm:w-64 ${positionClass}`}
         >
           {text}
         </span>
@@ -112,7 +112,7 @@ export function PanelHeading({ title, term, description, as: Tag = "h2", classNa
 }
 
 type ThWithTooltipProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   term: TooltipTerm;
   className?: string;
 };

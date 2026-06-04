@@ -12,6 +12,7 @@
     "db:migrate": "node scripts/prisma-deploy.mjs",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
+    "audit:responsive": "node scripts/e2e-responsive.mjs",
     "lighthouse:prod": "lighthouse https://xaurite.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json"
   },
   "dependencies": {
