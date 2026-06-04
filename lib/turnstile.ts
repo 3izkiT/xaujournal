@@ -10,7 +10,12 @@ export async function verifyTurnstileToken(
   remoteIp?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return { ok: true };
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      return { ok: false, error: "Security check is not configured on the server." };
+    }
+    return { ok: true };
+  }
 
   if (!token?.trim()) {
     return { ok: false, error: "Please complete the security check." };

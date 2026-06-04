@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "calendar": "Calendar",
+    "journal": "Journal",
+    "history": "History",
+    "gallery": "Gallery",
+    "settings": "Settings",
+    "upgrade": "Upgrade plan",
+    "signOut": "Sign out"
+  },
+  "common": {
+    "backHome": "Back to home",
+    "signIn": "Sign in",
+    "tryAgain": "Try again",
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "This link may be expired, mistyped, or the page was moved. Coach share links expire after 30 days.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "An unexpected error occurred. Try again, or return home if the problem persists."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "th": "ไทย"
+  }
+}

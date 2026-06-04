@@ -295,6 +295,55 @@ export async function deleteTradeForUser(userId: string, tradeId: string): Promi
   return result.count > 0;
 }
 
+export async function updateTradeForUser(
+  userId: string,
+  tradeId: string,
+  trade: JournalTrade
+): Promise<boolean> {
+  const entryAt = new Date(trade.entryAt || trade.date);
+  const exitAt = trade.exitAt ? new Date(trade.exitAt) : null;
+  const holdTimeMinutes = computeHoldMinutes(entryAt, exitAt, trade.holdTimeMinutes);
+
+  const result = await prisma.trade.updateMany({
+    where: { id: tradeId, userId },
+    data: {
+      asset: trade.asset,
+      date: new Date(trade.date),
+      entryAt,
+      exitAt,
+      holdTimeMinutes,
+      type: toTradeType(trade.type),
+      netProfitLoss: trade.netProfitLoss,
+      rMultiple: trade.rMultiple,
+      entryPrice: trade.entryPrice,
+      exitPrice: trade.exitPrice,
+      mae: trade.mae,
+      mfe: trade.mfe,
+      session: toSession(trade.session),
+      setupTags: trade.setupTags,
+      emotion: toEmotion(trade.emotion),
+      beforeChartUrl: trade.beforeChartUrl,
+      afterChartUrl: trade.afterChartUrl,
+      followedPlan: trade.disciplineChecklist.followedPlan,
+      rrAtLeastOneToTwo: trade.disciplineChecklist.rrAtLeastOneToTwo,
+      calmMindset: trade.disciplineChecklist.calmMindset,
+      disciplineScore: trade.disciplineScore,
+      noteContext: trade.noteContext.trim(),
+      noteMistake: trade.noteMistake.trim(),
+      noteNextAction: trade.noteNextAction.trim(),
+    },
+  });
+
+  return result.count > 0;
+}
+
+export async function getTradeForUser(userId: string, tradeId: string): Promise<JournalTrade | null> {
+  const trade = await prisma.trade.findFirst({
+    where: { id: tradeId, userId },
+  });
+  return trade ? mapTrade(trade) : null;
+}
+
 export async function addTradeForUser(userId: string, trade: JournalTrade) {
 
   const entryAt = new Date(trade.entryAt || trade.date);

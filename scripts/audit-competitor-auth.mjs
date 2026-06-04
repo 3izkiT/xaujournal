@@ -4,11 +4,16 @@ import path from "path";
 
 const OUT = path.join(process.cwd(), "docs", "competitor-audit");
 const BASE = "https://xaujournal.vercel.app";
-const API_KEY = "AIzaSyAvjaewumVEH9pWQk7ofxgkmd2mKrX5Zpw";
+const API_KEY = process.env.XAU_AUDIT_FIREBASE_API_KEY ?? "";
 const EMAIL = process.env.XAU_AUDIT_EMAIL ?? "hashtag.edmin@gmail.com";
 const PASS = process.env.XAU_AUDIT_PASS ?? "11111111";
 
 fs.mkdirSync(OUT, { recursive: true });
+
+if (!API_KEY) {
+  console.error("Set XAU_AUDIT_FIREBASE_API_KEY to run this script.");
+  process.exit(1);
+}
 
 const authRes = await fetch(
   `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,

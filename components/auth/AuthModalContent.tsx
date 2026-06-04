@@ -1,6 +1,7 @@
 "use client";
 
 import { GoogleOnlyAuthPanel } from "@/components/auth/GoogleOnlyAuthPanel";
+import { RegisterForm } from "@/app/register/RegisterForm";
 import { BRAND_NAME } from "@/lib/brand";
 import { EMAIL_AUTH_ENABLED } from "@/lib/auth-mode";
 
@@ -56,11 +57,15 @@ export function AuthModalContent({ mode, errorCode, onSwitchMode }: Props) {
     );
   }
 
+  if (isRegister) {
+    return <RegisterForm />;
+  }
+
   return (
     <p className="text-sm text-xau-muted">
       Email sign-in is enabled —{" "}
-      <a href={isRegister ? "/register" : "/login"} className="font-medium text-xau-ink underline">
-        open the full {isRegister ? "sign-up" : "sign-in"} page
+      <a href="/login" className="font-medium text-xau-ink underline">
+        open the full sign-in page
       </a>
       .
     </p>

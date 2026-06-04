@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Noto_Sans_Thai } from "next/font/google";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
@@ -17,15 +19,25 @@ const geistSans = Geist({
   preload: true,
 });
 
+const notoSansThai = Noto_Sans_Thai({
+  subsets: ["thai", "latin"],
+  variable: "--font-noto-thai",
+  display: "swap",
+  preload: false,
+});
+
 export const metadata: Metadata = buildSiteMetadata();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <GoogleAnalytics />
         {ADSENSE_ENABLED && (
@@ -40,8 +52,10 @@ export default function RootLayout({
         <JsonLd />
         <AdSenseScript />
       </head>
-      <body className={`${geistSans.className} antialiased`}>
-        <Providers>{children}</Providers>
+      <body className={`${locale === "th" ? notoSansThai.className : geistSans.className} antialiased`}>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

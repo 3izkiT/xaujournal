@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            "Database is not up to date. Run prisma migrate deploy on production (migration 0002_auth_email).",
+            "Database is not up to date. Run prisma migrate deploy on production (migration 0004_auth_email).",
         },
         { status: 503 }
       );

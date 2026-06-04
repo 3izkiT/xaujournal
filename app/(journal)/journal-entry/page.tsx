@@ -15,17 +15,18 @@ import {
   calculateDisciplineScore,
   emotionOptions,
   sessionOptions,
-  setupTagOptions,
   tradeTypeOptions,
   XAU_SPOT_PRICE_MAX,
   XAU_SPOT_PRICE_MIN,
 } from "@/lib/data";
+import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
+import type { EmotionType, SessionType, SetupTag } from "@/lib/types";
 import { isOpenAccessActive, PAYMENTS_ENABLED } from "@/lib/monetization";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 
 export default function JournalEntryPage() {
   const router = useRouter();
-  const { addTrade, canAddMore, tradeCount, tradeLimit, plan } = useXauJournal();
+  const { addTrade, canAddMore, tradeCount, tradeLimit, plan, settings, setupTagOptions, settingsLoading } = useXauJournal();
   const [saving, setSaving] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [entryTime, setEntryTime] = useState("13:00");
@@ -50,6 +51,8 @@ export default function JournalEntryPage() {
   const [noteNextAction, setNoteNextAction] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [chartUploadError, setChartUploadError] = useState<string | null>(null);
+
+  const checklistItems = settings.customChecklist.length > 0 ? settings.customChecklist : DEFAULT_CHECKLIST;
 
   const score = useMemo(
     () => calculateDisciplineScore({ followedPlan, rrAtLeastOneToTwo, calmMindset }),
@@ -103,9 +106,9 @@ export default function JournalEntryPage() {
       exitPrice: exit,
       mae: mae !== "" ? Number(mae) : null,
       mfe: mfe !== "" ? Number(mfe) : null,
-      session,
-      setupTags: setupTags as ("Liquidity Sweep" | "FVG Mitigation" | "Break of Structure" | "Order Block")[],
-      emotion: emotion as "Calm" | "Greed" | "Fear" | "FOMO" | "Revenge Trading" | "Overlot",
+      session: session as SessionType,
+      setupTags: setupTags as SetupTag[],
+      emotion: emotion as EmotionType,
       beforeChartUrl: beforeChartUrl.trim() || beforePlaceholder,
       afterChartUrl: afterChartUrl.trim() || afterPlaceholder,
       disciplineChecklist: {
@@ -162,25 +165,23 @@ export default function JournalEntryPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         <section className="xau-form-section">
           <h2 className="text-lg font-medium text-xau-ink">Pre-trade discipline</h2>
-          <div className="space-y-3">
-            <label className="flex items-start gap-3 text-sm text-xau-ink">
-              <input type="checkbox" className="mt-0.5" checked={followedPlan} onChange={(e) => setFollowedPlan(e.target.checked)} />
-              Did I follow my strict trading plan/strategy?
-            </label>
-            <label className="flex items-start gap-3 text-sm text-xau-ink">
-              <input
-                type="checkbox"
-                className="mt-0.5"
-                checked={rrAtLeastOneToTwo}
-                onChange={(e) => setRrAtLeastOneToTwo(e.target.checked)}
-              />
-              Is my Risk-to-Reward ratio at least 1:2?
-            </label>
-            <label className="flex items-start gap-3 text-sm text-xau-ink">
-              <input type="checkbox" className="mt-0.5" checked={calmMindset} onChange={(e) => setCalmMindset(e.target.checked)} />
-              Is my mindset completely calm and free of FOMO?
-            </label>
-          </div>
+          {settingsLoading ? (
+            <p className="text-sm text-xau-muted">Loading your checklist…</p>
+          ) : (
+            <div className="space-y-3">
+              {checklistItems.slice(0, 3).map((item, index) => {
+                const checked = index === 0 ? followedPlan : index === 1 ? rrAtLeastOneToTwo : calmMindset;
+                const onChange =
+                  index === 0 ? setFollowedPlan : index === 1 ? setRrAtLeastOneToTwo : setCalmMindset;
+                return (
+                  <label key={item.id} className="flex items-start gap-3 text-sm text-xau-ink">
+                    <input type="checkbox" className="mt-0.5" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+                    {item.label}
+                  </label>
+                );
+              })}
+            </div>
+          )}
           <p className="rounded-2xl border border-xau-border bg-xau-calm px-4 py-3 text-sm text-xau-ink">
             Discipline score: <span className="font-semibold">{score}%</span>
           </p>

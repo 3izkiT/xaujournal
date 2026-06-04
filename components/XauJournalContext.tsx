@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { LEGACY_TRADES_KEY_PREFIX, tradesStorageKey } from "@/lib/brand";
-import { calculateDisciplineScore } from "@/lib/data";
+import { calculateDisciplineScore, setupTagOptions as defaultSetupTags } from "@/lib/data";
 import { FREE_TRADE_LIMIT } from "@/lib/plans";
 import {
   DisciplineChecklist,
@@ -13,6 +13,8 @@ import {
   TradeType,
   UserPlan,
 } from "@/lib/types";
+import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
+import { mergeSetupTagOptions, type UserSettingsPayload } from "@/lib/user-settings-types";
 
 type AppUser = {
   id: string;
@@ -47,13 +49,26 @@ type AddTradePayload = {
 type XauJournalContextValue = {
   trades: JournalTrade[];
   loading: boolean;
+  settingsLoading: boolean;
+  settings: UserSettingsPayload;
+  setupTagOptions: string[];
   plan: UserPlan;
   tradeLimit: number | null;
   tradeCount: number;
   canAddMore: boolean;
   addTrade: (payload: AddTradePayload) => Promise<{ ok: boolean; error?: string }>;
+  updateTrade: (tradeId: string, payload: AddTradePayload) => Promise<{ ok: boolean; error?: string }>;
   removeTrade: (tradeId: string) => Promise<{ ok: boolean; error?: string }>;
   refreshTrades: () => Promise<void>;
+  refreshSettings: () => Promise<void>;
+};
+
+const defaultSettings: UserSettingsPayload = {
+  customChecklist: DEFAULT_CHECKLIST,
+  customSetupTags: [...defaultSetupTags],
+  customErrorTags: [],
+  riskModel: "FIXED_PERCENT",
+  templatePreset: "INTRADAY",
 };
 
 const XauJournalContext = createContext<XauJournalContextValue | null>(null);
@@ -63,12 +78,19 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
   const [authReady, setAuthReady] = useState(false);
   const [trades, setTrades] = useState<JournalTrade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [settings, setSettings] = useState<UserSettingsPayload>(defaultSettings);
   const [plan, setPlan] = useState<UserPlan>("FREE");
   const [tradeLimit, setTradeLimit] = useState<number | null>(FREE_TRADE_LIMIT);
   const [tradeCount, setTradeCount] = useState(0);
   const [canAddMore, setCanAddMore] = useState(true);
 
   const storageKey = user?.id ? tradesStorageKey(user.id) : null;
+
+  const setupTagOptions = useMemo(
+    () => mergeSetupTagOptions(defaultSetupTags, settings.customSetupTags),
+    [settings.customSetupTags]
+  );
 
   const readCachedTrades = useCallback((userId: string): JournalTrade[] | null => {
     if (typeof window === "undefined") return null;
@@ -113,6 +135,27 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
+  const refreshSettings = useCallback(async () => {
+    if (!user?.id) {
+      setSettings(defaultSettings);
+      setSettingsLoading(false);
+      return;
+    }
+
+    setSettingsLoading(true);
+    try {
+      const res = await fetch("/api/settings", { credentials: "include", cache: "no-store" });
+      if (res.ok) {
+        const data = (await res.json()) as { settings: UserSettingsPayload };
+        setSettings(data.settings);
+      }
+    } catch {
+      // keep previous settings
+    } finally {
+      setSettingsLoading(false);
+    }
+  }, [user?.id]);
+
   const refreshTrades = useCallback(async () => {
     if (!user?.id) {
       setTrades([]);
@@ -153,7 +196,8 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!authReady) return;
     void refreshTrades();
-  }, [authReady, refreshTrades]);
+    void refreshSettings();
+  }, [authReady, refreshTrades, refreshSettings]);
 
   const addTrade = useCallback(
     async (payload: AddTradePayload): Promise<{ ok: boolean; error?: string }> => {
@@ -227,6 +271,39 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     [user?.id, canAddMore, storageKey, applyMeta]
   );
 
+  const updateTrade = useCallback(
+    async (tradeId: string, payload: AddTradePayload): Promise<{ ok: boolean; error?: string }> => {
+      if (!user?.id) return { ok: false, error: "Not signed in." };
+
+      try {
+        const res = await fetch(`/api/trades/${encodeURIComponent(tradeId)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+        const data = (await res.json()) as {
+          trades?: JournalTrade[];
+          error?: string;
+          plan?: UserPlan;
+          tradeLimit?: number | null;
+          tradeCount?: number;
+          canAddMore?: boolean;
+        };
+        if (res.ok && data.trades) {
+          setTrades(data.trades);
+          applyMeta(data);
+          if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data.trades));
+          return { ok: true };
+        }
+        return { ok: false, error: data.error ?? "Failed to update trade." };
+      } catch {
+        return { ok: false, error: "Network error." };
+      }
+    },
+    [user?.id, storageKey, applyMeta]
+  );
+
   const removeTrade = useCallback(
     async (tradeId: string): Promise<{ ok: boolean; error?: string }> => {
       if (!user?.id) return { ok: false, error: "Not signed in." };
@@ -262,15 +339,35 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     () => ({
       trades,
       loading,
+      settingsLoading,
+      settings,
+      setupTagOptions,
       plan,
       tradeLimit,
       tradeCount,
       canAddMore,
       addTrade,
+      updateTrade,
       removeTrade,
       refreshTrades,
+      refreshSettings,
     }),
-    [trades, loading, plan, tradeLimit, tradeCount, canAddMore, addTrade, removeTrade, refreshTrades]
+    [
+      trades,
+      loading,
+      settingsLoading,
+      settings,
+      setupTagOptions,
+      plan,
+      tradeLimit,
+      tradeCount,
+      canAddMore,
+      addTrade,
+      updateTrade,
+      removeTrade,
+      refreshTrades,
+      refreshSettings,
+    ]
   );
 
   return <XauJournalContext.Provider value={value}>{children}</XauJournalContext.Provider>;
