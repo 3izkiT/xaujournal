@@ -230,7 +230,7 @@ export default function JournalEntryPage() {
           <button
             type="submit"
             disabled={!canAddMore || saveOverlay !== null}
-            className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+            className="xau-btn-gold disabled:cursor-not-allowed disabled:opacity-60"
           >
             {saveOverlay
               ? "Saving…"

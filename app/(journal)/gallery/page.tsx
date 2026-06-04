@@ -45,12 +45,20 @@ export default function GalleryPage() {
 
   return (
     <div className="xau-page-wide space-y-6">
-      <div>
-        <h2 className="text-3xl font-semibold text-xau-ink">Gallery View</h2>
-        <p className="mt-2 text-sm text-xau-muted">Before/after charts — portrait or landscape screenshots from mobile or desktop.</p>
-      </div>
+      <header>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Chart study</p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">Gallery</h1>
+        <p className="mt-1 text-sm text-xau-muted">
+          Before/after screenshots from mobile or desktop — tap any image to expand.
+        </p>
+      </header>
       {trades.length === 0 ? (
-        <p className="text-sm text-xau-muted">No trades with charts yet.</p>
+        <div className="xau-card-bordered px-6 py-12 text-center text-sm text-xau-muted">
+          No trades with charts yet.{" "}
+          <Link href="/journal-entry" className="font-medium text-xau-ink underline-offset-2 hover:underline">
+            Log your first trade
+          </Link>
+        </div>
       ) : (
         <div className="grid gap-5 md:grid-cols-2">
           {trades.map((trade) => (

@@ -191,8 +191,8 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen bg-xau-app text-xau-ink lg:flex">
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-xau-border bg-xau-card px-4 py-3 lg:hidden">
+    <div className="min-h-screen bg-xau-app text-xau-ink lg:flex [--xau-mobile-header:3.5rem]">
+      <header className="sticky top-0 z-50 flex h-[var(--xau-mobile-header)] items-center justify-between border-b border-xau-border bg-xau-card px-4 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
             Au
@@ -221,7 +221,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
           onClick={closeMobile}
         />
         <aside
-          className={`absolute left-0 top-0 flex h-full w-[280px] flex-col bg-xau-card p-5 shadow-xl transition ${
+          className={`absolute left-0 top-[var(--xau-mobile-header)] z-[46] flex h-[calc(100dvh-var(--xau-mobile-header))] w-[min(280px,88vw)] flex-col overflow-y-auto bg-xau-card p-5 shadow-xl transition ${
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >

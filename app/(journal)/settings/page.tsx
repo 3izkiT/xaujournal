@@ -193,7 +193,7 @@ export default function SettingsPage() {
           />
         </div>
 
-        <button type="submit" className="rounded-2xl bg-xau-calm px-6 py-3 text-sm font-medium text-xau-ink">
+        <button type="submit" className="xau-btn-soft">
           Save settings
         </button>
         {message && <p className="text-sm text-xau-muted">{message}</p>}

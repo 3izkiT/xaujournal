@@ -114,7 +114,7 @@ export default function DashboardPage() {
                 : `${tradeCount} intentional trade${tradeCount === 1 ? "" : "s"} — switch tabs to review performance, calendar, and analytics.`}
             </p>
           </div>
-          <Link href="/journal-entry" className="xau-btn-gold shrink-0 px-5 py-2.5">
+          <Link href="/journal-entry" className="xau-btn-gold shrink-0">
             + Log trade
           </Link>
         </div>
