@@ -1,42 +1,101 @@
 /**
- * Production migrate deploy with auto-recovery for failed 0004_auth_email (P3009).
- * Used by Vercel buildCommand.
+ * Production migrations for Vercel build.
+ * - Uses DIRECT_DATABASE_URL via schema directUrl (avoid pooler advisory-lock timeouts).
+ * - Retries on P1002 / advisory-lock contention (parallel deploys or stale sessions).
  */
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
+import { setTimeout as delay } from "node:timers/promises";
 
-function run(args, inherit = false) {
-  const result = spawnSync("npx", args, {
-    encoding: "utf8",
-    stdio: inherit ? "inherit" : "pipe",
-    env: process.env,
-  });
-  return result;
+const MAX_ATTEMPTS = 5;
+const RETRY_MS = 15_000;
+
+function hasDatabaseUrl() {
+  return Boolean(process.env.DATABASE_URL?.trim());
 }
 
-function migrateDeploy() {
-  return run(["prisma", "migrate", "deploy"]);
-}
-
-let result = migrateDeploy();
-
-if (result.status === 0) {
-  process.exit(0);
-}
-
-const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
-
-if (output.includes("P3009") && output.includes("0004_auth_email")) {
-  console.warn("[prisma-deploy] Recovering failed migration 0004_auth_email…");
-  const resolve = run(["prisma", "migrate", "resolve", "--rolled-back", "0004_auth_email"], true);
-  if (resolve.status !== 0) {
-    process.exit(resolve.status ?? 1);
+function ensureDirectDatabaseUrl() {
+  if (process.env.DIRECT_DATABASE_URL?.trim()) return;
+  const fallback =
+    process.env.DATABASE_URL_UNPOOLED?.trim() ||
+    process.env.DIRECT_URL?.trim() ||
+    process.env.DATABASE_URL?.trim();
+  if (fallback) {
+    process.env.DIRECT_DATABASE_URL = fallback;
   }
-  result = migrateDeploy();
-  if (result.status === 0) {
+}
+
+function logDirectUrlHint() {
+  ensureDirectDatabaseUrl();
+  const direct =
+    process.env.DIRECT_DATABASE_URL?.trim() ||
+    process.env.DATABASE_URL_UNPOOLED?.trim() ||
+    process.env.DIRECT_URL?.trim();
+  if (!direct) {
+    console.warn(
+      "[prisma-deploy] DIRECT_DATABASE_URL is not set. Migrations use DATABASE_URL only.",
+    );
+    console.warn(
+      "[prisma-deploy] For Neon/Supabase, set DIRECT_DATABASE_URL to the non-pooled (session) connection to avoid P1002.",
+    );
+  } else {
+    console.log("[prisma-deploy] Using DIRECT_DATABASE_URL for migrate (via prisma schema directUrl).");
+  }
+}
+
+function migrateDatabaseUrl() {
+  ensureDirectDatabaseUrl();
+  return (
+    process.env.DIRECT_DATABASE_URL?.trim() ||
+    process.env.DATABASE_URL_UNPOOLED?.trim() ||
+    process.env.DIRECT_URL?.trim() ||
+    process.env.DATABASE_URL?.trim()
+  );
+}
+
+function runMigrateDeploy() {
+  const migrateUrl = migrateDatabaseUrl();
+  const env = { ...process.env, DATABASE_URL: migrateUrl };
+  return new Promise((resolve, reject) => {
+    const child = spawn("npx", ["prisma", "migrate", "deploy"], {
+      stdio: "inherit",
+      env,
+      shell: process.platform === "win32",
+    });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`prisma migrate deploy exited with code ${code}`));
+    });
+  });
+}
+
+async function main() {
+  if (!hasDatabaseUrl()) {
+    console.log("[prisma-deploy] DATABASE_URL not set — skipping migrations.");
     process.exit(0);
   }
+
+  logDirectUrlHint();
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      console.log(`[prisma-deploy] migrate deploy (${attempt}/${MAX_ATTEMPTS})…`);
+      await runMigrateDeploy();
+      console.log("[prisma-deploy] Migrations applied successfully.");
+      process.exit(0);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[prisma-deploy] Attempt ${attempt} failed: ${message}`);
+      if (attempt >= MAX_ATTEMPTS) {
+        console.error(
+          "[prisma-deploy] If you see P1002 advisory lock: cancel other deploys, set DIRECT_DATABASE_URL, or terminate stale locks in Postgres.",
+        );
+        process.exit(1);
+      }
+      console.warn(`[prisma-deploy] Retrying in ${RETRY_MS / 1000}s…`);
+      await delay(RETRY_MS);
+    }
+  }
 }
 
-if (result.stdout) process.stderr.write(result.stdout);
-if (result.stderr) process.stderr.write(result.stderr);
-process.exit(result.status ?? 1);
+main();

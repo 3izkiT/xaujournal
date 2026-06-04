@@ -2,6 +2,8 @@
 
 XAURite needs **`DATABASE_URL`** on Vercel before login, trades, and analytics persist.
 
+For **migrations during build**, also set **`DIRECT_DATABASE_URL`** to a **non-pooled** Postgres URL (Neon “direct” / Supabase port `5432`). Using only a pooler URL often causes **P1002 advisory lock timeout** on `prisma migrate deploy`.
+
 ## What I can do vs what you provide
 
 | Step | Who |
