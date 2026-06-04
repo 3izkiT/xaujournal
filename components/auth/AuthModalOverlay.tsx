@@ -63,7 +63,7 @@ export function AuthModalOverlay({ mode, errorCode, onClose, onSwitchMode }: Pro
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-xau-muted transition hover:bg-xau-app hover:text-xau-ink"
+          className="xau-btn-icon absolute right-4 top-4 rounded-full"
         >
           <CloseIcon />
         </button>
