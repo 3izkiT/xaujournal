@@ -141,6 +141,7 @@ export function LandingExperience() {
             </a>
           </nav>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle className="hidden sm:flex" />
             <AuthModalTrigger
               mode="login"
