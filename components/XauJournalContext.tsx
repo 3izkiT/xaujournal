@@ -173,7 +173,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    setLoading(true);
+    if (!options?.silent) setLoading(true);
     try {
       const res = await fetch("/api/trades", { cache: "no-store", credentials: "include" });
       if (res.ok) {

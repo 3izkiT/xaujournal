@@ -38,11 +38,13 @@ enum TradeType {
 
 enum SessionType {
 
+  SYDNEY
+
+  TOKYO
+
   LONDON
 
   NEW_YORK
-
-  ASIAN
 
 }
 

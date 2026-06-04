@@ -1,4 +1,4 @@
-import Stripe from "stripe";
+import type Stripe from "stripe";
 
 export const PREMIUM_PRICE_ID = process.env.STRIPE_PREMIUM_PRICE_ID ?? "";
 
@@ -8,12 +8,13 @@ export function isStripeConfigured() {
 
 let stripeClient: Stripe | null = null;
 
-export function getStripe() {
+export async function getStripe(): Promise<Stripe> {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("STRIPE_SECRET_KEY is not configured.");
   }
   if (!stripeClient) {
-    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const { default: StripeSdk } = await import("stripe");
+    stripeClient = new StripeSdk(process.env.STRIPE_SECRET_KEY);
   }
   return stripeClient;
 }

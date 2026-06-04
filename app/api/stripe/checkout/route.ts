@@ -18,7 +18,7 @@ export async function POST() {
   }
 
   try {
-    const stripe = getStripe();
+    const stripe = await getStripe();
     const base = process.env.AUTH_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
     const checkout = await stripe.checkout.sessions.create({
