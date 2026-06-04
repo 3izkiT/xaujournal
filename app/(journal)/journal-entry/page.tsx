@@ -7,6 +7,7 @@ import {
   DisciplineRowConfig,
   TradeLogFormSections,
 } from "@/components/journal/TradeLogFormSections";
+import { SavingOverlay, type SavingOverlayPhase } from "@/components/ui/SavingOverlay";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
   afterPlaceholder,
@@ -28,7 +29,7 @@ const DISCIPLINE_TERMS: TooltipTerm[] = ["followedPlan", "riskRewardRule", "calm
 export default function JournalEntryPage() {
   const router = useRouter();
   const { addTrade, canAddMore, tradeCount, tradeLimit, plan, settings, setupTagOptions } = useXauJournal();
-  const [saving, setSaving] = useState(false);
+  const [saveOverlay, setSaveOverlay] = useState<SavingOverlayPhase | null>(null);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [entryTime, setEntryTime] = useState("13:00");
   const [exitTime, setExitTime] = useState("");
@@ -122,7 +123,7 @@ export default function JournalEntryPage() {
       holdTimeMinutes = Math.max(0, Math.round((new Date(exitAt).getTime() - new Date(entryAt).getTime()) / 60000));
     }
 
-    setSaving(true);
+    setSaveOverlay("saving");
     const result = await addTrade({
       date,
       entryAt,
@@ -150,18 +151,21 @@ export default function JournalEntryPage() {
       noteNextAction,
     });
 
-    setSaving(false);
-
     if (!result.ok) {
+      setSaveOverlay(null);
       setSubmitError(result.error ?? "Could not save trade.");
       return;
     }
 
+    setSaveOverlay("success");
+    await new Promise((resolve) => setTimeout(resolve, 700));
     router.push("/history?saved=1");
   };
 
   return (
-    <div className="xau-page-form">
+    <>
+      <SavingOverlay open={saveOverlay !== null} phase={saveOverlay ?? "saving"} />
+      <div className="xau-page-form">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-xau-ink md:text-3xl">Log trade</h1>
@@ -225,10 +229,10 @@ export default function JournalEntryPage() {
         <div className="flex flex-col gap-3 border-t border-xau-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="submit"
-            disabled={!canAddMore || saving}
+            disabled={!canAddMore || saveOverlay !== null}
             className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving
+            {saveOverlay
               ? "Saving…"
               : canAddMore
                 ? "Save trade log"
@@ -246,5 +250,6 @@ export default function JournalEntryPage() {
         </div>
       </form>
     </div>
+    </>
   );
 }
