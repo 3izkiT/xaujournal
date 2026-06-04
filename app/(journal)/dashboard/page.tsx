@@ -64,7 +64,7 @@ function hashForTab(tab: DashboardTab): string {
 
 export default function DashboardPage() {
   const { trades, loading } = useXauJournal();
-  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
+  const [activeTab, setActiveTab] = useState<DashboardTab>(() => tabFromHash());
 
   const winRate = getWinRate(trades);
   const avgDiscipline = getAverageDisciplineScore(trades);
