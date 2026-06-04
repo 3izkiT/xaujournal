@@ -7,7 +7,7 @@ import { FREE_TRADE_LIMIT } from "@/lib/plans";
 import { addTradeForUser, countTradesForUser, getTradesForUser, getUserPlan } from "@/lib/trades-store";
 import { JournalTrade } from "@/lib/types";
 import { afterPlaceholder, beforePlaceholder, sanitizeChartUrl } from "@/lib/chart-upload";
-import { validateTradeNotes } from "@/lib/validate-trade";
+import { validateTradeInput } from "@/lib/validate-trade";
 import { Plan } from "@prisma/client";
 
 async function journalMeta(userId: string) {
@@ -22,6 +22,41 @@ async function journalMeta(userId: string) {
   };
 }
 
+function buildTradeFromBody(body: Record<string, unknown>, existingId?: string): JournalTrade {
+  const disciplineChecklist = body.disciplineChecklist as JournalTrade["disciplineChecklist"];
+  const disciplineScore = calculateDisciplineScore(disciplineChecklist);
+  const entryAt = body.entryAt
+    ? new Date(String(body.entryAt)).toISOString()
+    : new Date(`${String(body.date)}T12:00:00`).toISOString();
+  const exitAt = body.exitAt ? new Date(String(body.exitAt)).toISOString() : null;
+
+  return {
+    id: existingId ?? `t-${Date.now()}`,
+    asset: "XAUUSD (Gold)",
+    date: String(body.date),
+    entryAt,
+    exitAt,
+    holdTimeMinutes: body.holdTimeMinutes != null ? Number(body.holdTimeMinutes) : null,
+    type: body.type as JournalTrade["type"],
+    netProfitLoss: Number(body.netProfitLoss),
+    rMultiple: String(body.rMultiple),
+    entryPrice: Number(body.entryPrice),
+    exitPrice: Number(body.exitPrice),
+    mae: body.mae != null && body.mae !== "" ? Number(body.mae) : null,
+    mfe: body.mfe != null && body.mfe !== "" ? Number(body.mfe) : null,
+    session: body.session as JournalTrade["session"],
+    setupTags: body.setupTags as JournalTrade["setupTags"],
+    emotion: body.emotion as JournalTrade["emotion"],
+    beforeChartUrl: String(body.beforeChartUrl),
+    afterChartUrl: String(body.afterChartUrl),
+    disciplineChecklist,
+    disciplineScore,
+    noteContext: String(body.noteContext ?? ""),
+    noteMistake: String(body.noteMistake ?? ""),
+    noteNextAction: String(body.noteNextAction ?? ""),
+  };
+}
+
 export async function GET() {
   if (!isDatabaseConfigured) {
     return NextResponse.json(
@@ -29,17 +64,23 @@ export async function GET() {
       { status: 503 }
     );
   }
-  const session = await getAppSession();
-  if (!session?.userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const session = await getAppSession();
+    if (!session?.userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const [trades, meta] = await Promise.all([
+      getTradesForUser(session.userId),
+      journalMeta(session.userId),
+    ]);
+
+    return NextResponse.json({ trades, ...meta });
+  } catch (err) {
+    console.error("[trades GET]", err);
+    return NextResponse.json({ error: "Failed to load trades." }, { status: 500 });
   }
-
-  const [trades, meta] = await Promise.all([
-    getTradesForUser(session.userId),
-    journalMeta(session.userId),
-  ]);
-
-  return NextResponse.json({ trades, ...meta });
 }
 
 export async function POST(request: Request) {
@@ -49,6 +90,7 @@ export async function POST(request: Request) {
       { status: 503 }
     );
   }
+
   const session = await getAppSession();
   if (!session?.userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -69,10 +111,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
-    const noteError = validateTradeNotes(body);
-    if (noteError) {
-      return NextResponse.json({ error: noteError }, { status: 400 });
+    const body = (await request.json()) as Record<string, unknown>;
+    const validationError = validateTradeInput(body);
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     let beforeChartUrl: string;
@@ -85,42 +127,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    const disciplineChecklist = body.disciplineChecklist;
-    const disciplineScore = calculateDisciplineScore(disciplineChecklist);
-    const entryAt = body.entryAt ? new Date(body.entryAt).toISOString() : new Date(`${body.date}T12:00:00`).toISOString();
-    const exitAt = body.exitAt ? new Date(body.exitAt).toISOString() : null;
-
-    const trade: JournalTrade = {
-      id: `t-${Date.now()}`,
-      asset: "XAUUSD (Gold)",
-      date: body.date,
-      entryAt,
-      exitAt,
-      holdTimeMinutes: body.holdTimeMinutes != null ? Number(body.holdTimeMinutes) : null,
-      type: body.type,
-      netProfitLoss: Number(body.netProfitLoss),
-      rMultiple: body.rMultiple,
-      entryPrice: Number(body.entryPrice),
-      exitPrice: Number(body.exitPrice),
-      mae: body.mae != null && body.mae !== "" ? Number(body.mae) : null,
-      mfe: body.mfe != null && body.mfe !== "" ? Number(body.mfe) : null,
-      session: body.session,
-      setupTags: body.setupTags,
-      emotion: body.emotion,
-      beforeChartUrl,
-      afterChartUrl,
-      disciplineChecklist,
-      disciplineScore,
-      noteContext: body.noteContext,
-      noteMistake: body.noteMistake,
-      noteNextAction: body.noteNextAction,
-    };
-
+    const trade = buildTradeFromBody({ ...body, beforeChartUrl, afterChartUrl });
     await addTradeForUser(session.userId, trade);
     const trades = await getTradesForUser(session.userId);
     const updatedMeta = await journalMeta(session.userId);
-    return NextResponse.json({ trade, trades, ...updatedMeta });
-  } catch {
+    return NextResponse.json({ trades, ...updatedMeta });
+  } catch (err) {
+    console.error("[trades POST]", err);
     return NextResponse.json({ error: "Failed to save trade." }, { status: 500 });
   }
 }

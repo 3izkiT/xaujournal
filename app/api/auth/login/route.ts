@@ -6,8 +6,9 @@ import {
 } from "@/lib/demo-auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { DEMO_EMAIL, LEGACY_DEMO_EMAIL } from "@/lib/brand";
-import { isGoogleOnlyAuth } from "@/lib/auth-mode";
+import { DEMO_AUTH_ENABLED, isGoogleOnlyAuth } from "@/lib/auth-mode";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 import { setSessionOnResponse, type AppSession } from "@/lib/app-session";
 import { notifyLoginByEmail } from "@/lib/auth-notify";
 import { mustVerifyEmailBeforeLogin } from "@/lib/email-verification";
@@ -61,6 +62,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
+  if (isDemoLoginEmail(email) && !DEMO_AUTH_ENABLED) {
+    return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
+  }
+
   if (isGoogleOnlyAuth() && !isDemoLoginEmail(email)) {
     return NextResponse.json(
       { error: "Email sign-in is disabled. Use Continue with Google." },
@@ -68,44 +73,57 @@ export async function POST(request: Request) {
     );
   }
 
-  let user = await findUserForLogin(email);
-  if (!user) {
-    return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
-  }
-
-  if (!user.passwordHash) {
+  const limited = checkRateLimit(rateLimitKey(request, "login", email), { limit: 12, windowMs: 60_000 });
+  if (!limited.ok) {
     return NextResponse.json(
-      { error: "This account uses Google sign-in. Click Continue with Google." },
-      { status: 401 }
+      { error: `Too many attempts. Try again in ${limited.retryAfterSec}s.` },
+      { status: 429 }
     );
   }
 
-  const valid = await verifyLoginPassword(user, password);
-  if (!valid) {
-    return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
+  try {
+    let user = await findUserForLogin(email);
+    if (!user) {
+      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
+    }
+
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: "This account uses Google sign-in. Click Continue with Google." },
+        { status: 401 }
+      );
+    }
+
+    const valid = await verifyLoginPassword(user, password);
+    if (!valid) {
+      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
+    }
+
+    if (mustVerifyEmailBeforeLogin(user)) {
+      return NextResponse.json(
+        {
+          error: "Verify your email before signing in. Check your inbox or request a new link.",
+          code: "EMAIL_NOT_VERIFIED",
+          email: user.email,
+        },
+        { status: 403 }
+      );
+    }
+
+    user = await migrateDemoUserAfterLogin(user);
+
+    const session: AppSession = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      plan: user.plan as UserPlan,
+    };
+
+    const response = NextResponse.json({ ok: true, redirectTo: "/dashboard" });
+    notifyLoginByEmail(request, { email: user.email, name: user.name });
+    return setSessionOnResponse(response, session);
+  } catch (err) {
+    console.error("[login]", err);
+    return NextResponse.json({ error: "Sign in failed. Please try again." }, { status: 500 });
   }
-
-  if (mustVerifyEmailBeforeLogin(user)) {
-    return NextResponse.json(
-      {
-        error: "Verify your email before signing in. Check your inbox or request a new link.",
-        code: "EMAIL_NOT_VERIFIED",
-        email: user.email,
-      },
-      { status: 403 }
-    );
-  }
-
-  user = await migrateDemoUserAfterLogin(user);
-
-  const session: AppSession = {
-    userId: user.id,
-    email: user.email,
-    name: user.name,
-    plan: user.plan as UserPlan,
-  };
-
-  const response = NextResponse.json({ ok: true, redirectTo: "/dashboard" });
-  notifyLoginByEmail(request, { email: user.email, name: user.name });
-  return setSessionOnResponse(response, session);
 }

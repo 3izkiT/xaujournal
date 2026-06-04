@@ -19,15 +19,17 @@
     "bcryptjs": "^3.0.3",
     "next": "^15.5.14",
     "next-auth": "^5.0.0-beta.30",
+    "next-intl": "^4.13.0",
     "prisma": "^6.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^3.8.1"
+    "recharts": "^3.8.1",
+    "stripe": "^22.2.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20",
+    "@types/node": "^20.19.41",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

@@ -8,11 +8,7 @@ export type EmotionType =
   | "Revenge Trading"
   | "Overlot";
 
-export type SetupTag =
-  | "Liquidity Sweep"
-  | "FVG Mitigation"
-  | "Break of Structure"
-  | "Order Block";
+export type SetupTag = string;
 
 export type DisciplineChecklist = {
   followedPlan: boolean;
