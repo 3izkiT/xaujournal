@@ -12,24 +12,27 @@
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "lighthouse:prod": "lighthouse https://xaurite.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json"
+    "lighthouse:prod": "lighthouse https://xaurite.vercel.app --quiet --chrome-flags='--headless' --preset=desktop --output=json --output-path=./lighthouse-report.json",
+    "test:e2e": "node scripts/e2e-frontend.mjs",
+    "test:e2e:visual": "node scripts/e2e-visual.mjs",
+    "test:e2e:visual:headed": "E2E_HEADED=1 E2E_SLOW_MO=500 node scripts/e2e-visual.mjs",
+    "test:e2e:prod": "E2E_BASE_URL=https://xaurite.vercel.app node scripts/e2e-frontend.mjs",
+    "test:e2e:prod:visual": "E2E_BASE_URL=https://xaurite.vercel.app node scripts/e2e-visual.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
     "bcryptjs": "^3.0.3",
     "next": "^15.5.14",
     "next-auth": "^5.0.0-beta.30",
-    "next-intl": "^4.13.0",
     "prisma": "^6.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^3.8.1",
-    "stripe": "^22.2.0"
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.19.41",
+    "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
