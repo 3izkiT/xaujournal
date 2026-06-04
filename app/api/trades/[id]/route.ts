@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
 import { getAppSession } from "@/lib/app-session";
+import { afterPlaceholder, beforePlaceholder, sanitizeChartUrl } from "@/lib/chart-upload";
+import { calculateDisciplineScore } from "@/lib/data";
 import { isDatabaseConfigured } from "@/lib/db";
+import { canAddMoreTrades, effectiveTradeLimit, isOpenAccessActive } from "@/lib/monetization";
 import {
   countTradesForUser,
   deleteTradeForUser,
-  getTradeForUser,
   getTradesForUser,
   getUserPlan,
   updateTradeForUser,
 } from "@/lib/trades-store";
-import { canAddMoreTrades, effectiveTradeLimit, isOpenAccessActive } from "@/lib/monetization";
-import { afterPlaceholder, beforePlaceholder, sanitizeChartUrl } from "@/lib/chart-upload";
-import { calculateDisciplineScore } from "@/lib/data";
 import { JournalTrade } from "@/lib/types";
-import { validateTradeInput } from "@/lib/validate-trade";
+import { validateTradeNotes } from "@/lib/validate-trade";
 import { Plan } from "@prisma/client";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -27,47 +26,6 @@ async function journalMeta(userId: string) {
     tradeLimit,
     canAddMore: canAddMoreTrades(plan, tradeCount),
     openAccess: isOpenAccessActive(),
-  };
-}
-
-function mergeTrade(existing: JournalTrade, body: Record<string, unknown>): JournalTrade {
-  const disciplineChecklist = (body.disciplineChecklist as JournalTrade["disciplineChecklist"]) ?? existing.disciplineChecklist;
-  const entryAt = body.entryAt
-    ? new Date(String(body.entryAt)).toISOString()
-    : body.date
-      ? new Date(`${String(body.date)}T12:00:00`).toISOString()
-      : existing.entryAt;
-  const exitAt =
-    body.exitAt === null
-      ? null
-      : body.exitAt
-        ? new Date(String(body.exitAt)).toISOString()
-        : existing.exitAt;
-
-  return {
-    ...existing,
-    date: body.date != null ? String(body.date) : existing.date,
-    entryAt,
-    exitAt,
-    holdTimeMinutes:
-      body.holdTimeMinutes != null ? Number(body.holdTimeMinutes) : existing.holdTimeMinutes,
-    type: (body.type as JournalTrade["type"]) ?? existing.type,
-    netProfitLoss: body.netProfitLoss != null ? Number(body.netProfitLoss) : existing.netProfitLoss,
-    rMultiple: body.rMultiple != null ? String(body.rMultiple) : existing.rMultiple,
-    entryPrice: body.entryPrice != null ? Number(body.entryPrice) : existing.entryPrice,
-    exitPrice: body.exitPrice != null ? Number(body.exitPrice) : existing.exitPrice,
-    mae: body.mae !== undefined ? (body.mae === "" || body.mae == null ? null : Number(body.mae)) : existing.mae,
-    mfe: body.mfe !== undefined ? (body.mfe === "" || body.mfe == null ? null : Number(body.mfe)) : existing.mfe,
-    session: (body.session as JournalTrade["session"]) ?? existing.session,
-    setupTags: (body.setupTags as JournalTrade["setupTags"]) ?? existing.setupTags,
-    emotion: (body.emotion as JournalTrade["emotion"]) ?? existing.emotion,
-    beforeChartUrl: body.beforeChartUrl != null ? String(body.beforeChartUrl) : existing.beforeChartUrl,
-    afterChartUrl: body.afterChartUrl != null ? String(body.afterChartUrl) : existing.afterChartUrl,
-    disciplineChecklist,
-    disciplineScore: calculateDisciplineScore(disciplineChecklist),
-    noteContext: body.noteContext != null ? String(body.noteContext) : existing.noteContext,
-    noteMistake: body.noteMistake != null ? String(body.noteMistake) : existing.noteMistake,
-    noteNextAction: body.noteNextAction != null ? String(body.noteNextAction) : existing.noteNextAction,
   };
 }
 
@@ -87,28 +45,52 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const existing = await getTradeForUser(session.userId, id);
-    if (!existing) {
-      return NextResponse.json({ error: "Trade not found." }, { status: 404 });
+    const body = await request.json();
+    const noteError = validateTradeNotes(body);
+    if (noteError) {
+      return NextResponse.json({ error: noteError }, { status: 400 });
     }
 
-    const body = (await request.json()) as Record<string, unknown>;
-    const merged = mergeTrade(existing, body);
-
-    let beforeChartUrl = merged.beforeChartUrl;
-    let afterChartUrl = merged.afterChartUrl;
-    if (body.beforeChartUrl !== undefined) {
+    let beforeChartUrl: string;
+    let afterChartUrl: string;
+    try {
       beforeChartUrl = sanitizeChartUrl(body.beforeChartUrl, beforePlaceholder);
-    }
-    if (body.afterChartUrl !== undefined) {
       afterChartUrl = sanitizeChartUrl(body.afterChartUrl, afterPlaceholder);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Invalid chart image.";
+      return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    const trade: JournalTrade = { ...merged, beforeChartUrl, afterChartUrl };
-    const validationError = validateTradeInput(trade);
-    if (validationError) {
-      return NextResponse.json({ error: validationError }, { status: 400 });
-    }
+    const disciplineChecklist = body.disciplineChecklist;
+    const disciplineScore = calculateDisciplineScore(disciplineChecklist);
+    const entryAt = body.entryAt ? new Date(body.entryAt).toISOString() : new Date(`${body.date}T12:00:00`).toISOString();
+    const exitAt = body.exitAt ? new Date(body.exitAt).toISOString() : null;
+
+    const trade: JournalTrade = {
+      id,
+      asset: "XAUUSD (Gold)",
+      date: body.date,
+      entryAt,
+      exitAt,
+      holdTimeMinutes: body.holdTimeMinutes != null ? Number(body.holdTimeMinutes) : null,
+      type: body.type,
+      netProfitLoss: Number(body.netProfitLoss),
+      rMultiple: body.rMultiple,
+      entryPrice: Number(body.entryPrice),
+      exitPrice: Number(body.exitPrice),
+      mae: body.mae != null && body.mae !== "" ? Number(body.mae) : null,
+      mfe: body.mfe != null && body.mfe !== "" ? Number(body.mfe) : null,
+      session: body.session,
+      setupTags: body.setupTags,
+      emotion: body.emotion,
+      beforeChartUrl,
+      afterChartUrl,
+      disciplineChecklist,
+      disciplineScore,
+      noteContext: body.noteContext,
+      noteMistake: body.noteMistake,
+      noteNextAction: body.noteNextAction,
+    };
 
     const updated = await updateTradeForUser(session.userId, id, trade);
     if (!updated) {
@@ -117,8 +99,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const [trades, meta] = await Promise.all([getTradesForUser(session.userId), journalMeta(session.userId)]);
     return NextResponse.json({ trades, ...meta });
-  } catch (err) {
-    console.error("[trades PATCH]", err);
+  } catch {
     return NextResponse.json({ error: "Failed to update trade." }, { status: 500 });
   }
 }
@@ -146,8 +127,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
     const [trades, meta] = await Promise.all([getTradesForUser(session.userId), journalMeta(session.userId)]);
     return NextResponse.json({ trades, ...meta });
-  } catch (err) {
-    console.error("[trades DELETE]", err);
+  } catch {
     return NextResponse.json({ error: "Failed to delete trade." }, { status: 500 });
   }
 }

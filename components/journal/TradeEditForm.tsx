@@ -1,9 +1,10 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ChartImage } from "@/components/journal/ChartImage";
-import { FormCheckRow, FormField } from "@/components/journal/FormField";
-import { HelpTooltip } from "@/components/ui/HelpTooltip";
+import {
+  DisciplineRowConfig,
+  TradeLogFormSections,
+} from "@/components/journal/TradeLogFormSections";
 import { SavingOverlay, type SavingOverlayPhase } from "@/components/ui/SavingOverlay";
 import { useXauJournal } from "@/components/XauJournalContext";
 import {
@@ -11,12 +12,7 @@ import {
   beforePlaceholder,
   readImageFileAsDataUrl,
 } from "@/lib/chart-upload";
-import {
-  calculateDisciplineScore,
-  emotionOptions,
-  sessionOptions,
-  tradeTypeOptions,
-} from "@/lib/data";
+import { calculateDisciplineScore, XAU_SPOT_PRICE_MAX, XAU_SPOT_PRICE_MIN } from "@/lib/data";
 import type { TooltipTerm } from "@/lib/term-tooltips";
 import type { EmotionType, JournalTrade, SessionType, SetupTag, TradeType } from "@/lib/types";
 import { DEFAULT_CHECKLIST } from "@/lib/user-settings";
@@ -32,10 +28,13 @@ function timeFromIso(iso: string) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+const DISCIPLINE_TERMS: TooltipTerm[] = ["followedPlan", "riskRewardRule", "calmMindsetRule"];
+
 export function TradeEditForm({ trade, onClose, onSaved }: Props) {
   const { updateTrade, settings, setupTagOptions } = useXauJournal();
   const [saveOverlay, setSaveOverlay] = useState<SavingOverlayPhase | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [chartUploadError, setChartUploadError] = useState<string | null>(null);
   const [date, setDate] = useState(trade.date);
   const [entryTime, setEntryTime] = useState(timeFromIso(trade.entryAt));
   const [exitTime, setExitTime] = useState(trade.exitAt ? timeFromIso(trade.exitAt) : "");
@@ -83,18 +82,59 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
   }, [trade]);
 
   const checklistItems = settings.customChecklist.length > 0 ? settings.customChecklist : DEFAULT_CHECKLIST;
-  const score = useMemo(
+  const disciplineScore = useMemo(
     () => calculateDisciplineScore({ followedPlan, rrAtLeastOneToTwo, calmMindset }),
     [followedPlan, rrAtLeastOneToTwo, calmMindset]
   );
 
-  const handleSetupTagChange = (tag: string) => {
+  const disciplineRows: DisciplineRowConfig[] = useMemo(() => {
+    const handlers = [setFollowedPlan, setRrAtLeastOneToTwo, setCalmMindset];
+    const checked = [followedPlan, rrAtLeastOneToTwo, calmMindset];
+    return checklistItems.slice(0, 3).map((item, index) => ({
+      id: item.id,
+      label: item.label,
+      term: DISCIPLINE_TERMS[index] ?? "followedPlan",
+      checked: checked[index] ?? false,
+      onChange: handlers[index] ?? setFollowedPlan,
+    }));
+  }, [checklistItems, followedPlan, rrAtLeastOneToTwo, calmMindset]);
+
+  const handleSetupTagToggle = (tag: string) => {
     setSetupTags((prev) => (prev.includes(tag) ? prev.filter((v) => v !== tag) : [...prev, tag]));
+  };
+
+  const handleChartFile = async (file: File | null, target: "before" | "after") => {
+    if (!file) return;
+    setChartUploadError(null);
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file);
+      if (target === "before") setBeforeChartUrl(dataUrl);
+      else setAfterChartUrl(dataUrl);
+    } catch (err) {
+      setChartUploadError(err instanceof Error ? err.message : "Could not load image.");
+    }
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
+
+    const entry = Number(entryPrice);
+    if (!Number.isFinite(entry) || entry < XAU_SPOT_PRICE_MIN || entry > XAU_SPOT_PRICE_MAX) {
+      setError(`Enter a valid entry price (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX}).`);
+      return;
+    }
+
+    let exit = Number(exitPrice);
+    if (exitTime) {
+      if (!Number.isFinite(exit) || exit < XAU_SPOT_PRICE_MIN || exit > XAU_SPOT_PRICE_MAX) {
+        setError(`Enter a valid exit price (${XAU_SPOT_PRICE_MIN}–${XAU_SPOT_PRICE_MAX}).`);
+        return;
+      }
+    } else if (!Number.isFinite(exit)) {
+      exit = entry;
+    }
+
     setSaveOverlay("saving");
 
     const entryAt = new Date(`${date}T${entryTime}:00`).toISOString();
@@ -112,8 +152,8 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
       type,
       netProfitLoss: Number(netProfitLoss),
       rMultiple,
-      entryPrice: Number(entryPrice),
-      exitPrice: Number(exitPrice),
+      entryPrice: entry,
+      exitPrice: exit,
       mae: mae !== "" ? Number(mae) : null,
       mfe: mfe !== "" ? Number(mfe) : null,
       session,
@@ -151,149 +191,79 @@ export function TradeEditForm({ trade, onClose, onSaved }: Props) {
             : "Saving discipline score, charts, and notes…"
         }
       />
-      <form onSubmit={handleSubmit} className="xau-card-bordered space-y-6 p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-semibold text-xau-ink">Edit trade</h3>
-          <p className="text-sm text-xau-muted">{trade.date} · Discipline {score}%</p>
-        </div>
-        <button type="button" onClick={onClose} className="text-sm text-xau-muted hover:text-xau-ink">
-          Cancel
-        </button>
-      </div>
-
-      {error && <p className="text-sm text-xau-loss">{error}</p>}
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Date" tooltipTerm="tradeDate">
-          <input type="date" className="xau-field" value={date} onChange={(e) => setDate(e.target.value)} />
-        </FormField>
-        <FormField label="Direction" tooltipTerm="tradeType">
-          <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as TradeType)}>
-            {tradeTypeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </FormField>
-        <FormField label="Net P&amp;L ($)" tooltipTerm="netPnl">
-          <input type="number" step="0.01" className="xau-field" value={netProfitLoss} onChange={(e) => setNetProfitLoss(e.target.value)} />
-        </FormField>
-        <FormField label="Session" tooltipTerm="session">
-          <select className="xau-select" value={session} onChange={(e) => setSession(e.target.value as SessionType)}>
-            {sessionOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </FormField>
-        <FormField label="Entry price" tooltipTerm="entryPrice">
-          <input type="number" step="0.01" className="xau-field" value={entryPrice} onChange={(e) => setEntryPrice(e.target.value)} />
-        </FormField>
-        <FormField label="Exit price" tooltipTerm="exitPrice">
-          <input type="number" step="0.01" className="xau-field" value={exitPrice} onChange={(e) => setExitPrice(e.target.value)} />
-        </FormField>
-      </div>
-
-      <div className="space-y-2">
-        {checklistItems.slice(0, 3).map((item, index) => {
-          const checked = index === 0 ? followedPlan : index === 1 ? rrAtLeastOneToTwo : calmMindset;
-          const onChange = index === 0 ? setFollowedPlan : index === 1 ? setRrAtLeastOneToTwo : setCalmMindset;
-          const disciplineTerms: TooltipTerm[] = ["followedPlan", "riskRewardRule", "calmMindsetRule"];
-          const term = disciplineTerms[index] ?? "followedPlan";
-          return (
-            <FormCheckRow key={item.id} label={item.label} term={term} checked={checked} onChange={onChange} />
-          );
-        })}
-      </div>
-
-      <p className="inline-flex items-center gap-1.5 text-sm font-medium text-xau-ink">
-        Setup tags
-        <HelpTooltip term="setupTags" label="About setup tags" size="sm" placement="above" />
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {setupTagOptions.map((tag) => (
-          <button
-            type="button"
-            key={tag}
-            onClick={() => handleSetupTagChange(tag)}
-            className={`rounded-full px-3 py-1.5 text-xs ${
-              setupTags.includes(tag) ? "bg-xau-calm text-xau-ink" : "border border-xau-border text-xau-muted"
-            }`}
-          >
-            {tag}
+      <form onSubmit={handleSubmit} className="xau-page-form">
+        <div className="xau-card-bordered flex flex-wrap items-start justify-between gap-4 p-6">
+          <div>
+            <h3 className="text-lg font-semibold text-xau-ink">Edit trade log</h3>
+            <p className="mt-1 text-sm text-xau-muted">
+              Update exit time, P&amp;L, charts, and notes when the trade finishes — same fields as when you logged
+              the entry.
+            </p>
+          </div>
+          <button type="button" onClick={onClose} className="text-sm text-xau-muted hover:text-xau-ink">
+            Cancel
           </button>
-        ))}
-      </div>
-
-      <FormField label="Emotion" tooltipTerm="emotion">
-        <select className="xau-select" value={emotion} onChange={(e) => setEmotion(e.target.value as EmotionType)}>
-          {emotionOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </FormField>
-
-      <label className="block space-y-2">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Context<HelpTooltip term="noteContext" label="About context" size="sm" placement="above" /></span>
-        <textarea rows={2} className="xau-textarea" value={noteContext} onChange={(e) => setNoteContext(e.target.value)} placeholder="Context" />
-      </label>
-      <label className="block space-y-2">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Mistake<HelpTooltip term="noteMistake" label="About mistake" size="sm" placement="above" /></span>
-        <textarea rows={2} className="xau-textarea" value={noteMistake} onChange={(e) => setNoteMistake(e.target.value)} placeholder="Mistake" />
-      </label>
-      <label className="block space-y-2">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Next action<HelpTooltip term="noteNextAction" label="About next action" size="sm" placement="above" /></span>
-        <textarea rows={2} className="xau-textarea" value={noteNextAction} onChange={(e) => setNoteNextAction(e.target.value)} placeholder="Next action" />
-      </label>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">Before chart<HelpTooltip term="chartBefore" label="About before chart" size="sm" placement="above" /></p>
-          <input
-            type="file"
-            accept="image/*"
-            className="mb-2 block w-full text-xs"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setBeforeChartUrl(await readImageFileAsDataUrl(file));
-            }}
-          />
-          {beforeChartUrl && (
-            <div className="relative h-24 overflow-hidden rounded-xl">
-              <ChartImage src={beforeChartUrl} alt="Before" />
-            </div>
-          )}
         </div>
-        <div>
-          <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-xau-ink">After chart<HelpTooltip term="chartAfter" label="About after chart" size="sm" placement="above" /></p>
-          <input
-            type="file"
-            accept="image/*"
-            className="mb-2 block w-full text-xs"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setAfterChartUrl(await readImageFileAsDataUrl(file));
-            }}
-          />
-          {afterChartUrl && (
-            <div className="relative h-24 overflow-hidden rounded-xl">
-              <ChartImage src={afterChartUrl} alt="After" />
-            </div>
-          )}
-        </div>
-      </div>
 
-      <button type="submit" disabled={saveOverlay !== null} className="xau-btn-gold px-6 py-2.5 disabled:opacity-60">
-        {saveOverlay ? "Saving…" : "Save changes"}
-      </button>
-    </form>
+        {error && (
+          <div className="rounded-2xl border border-xau-border bg-xau-rose px-4 py-3 text-sm text-xau-loss">{error}</div>
+        )}
+
+        <TradeLogFormSections
+          disciplineRows={disciplineRows}
+          disciplineScore={disciplineScore}
+          date={date}
+          setDate={setDate}
+          entryTime={entryTime}
+          setEntryTime={setEntryTime}
+          exitTime={exitTime}
+          setExitTime={setExitTime}
+          type={type}
+          setType={setType}
+          session={session}
+          setSession={setSession}
+          netProfitLoss={netProfitLoss}
+          setNetProfitLoss={setNetProfitLoss}
+          rMultiple={rMultiple}
+          setRMultiple={setRMultiple}
+          entryPrice={entryPrice}
+          setEntryPrice={setEntryPrice}
+          exitPrice={exitPrice}
+          setExitPrice={setExitPrice}
+          mae={mae}
+          setMae={setMae}
+          mfe={mfe}
+          setMfe={setMfe}
+          setupTagOptions={setupTagOptions}
+          setupTags={setupTags}
+          onSetupTagToggle={handleSetupTagToggle}
+          emotion={emotion}
+          setEmotion={(v) => setEmotion(v as EmotionType)}
+          noteContext={noteContext}
+          setNoteContext={setNoteContext}
+          noteMistake={noteMistake}
+          setNoteMistake={setNoteMistake}
+          noteNextAction={noteNextAction}
+          setNoteNextAction={setNoteNextAction}
+          beforeChartUrl={beforeChartUrl}
+          setBeforeChartUrl={setBeforeChartUrl}
+          afterChartUrl={afterChartUrl}
+          setAfterChartUrl={setAfterChartUrl}
+          chartUploadError={chartUploadError}
+          onChartFile={handleChartFile}
+          exitPriceOptional
+        />
+
+        <div className="flex flex-col gap-3 border-t border-xau-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            type="submit"
+            disabled={saveOverlay !== null}
+            className="xau-btn-gold px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {saveOverlay ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </form>
     </>
   );
 }

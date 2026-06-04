@@ -307,7 +307,6 @@ export async function updateTradeForUser(
   const result = await prisma.trade.updateMany({
     where: { id: tradeId, userId },
     data: {
-      asset: trade.asset,
       date: new Date(trade.date),
       entryAt,
       exitAt,
@@ -335,13 +334,6 @@ export async function updateTradeForUser(
   });
 
   return result.count > 0;
-}
-
-export async function getTradeForUser(userId: string, tradeId: string): Promise<JournalTrade | null> {
-  const trade = await prisma.trade.findFirst({
-    where: { id: tradeId, userId },
-  });
-  return trade ? mapTrade(trade) : null;
 }
 
 export async function addTradeForUser(userId: string, trade: JournalTrade) {
