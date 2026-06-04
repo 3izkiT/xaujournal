@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { PanelHeading } from "@/components/ui/HelpTooltip";
 import type { ChartPalette } from "@/lib/chart-colors";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
@@ -29,8 +30,13 @@ export function DisciplineAnalytics({ ruleBreaks, heatmap }: Props) {
   return (
     <div className="grid gap-4 xl:grid-cols-2">
       <article className="xau-card-bordered p-5">
-        <h4 className="text-sm font-medium text-xau-ink">Rule-break tracker</h4>
-        <p className="mb-4 mt-0.5 text-xs text-xau-muted">Most broken checklist items.</p>
+        <PanelHeading
+          as="h4"
+          className="mb-4"
+          title="Rule-break tracker"
+          term="ruleBreakTracker"
+          description="Most broken checklist items."
+        />
         <ChartContainer className="h-52">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={ruleBreaks} layout="vertical" margin={{ left: 8, right: 16 }}>
@@ -52,10 +58,13 @@ export function DisciplineAnalytics({ ruleBreaks, heatmap }: Props) {
       </article>
 
       <article className="xau-card-bordered p-5">
-        <h4 className="text-sm font-medium text-xau-ink">Day × hour heatmap</h4>
-        <p className="mb-4 mt-0.5 text-xs text-xau-muted">
-          Green / red like TradingView — entry time in your timezone.
-        </p>
+        <PanelHeading
+          as="h4"
+          className="mb-4"
+          title="Day × hour heatmap"
+          term="dayHourHeatmap"
+          description="Green / red like TradingView — entry time in your timezone."
+        />
         <div className="overflow-x-hidden md:overflow-x-auto">
           <div className="w-full min-w-0 md:min-w-[520px]">
             <div className="mb-2 grid grid-cols-[40px_repeat(8,1fr)] gap-1 text-[10px] text-xau-muted">

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect } from "react";
 import { DashboardSectionNav } from "@/components/dashboard/DashboardSectionNav";
+import { HelpTooltip, PanelHeading } from "@/components/ui/HelpTooltip";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { RecentTradesPanel } from "@/components/dashboard/RecentTradesPanel";
 import { TradeCalendarPanel } from "@/components/dashboard/TradeCalendarPanel";
@@ -84,8 +85,11 @@ export default function DashboardPage() {
       <header id="overview" className="scroll-mt-24 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-xau-ink md:text-[1.75rem]">
+            <h1 className="inline-flex flex-wrap items-center gap-2 text-2xl font-semibold tracking-tight text-xau-ink md:text-[1.75rem]">
               {tradeCount === 0 ? "Welcome back" : "Performance overview"}
+              {tradeCount > 0 ? (
+                <HelpTooltip term="performanceOverview" label="About performance overview" placement="above" />
+              ) : null}
             </h1>
             <p className="mt-1 text-sm text-xau-muted">
               {tradeCount === 0
@@ -101,15 +105,16 @@ export default function DashboardPage() {
       </header>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Win rate" value={`${winRate}%`} accent="profit" />
-        <KpiCard label="Discipline" value={`${avgDiscipline}%`} hint={`Month: ${monthlyDiscipline}%`} accent="calm" />
+        <KpiCard label="Win rate" value={`${winRate}%`} accent="profit" tooltipTerm="winRate" />
+        <KpiCard label="Discipline" value={`${avgDiscipline}%`} hint={`Month: ${monthlyDiscipline}%`} accent="calm" tooltipTerm="discipline" />
         <KpiCard
           label="Net P&L"
           value={`${totalPnl >= 0 ? "+" : "-"}$${Math.abs(totalPnl).toFixed(2)}`}
           accent={totalPnl >= 0 ? "profit" : "loss"}
           valueClassName={totalPnl >= 0 ? "text-tv-profit" : "text-tv-loss"}
+          tooltipTerm="netPnl"
         />
-        <KpiCard label="Profit factor" value={String(profitFactor)} accent="gold" />
+        <KpiCard label="Profit factor" value={String(profitFactor)} accent="gold" tooltipTerm="profitFactor" />
       </div>
 
       <EquityChart equityCurve={equityCurve} />
@@ -128,10 +133,13 @@ export default function DashboardPage() {
       <section id="analytics" className="scroll-mt-24 space-y-6">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-xau-gold-accent">Deep dive</p>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight text-xau-ink md:text-2xl">Analytics</h2>
-          <p className="mt-1 text-sm text-xau-muted">
-            Setup quality, execution, and discipline patterns from intentional logs.
-          </p>
+          <PanelHeading
+            as="h2"
+            className="mt-1"
+            title="Analytics"
+            term="analytics"
+            description="Setup quality, execution, and discipline patterns from intentional logs."
+          />
         </div>
 
         {tradeCount === 0 ? (

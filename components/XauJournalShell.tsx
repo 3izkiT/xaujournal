@@ -14,8 +14,6 @@ type NavItem = {
 
 const mainNav: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <IconGrid /> },
-  { href: "/analytics", label: "Analytics", icon: <IconChart /> },
-  { href: "/calendar", label: "Calendar", icon: <IconCalendar /> },
   { href: "/journal-entry", label: "Journal", icon: <IconPen /> },
   { href: "/history", label: "History", icon: <IconList /> },
   { href: "/gallery", label: "Gallery", icon: <IconImage /> },

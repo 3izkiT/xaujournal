@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { PanelHeading } from "@/components/ui/HelpTooltip";
 import { useMdUp } from "@/lib/use-md-up";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
@@ -47,10 +48,13 @@ export function SetupAnalytics({ setupVsMistakes }: { setupVsMistakes: SetupRow[
 
   return (
     <article className="xau-card-bordered p-4 md:p-5">
-      <div className="mb-4">
-        <h2 className="text-base font-semibold text-xau-ink">Setup win rate vs mistakes</h2>
-        <p className="mt-0.5 text-xs text-xau-muted">Per setup tag on journal entries</p>
-      </div>
+      <PanelHeading
+        as="h2"
+        className="mb-4"
+        title="Setup win rate vs mistakes"
+        term="setupWinRate"
+        description="Per setup tag on journal entries"
+      />
       {!hasSetupData ? (
         <div className="flex h-48 items-center justify-center rounded-xl bg-xau-app text-sm text-xau-muted">
           Tag setups to compare edge and mistakes.

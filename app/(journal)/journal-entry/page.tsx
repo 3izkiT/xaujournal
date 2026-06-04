@@ -235,7 +235,7 @@ export default function JournalEntryPage() {
             <FormField label="Exit time" hint="Optional">
               <input type="time" className="xau-field" value={exitTime} onChange={(e) => setExitTime(e.target.value)} />
             </FormField>
-            <FormField label="Direction">
+            <FormField label="Direction" tooltipTerm="tradeType">
               <select className="xau-select" value={type} onChange={(e) => setType(e.target.value as "Buy" | "Sell")}>
                 {tradeTypeOptions.map((option) => (
                   <option key={option} value={option}>
@@ -244,7 +244,7 @@ export default function JournalEntryPage() {
                 ))}
               </select>
             </FormField>
-            <FormField label="Session">
+            <FormField label="Session" tooltipTerm="session">
               <select
                 className="xau-select"
                 value={session}
@@ -257,7 +257,7 @@ export default function JournalEntryPage() {
                 ))}
               </select>
             </FormField>
-            <FormField label="Net P&amp;L ($)">
+            <FormField label="Net P&amp;L ($)" tooltipTerm="netShort">
               <input
                 type="number"
                 step="0.01"
@@ -266,7 +266,7 @@ export default function JournalEntryPage() {
                 onChange={(e) => setNetProfitLoss(e.target.value)}
               />
             </FormField>
-            <FormField label="R-multiple" hint="e.g. +3R">
+            <FormField label="R-multiple" hint="e.g. +3R" tooltipTerm="rMultiple">
               <input className="xau-field" value={rMultiple} onChange={(e) => setRMultiple(e.target.value)} />
             </FormField>
           </div>
@@ -302,7 +302,7 @@ export default function JournalEntryPage() {
               />
             </FormField>
             <FormField
-              label="MAE ($)"
+              label="MAE ($)" tooltipTerm="mae"
               hint="Maximum Adverse Excursion — worst unrealized loss ($) while the trade was open. Optional; fill after close from your platform."
             >
               <input
@@ -315,7 +315,7 @@ export default function JournalEntryPage() {
               />
             </FormField>
             <FormField
-              label="MFE ($)"
+              label="MFE ($)" tooltipTerm="mfe"
               hint="Maximum Favorable Excursion — best unrealized profit ($) before exit. Optional."
             >
               <input

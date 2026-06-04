@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
+import { PanelHeading } from "@/components/ui/HelpTooltip";
 import { useMdUp } from "@/lib/use-md-up";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
@@ -77,10 +78,12 @@ export function EquityChart({ equityCurve }: { equityCurve: EquityPoint[] }) {
   return (
     <article className="xau-card-bordered p-4 md:p-5">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h2 className="text-base font-semibold text-xau-ink">Equity curve</h2>
-          <p className="mt-0.5 text-xs text-xau-muted">Cumulative net P&L{chartScroll ? " · scroll when you have many trades" : ""}</p>
-        </div>
+        <PanelHeading
+          as="h2"
+          title="Equity curve"
+          term="equityCurve"
+          description={`Cumulative net P&L${chartScroll ? " · scroll when you have many trades" : ""}`}
+        />
         <span className="text-xs font-medium text-xau-muted">{tradeCount} trades</span>
       </div>
       <ChartContainer className="h-64 md:h-80">

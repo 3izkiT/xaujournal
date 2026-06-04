@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PanelHeading, ThWithTooltip } from "@/components/ui/HelpTooltip";
 import type { JournalTrade } from "@/lib/types";
 
 function shortSession(session: JournalTrade["session"]) {
@@ -23,8 +24,8 @@ export function RecentTradesPanel({ trades, maxItems = 5 }: Props) {
 
   return (
     <article className="xau-card-bordered flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-xau-border px-4 py-3">
-        <h2 className="text-sm font-semibold text-xau-ink">Recent trades</h2>
+      <div className="flex items-center justify-between gap-2 border-b border-xau-border px-4 py-3">
+        <PanelHeading as="h2" title="Recent trades" term="recentTrades" className="min-w-0" />
         <Link href="/history" className="shrink-0 text-xs font-medium text-xau-muted hover:text-xau-ink">
           View all →
         </Link>
@@ -86,12 +87,12 @@ export function RecentTradesPanel({ trades, maxItems = 5 }: Props) {
                   <tr>
                     <th className="px-4 py-2.5 font-medium">Date</th>
                     <th className="px-3 py-2.5 font-medium">Type</th>
-                    <th className="px-3 py-2.5 font-medium">Session</th>
-                    <th className="px-3 py-2.5 font-medium">R</th>
-                    <th className="px-3 py-2.5 font-medium">Net</th>
-                    <th className="px-3 py-2.5 font-medium">Disc.</th>
-                    <th className="hidden px-3 py-2.5 font-medium lg:table-cell">Emotion</th>
-                    <th className="hidden px-3 py-2.5 font-medium xl:table-cell">Setup</th>
+                    <ThWithTooltip term="session" className="px-3 py-2.5 font-medium">Session</ThWithTooltip>
+                    <ThWithTooltip term="rMultiple" className="px-3 py-2.5 font-medium">R</ThWithTooltip>
+                    <ThWithTooltip term="netShort" className="px-3 py-2.5 font-medium">Net</ThWithTooltip>
+                    <ThWithTooltip term="disciplineShort" className="px-3 py-2.5 font-medium">Disc.</ThWithTooltip>
+                    <ThWithTooltip term="emotion" className="hidden px-3 py-2.5 font-medium lg:table-cell">Emotion</ThWithTooltip>
+                    <ThWithTooltip term="setup" className="hidden px-3 py-2.5 font-medium xl:table-cell">Setup</ThWithTooltip>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-xau-border">

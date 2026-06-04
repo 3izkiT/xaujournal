@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PanelHeading } from "@/components/ui/HelpTooltip";
 import { useMemo, useState } from "react";
 import type { JournalTrade } from "@/lib/types";
 
@@ -52,10 +53,12 @@ export function TradeCalendarPanel({ trades }: Props) {
   return (
     <article id="calendar" className="xau-card-bordered scroll-mt-24 p-4 md:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-semibold text-xau-ink">Trade calendar</h2>
-          <p className="mt-0.5 text-xs text-xau-muted">Daily P&L from trades you log on purpose</p>
-        </div>
+        <PanelHeading
+          as="h2"
+          title="Trade calendar"
+          term="tradeCalendar"
+          description="Daily P&L from trades you log on purpose"
+        />
         <div className="flex items-center gap-1">
           <button
             type="button"
