@@ -4,7 +4,7 @@ export const TOOLTIP_TERMS = {
     "Average discipline checklist score (0–100%). Based on following your plan, minimum 1:2 R:R, and a calm mindset.",
   netPnl: "Total net profit or loss in USD across every trade in your journal.",
   netPnlTrade:
-    "กำไรหรือขาดทุนสุทธิของเทรดนี้ ($) — เลือกกำไร/ขาดทุนแล้วใส่ตัวเลข (เหมาะกับมือถือ ไม่ต้องพิมพ์ +/−).",
+    "Net P&L for this trade in USD. Choose Profit or Loss from the dropdown, then enter the amount.",
   profitFactor:
     "Gross winning dollars divided by gross losing dollars. Above 1.0 means wins outweigh losses; below 1.0 means the opposite.",
   monthDiscipline: "Average discipline score for trades logged in the current calendar month only.",
@@ -28,7 +28,7 @@ export const TOOLTIP_TERMS = {
   mae: "MAE — ขาดทุนลอยสูงสุดระหว่างถือออเดอร์ ($) จากแพลตฟอร์ม ใช้ดูว่าราคาวิ่งกระทบบัญชีแค่ไหนก่อนปิด (ไม่บังคับ).",
   mfe: "MFE — กำไรลอยสูงสุดระหว่างถือออเดอร์ ($) ก่อนปิด ใช้ดูว่าเทรดไปได้ดีแค่ไหนก่อนราคากลับ (ไม่บังคับ).",
   rMultiple:
-    "ผลลัพธ์เป็น R (เทียบกับเงินที่เสี่ยงต่อไม้) — พิมพ์แค่ +3 หรือ -1 ระบบเติม R ให้เมื่อบันทึก (+2R = กำไร 2 เท่าของความเสี่ยง).",
+    "Result in R vs. risk per trade. Choose Win or Loss, enter the number — we add R on save (Win + 2 → +2R).",
   disciplineShort: "Discipline checklist score for that trade: 0%, 33%, 66%, or 100% (three yes/no items).",
   tradeType: "Trade direction: Buy (long) or Sell (short).",
   session: "Session when you entered: Sydney, Tokyo, London, or New York (Thailand time) — tag this on each journal entry.",
