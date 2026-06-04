@@ -2,7 +2,6 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartContainer } from "@/components/ChartContainer";
-import { PanelHeading } from "@/components/ui/HelpTooltip";
 import { useChartPalette } from "@/lib/use-chart-palette";
 
 type SessionRow = { name: string; value: number };
@@ -20,19 +19,15 @@ export function SessionMini({ sessionData }: { sessionData: SessionRow[] }) {
   const hasData = sessionData.some((s) => s.value !== 0);
 
   return (
-    <article className="xau-card-bordered flex h-full flex-col p-4">
-      <PanelHeading
-        as="h2"
-        title="Session P&L"
-        term="sessionPnl"
-        description="London · NY · Asian"
-      />
+    <article className="xau-card-bordered p-4 md:p-5">
+      <h2 className="text-sm font-semibold text-xau-ink">Session P&L</h2>
+      <p className="mt-0.5 text-xs text-xau-muted">London · NY · Asian</p>
       {!hasData ? (
-        <p className="mt-6 flex flex-1 items-center justify-center text-center text-xs text-xau-muted">
+        <p className="mt-6 flex h-52 items-center justify-center text-center text-xs text-xau-muted md:h-64">
           Tag sessions on entries.
         </p>
       ) : (
-        <ChartContainer className="mt-3 min-h-[180px] flex-1">
+        <ChartContainer className="mt-3 h-52 md:h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sessionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
