@@ -72,7 +72,7 @@ const features = [
   },
   {
     title: "Session intelligence",
-    body: "Sydney, Tokyo, London, and New York session tags (Thailand time) reveal where your edge actually lives.",
+    body: "Sydney, Tokyo, London, and New York session tags reveal where your edge actually lives.",
   },
 ];
 

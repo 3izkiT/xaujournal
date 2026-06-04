@@ -94,7 +94,7 @@ export function AdvancedAnalytics({
 
         <article className="xau-card-bordered p-4 md:p-5 lg:col-span-7">
           <h3 className="text-lg font-medium text-xau-ink">Session Performance (P&L)</h3>
-          <p className="mt-1 text-xs text-xau-muted">Net P&L by Sydney, Tokyo, London, and New York (Thailand time).</p>
+          <p className="mt-1 text-xs text-xau-muted">Net P&L by Sydney, Tokyo, London, and New York.</p>
 
           {!hasSessionPnl ? (
             <div className="mt-4 flex h-40 items-center justify-center rounded-xl bg-xau-app text-sm text-xau-muted">
