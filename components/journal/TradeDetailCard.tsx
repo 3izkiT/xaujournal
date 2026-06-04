@@ -1,4 +1,4 @@
-import { ChartImage } from "@/components/journal/ChartImage";
+import { ExpandableChartImage, type ChartSlide } from "@/components/journal/ChartImageLightbox";
 import type { JournalTrade } from "@/lib/types";
 
 function formatTime(iso: string | null) {
@@ -35,6 +35,43 @@ type Props = {
   trade: JournalTrade;
   onClose?: () => void;
 };
+
+
+function ChartSection({ trade }: { trade: JournalTrade }) {
+  const slides: ChartSlide[] = [
+    { src: trade.beforeChartUrl, alt: "Before trade chart", caption: "Before trade" },
+    { src: trade.afterChartUrl, alt: "After trade chart", caption: "After trade" },
+  ];
+
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-xau-ink">Charts</h3>
+      <p className="mt-1 text-xs text-xau-muted">Tap a screenshot to expand. Arrow keys switch before / after.</p>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="mb-2 text-xs text-xau-muted">Before</p>
+          <ExpandableChartImage
+            src={trade.beforeChartUrl}
+            alt="Before trade chart"
+            fit="contain"
+            slides={slides}
+            slideIndex={0}
+          />
+        </div>
+        <div>
+          <p className="mb-2 text-xs text-xau-muted">After</p>
+          <ExpandableChartImage
+            src={trade.afterChartUrl}
+            alt="After trade chart"
+            fit="contain"
+            slides={slides}
+            slideIndex={1}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function TradeDetailCard({ trade, onClose }: Props) {
   const checklist = trade.disciplineChecklist;
@@ -94,23 +131,7 @@ export function TradeDetailCard({ trade, onClose }: Props) {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-sm font-semibold text-xau-ink">Charts</h3>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2">
-          <div>
-            <p className="mb-2 text-xs text-xau-muted">Before</p>
-            <div className="relative h-44 overflow-hidden rounded-xl bg-xau-app">
-              <ChartImage fit="contain" src={trade.beforeChartUrl} alt="Before trade" />
-            </div>
-          </div>
-          <div>
-            <p className="mb-2 text-xs text-xau-muted">After</p>
-            <div className="relative h-44 overflow-hidden rounded-xl bg-xau-app">
-              <ChartImage fit="contain" src={trade.afterChartUrl} alt="After trade" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <ChartSection trade={trade} />
 
       <p className={`text-lg font-semibold ${pnlClass}`}>
         {trade.netProfitLoss >= 0 ? "+" : "-"}${Math.abs(trade.netProfitLoss).toFixed(2)} net
