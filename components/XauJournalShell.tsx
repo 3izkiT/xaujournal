@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BRAND_NAME, BRAND_SHORT } from "@/lib/brand";
-import { PAYMENTS_ENABLED } from "@/lib/monetization";
 
 type NavItem = {
   href: string;
@@ -31,23 +30,6 @@ function IconGrid() {
       <rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
       <rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
       <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function IconChart() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M4 19V5M10 19V9M16 19V12M22 19V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconCalendar() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -138,15 +120,13 @@ function SidebarContent({
 }) {
   return (
     <>
-      <div className="flex items-center justify-between gap-2 px-2">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-xs font-bold text-xau-ink">
-            Au
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
-            <p className="text-[10px] uppercase tracking-wider text-xau-muted">{BRAND_SHORT}</p>
-          </div>
+      <div className="flex items-center gap-2.5 px-2">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-xau-gold to-xau-gold-accent text-xs font-bold text-xau-ink">
+          Au
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-xau-ink">{BRAND_NAME}</p>
+          <p className="text-[10px] uppercase tracking-wider text-xau-muted">{BRAND_SHORT}</p>
         </div>
       </div>
 
@@ -162,15 +142,13 @@ function SidebarContent({
 
       <div className="mt-auto space-y-2 border-t border-xau-border pt-4">
         <ThemeToggle className="w-full justify-center" />
-        {PAYMENTS_ENABLED && (
-          <Link
-            href="/pricing"
-            className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
-            onClick={onNavigate}
-          >
-            Upgrade plan
-          </Link>
-        )}
+        <Link
+          href="/pricing"
+          className="block rounded-xl px-3 py-2 text-xs font-medium text-xau-muted hover:bg-xau-app hover:text-xau-ink"
+          onClick={onNavigate}
+        >
+          Upgrade plan
+        </Link>
         <p className="truncate px-3 text-[11px] text-xau-muted">{userEmail}</p>
         <button
           type="button"
@@ -222,7 +200,8 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-xau-app text-xau-ink lg:flex">
+    <div className="min-h-screen bg-xau-app text-xau-ink lg:flex">
+      {/* Mobile header */}
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-xau-border bg-xau-card px-4 py-3 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-xau-gold to-xau-gold-accent text-[10px] font-bold">
@@ -244,6 +223,7 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
+      {/* Mobile drawer */}
       <div className={`fixed inset-0 z-40 lg:hidden ${mobileOpen ? "" : "pointer-events-none"}`}>
         <button
           type="button"
@@ -260,10 +240,12 @@ export function XauJournalShell({ children }: { children: ReactNode }) {
         </aside>
       </div>
 
+      {/* Desktop sidebar — full height, no floating card */}
       <aside className="hidden w-[248px] shrink-0 flex-col border-r border-xau-border bg-xau-card px-4 py-6 lg:flex lg:min-h-screen lg:sticky lg:top-0 lg:h-screen">
         <SidebarContent pathname={pathname} userEmail={userEmail} onSignOut={() => void handleSignOut()} />
       </aside>
 
+      {/* Main canvas — open background, no extra card wrapper */}
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="w-full flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
