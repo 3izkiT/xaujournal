@@ -100,6 +100,132 @@
     background: var(--xau-app);
   }
 
+  .xau-btn-ghost:active {
+    background: var(--xau-border);
+  }
+
+  .xau-btn-gold:active {
+    filter: brightness(0.92);
+  }
+
+  .xau-btn-soft {
+    @apply rounded-xl border border-xau-border px-3 py-2 text-sm font-medium transition;
+    background: var(--xau-app);
+    color: var(--xau-ink);
+  }
+
+  .xau-btn-soft:hover {
+    background: var(--xau-card);
+  }
+
+  .xau-btn-soft:active {
+    background: var(--xau-border);
+  }
+
+  .xau-btn-icon {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-xl border border-xau-border transition;
+    background: var(--xau-card);
+    color: var(--xau-ink);
+  }
+
+  .xau-btn-icon:hover {
+    background: var(--xau-app);
+  }
+
+  .xau-btn-icon:active {
+    background: var(--xau-border);
+  }
+
+  .xau-btn-pill {
+    @apply rounded-full border border-xau-border bg-xau-app px-4 py-2 text-sm text-xau-muted transition;
+  }
+
+  .xau-btn-pill:hover {
+    @apply text-xau-ink;
+    background: var(--xau-card);
+  }
+
+  .xau-btn-pill-active {
+    @apply border-transparent font-medium text-xau-ink;
+    background: var(--xau-calm-bg);
+  }
+
+  .xau-btn-pill:active {
+    filter: brightness(0.97);
+  }
+
+  .xau-btn-nav {
+    @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition;
+    color: var(--xau-ink);
+  }
+
+  .xau-btn-nav:hover {
+    background: var(--xau-app);
+  }
+
+  .xau-btn-nav-active {
+    background: var(--xau-gold-soft);
+  }
+
+  .xau-btn-nav:active {
+    filter: brightness(0.97);
+  }
+
+  .xau-btn-tab {
+    @apply rounded-lg px-3 py-2 text-sm font-medium transition;
+    color: var(--xau-muted);
+  }
+
+  .xau-btn-tab:hover {
+    color: var(--xau-ink);
+    background: var(--xau-app);
+  }
+
+  .xau-btn-tab[aria-selected="true"] {
+    color: var(--xau-ink);
+    background: var(--xau-card);
+    box-shadow: var(--xau-shadow-card);
+  }
+
+  .xau-btn-link {
+    @apply text-xs font-medium text-xau-ink underline-offset-2 transition hover:underline;
+  }
+
+  .xau-btn-link:active {
+    opacity: 0.75;
+  }
+
+  .xau-btn-link-gold {
+    @apply text-xs font-medium text-xau-gold-accent underline-offset-2 transition hover:underline;
+  }
+
+  .xau-btn-link-gold:active {
+    opacity: 0.75;
+  }
+
+  .xau-btn-link-danger {
+    @apply text-xs font-medium text-xau-loss underline-offset-2 transition hover:underline;
+  }
+
+  .xau-btn-link-danger:active {
+    opacity: 0.75;
+  }
+
+  .xau-btn-danger {
+    @apply rounded-xl px-4 py-2 text-sm font-medium text-xau-loss transition;
+    border: 1px solid rgba(242, 54, 69, 0.3);
+    background: var(--xau-loss-bg);
+  }
+
+  .xau-btn-danger:hover {
+    background: var(--xau-loss-bg);
+    filter: brightness(0.97);
+  }
+
+  .xau-btn-danger:active {
+    filter: brightness(0.92);
+  }
+
   .text-tv-profit {
     color: var(--xau-profit);
   }
@@ -155,20 +281,6 @@ html {
   scroll-behavior: smooth;
 }
 
-
-@keyframes saving-bar-slide {
-  0% {
-    transform: translateX(-120%);
-  }
-  100% {
-    transform: translateX(420%);
-  }
-}
-
-.animate-saving-bar {
-  animation: saving-bar-slide 1.25s ease-in-out infinite;
-}
-
 @keyframes rise-up {
   from {
     opacity: 0;
@@ -218,22 +330,6 @@ html {
     opacity: 1;
     transform: none;
     transition: none;
-  }
-
-  .xau-btn-gold,
-  .xau-btn-ghost,
-  .xau-btn-soft,
-  .xau-btn-icon,
-  .xau-btn-pill,
-  .xau-btn-nav,
-  .xau-btn-tab,
-  .xau-btn-link,
-  .xau-btn-link-gold,
-  .xau-btn-link-danger,
-  .xau-btn-danger {
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease,
-      filter 0.15s ease;
-    transform: none !important;
   }
 }
 

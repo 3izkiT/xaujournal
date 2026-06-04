@@ -213,7 +213,7 @@ export function XauJournalProvider({ children }: { children: ReactNode }) {
     }
     const cached = readCachedTrades(user.id);
     if (cached?.length) {
-      setTrades(cached);
+      setTrades(sortTradesByLoggedAt(cached));
       setLoading(false);
       void refreshTrades({ silent: true });
     } else {
